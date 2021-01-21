@@ -15,3 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
+
+$string['pluginname'] = 'Course Wrangler Tool';
+
+$string['pageheader'] = 'The course wrangler tool page header.';
+$string['pageheading'] = 'Course Wrangler Tool';
+$string['pageheading'] = 'Course Wrangler Tool';
+
+$string['privacy:metadata'] = 'The course wrangler tool plugin does not store any personal data.';

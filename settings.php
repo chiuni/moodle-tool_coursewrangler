@@ -22,3 +22,20 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+if ($hassiteconfig) {
+
+    $pluginname = get_string('pluginname', 'tool_coursewrangler');
+    $url = $CFG->wwwroot . '/' . $CFG->admin . '/tool/coursewrangler/index.php';
+    // $ADMIN->add('security', new admin_externalpage('toolcoursewrangler', $pluginname, $url, 'moodle/site:config', true));
+    $ADMIN->add("parent_section", new admin_externalpage('toolcoursewrangler', $pluginname, $url, 'moodle/site:config', true));
+
+    $coursewranglerurl = $CFG->wwwroot . '/' . $CFG->admin . '/tool/coursewrangler/index.php';
+    // $ADMIN->locate('httpsecurity')->add(
+    //     new admin_setting_heading(
+    //         'tool_coursewranglerheader',
+    //         new lang_string('pluginname', 'tool_coursewrangler'),
+    //         new lang_string('toolintro', 'tool_coursewrangler', $coursewranglerurl)
+    //     )
+    // );
+}

@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,16 +16,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * This file is a class example.
+ * 
  * @package   tool_coursewrangler
  * @author    Mark Sharp <m.sharp@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace tool_coursewrangler\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2020120902;
-$plugin->requires = 2019111800;
-$plugin->component = 'tool_coursewrangler';
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '0.0.1';
+/**
+ * Privacy Subsystem for tool_coursewrangler implementing null_provider.
+ *
+ * @author    Hugo Soares <h.soares@chi.ac.uk>
+ * @copyright 2021 University of Chichester {@link www.chi.ac.uk}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}

@@ -24,3 +24,146 @@
 namespace tool_coursewrangler;
 
 defined('MOODLE_INTERNAL') || die();
+
+function find_relevant_course_data()
+{
+    global $DB, $CFG;
+    $modules = $DB->get_records_sql("SELECT id, name FROM {modules};");
+    $union_segments = [];
+    foreach ($modules as $module) {
+        $union_segments[] =    " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act ";
+    }
+    $union_statement = implode(" UNION ", $union_segments);
+    return $DB->get_records_sql(
+        "SELECT c.id AS course_id,
+                cm.id AS course_module_id, 
+                act.id AS activity_id,
+                c.fullname AS course_fullname, 
+                c.shortname AS course_shortname, 
+                c.idnumber AS course_idnumber, 
+                c.startdate AS course_startdate, 
+                c.enddate AS course_enddate, 
+                c.timecreated AS course_timecreated, 
+                c.timemodified AS course_timemodified, 
+                c.visible AS course_visible, 
+                m.name AS activity_type, 
+                MAX(act.timemodified) AS activity_last_modified
+        FROM    {course} AS c 
+            JOIN {course_modules} AS cm ON cm.course=c.id 
+            JOIN {modules} AS m ON cm.module=m.id 
+            JOIN (  $union_statement ) AS act ON act.course=c.id AND act.id=cm.instance
+            JOIN (  SELECT ula.id, 
+                            ula.userid, 
+                            ula.courseid, 
+                            ula.timeaccess
+                    FROM    {user_lastaccess} AS ula
+                        INNER JOIN (SELECT  courseid, 
+                                            MAX(timeaccess) AS timeid
+                                    FROM    {user_lastaccess}
+                                    WHERE   userid!=:guestid 
+                                    AND     userid NOT IN (:siteadminids)
+                                    GROUP BY courseid) AS groupedula 
+                        ON ula.courseid = groupedula.courseid 
+                        AND ula.timeaccess = groupedula.timeid) AS ula
+        WHERE c.id!=:siteid
+        GROUP BY c.id;",
+        [
+            'guestid' => 1,
+            'siteadminids' => $CFG->siteadmins,
+            'sideid' => SITEID
+        ]
+    );
+}
+
+function find_relevant_course_data_lite()
+{
+    $course_query = find_activities_modified();
+    $ula_query = find_course_last_access();
+    $meta_query = find_meta_parents();
+    $parent_course_ids = array_keys($meta_query);
+    foreach ($course_query as $key => $result) {
+        $result->course_timeaccess = $ula_query[$key]->timeaccess;
+        $result->course_isparent = in_array($result->course_id, $parent_course_ids) ? 1 : 0; // could we count this?
+        $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? null;
+        $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? null;
+    }
+    return $course_query;
+}
+
+function find_meta_parents()
+{
+    global $DB;
+    return $DB->get_records_sql("SELECT customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
+}
+
+function find_last_enrolment($id)
+{
+    global $DB;
+    return $DB->get_record_sql("SELECT courseid AS course_id, MAX(timecreated) AS course_lastenrolment FROM {enrol} WHERE courseid=:id;", ['id' => $id]);
+}
+
+function count_course_modules(int $id)
+{
+    global $DB;
+    if ($id < 1) {
+        return null;
+    }
+    return $DB->get_record_sql("SELECT COUNT(id) AS course_modulescount FROM {course_modules} WHERE course=:id;", ['id' => $id]);
+}
+function find_activities_modified(string $where = '')
+{
+    global $DB;
+    $modules = $DB->get_records_sql("SELECT id, name FROM {modules};");
+    $union_segments = [];
+    foreach ($modules as $module) {
+        $union_segments[] =    " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act $where";
+    }
+    $union_statement = implode(" UNION ", $union_segments);
+    return $DB->get_records_sql(
+        "SELECT c.id AS course_id,
+                cm.id AS course_module_id, 
+                act.id AS activity_id,
+                c.fullname AS course_fullname, 
+                c.shortname AS course_shortname, 
+                c.idnumber AS course_idnumber, 
+                c.startdate AS course_startdate, 
+                c.enddate AS course_enddate, 
+                c.timecreated AS course_timecreated, 
+                c.timemodified AS course_timemodified, 
+                c.visible AS course_visible, 
+                m.name AS activity_type, 
+                MAX(act.timemodified) AS activity_lastmodified
+        FROM    {course} AS c 
+            JOIN {course_modules} AS cm ON cm.course=c.id 
+            JOIN {modules} AS m ON cm.module=m.id 
+            JOIN ( $union_statement ) AS act 
+        ON act.course=c.id 
+        AND act.id=cm.instance
+        WHERE c.id!=:siteid
+        GROUP BY c.id;",
+        ['siteid' => SITEID]
+    );
+}
+
+function find_course_last_access()
+{
+    global $DB, $CFG;
+    return $DB->get_records_sql(
+        "SELECT ula.courseid, 
+                ula.userid, 
+                ula.timeaccess
+        FROM    {user_lastaccess} AS ula
+            INNER JOIN (SELECT  courseid, 
+                                MAX(timeaccess) AS timeid
+                        FROM    {user_lastaccess}
+                        WHERE   userid!=:guestid 
+                        AND     userid NOT IN (:siteadminids)
+                        GROUP BY courseid) AS groupedula 
+        ON ula.courseid = groupedula.courseid 
+        AND ula.timeaccess = groupedula.timeid ORDER BY ula.courseid ASC;",
+        [
+            'guestid' => 1,
+            'siteadminids' => $CFG->siteadmins
+        ]
+    );
+}
