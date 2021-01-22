@@ -27,10 +27,12 @@ namespace tool_coursewrangler;
 
 use context_system;
 use moodle_url;
+use flexible_table;
 
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/locallib.php');
+require_once($CFG->libdir . '/tablelib.php');
 $context = context_system::instance();
 
 // require_capability('moodle/course:manageactivities', $coursecontext);
@@ -42,7 +44,6 @@ $PAGE->set_title(get_string('pageheader', 'tool_coursewrangler'));
 $PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
-
 // OUTPUT HERE
 echo "let's get some db queries going<br> ";
 global $DB;

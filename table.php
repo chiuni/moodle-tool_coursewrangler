@@ -1,0 +1,89 @@
+<?php // $Id$
+/**
+ * Simple file test.php to drop into root of Moodle installation.
+ * This is the skeleton code to print a downloadable, paged, sorted table of
+ * data from a sql query.
+ */
+
+namespace tool_coursewrangler;
+
+use moodle_url;
+use flexible_table;
+use context_system;
+
+require_once(__DIR__ . '/../../../config.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/tablelib.php');
+require_once(__DIR__ . '/locallib.php');
+$context = context_system::instance();
+
+// require_capability('moodle/course:manageactivities', $coursecontext);
+
+$PAGE->set_context($context);
+$PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
+$PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/table.php'));
+$PAGE->set_title(get_string('pageheader', 'tool_coursewrangler'));
+$PAGE->set_pagelayout('admin');
+
+// Print the page header
+// $PAGE->navbar->add('Testing table class', new moodle_url('/admin/tool/coursewrangler/table.php'));
+echo $OUTPUT->header();
+$table = new flexible_table('uniqueid');
+$table->define_baseurl(new moodle_url('/admin/tool/coursewrangler/table.php'));
+$table->define_columns([
+    'course_id',
+    'course_fullname',
+    'course_shortname',
+    'course_startdate',
+    'course_enddate',
+    'course_timecreated',
+    'course_timemodified',
+    'course_visible',
+    'activity_type',
+    'activity_lastmodified',
+    'course_timeaccess',
+    'course_isparent',
+    'course_modulescount',
+    'course_lastenrolment'
+]);
+$table->define_headers([
+    get_string('table_course_id', 'tool_coursewrangler'),
+    get_string('table_course_fullname', 'tool_coursewrangler'),
+    get_string('table_course_shortname', 'tool_coursewrangler'),
+    get_string('table_course_startdate', 'tool_coursewrangler'),
+    get_string('table_course_enddate', 'tool_coursewrangler'),
+    get_string('table_course_timecreated', 'tool_coursewrangler'),
+    get_string('table_course_timemodified', 'tool_coursewrangler'),
+    get_string('table_course_visible', 'tool_coursewrangler'),
+    get_string('table_activity_type', 'tool_coursewrangler'),
+    get_string('table_activity_lastmodified', 'tool_coursewrangler'),
+    get_string('table_course_timeaccess', 'tool_coursewrangler'),
+    get_string('table_course_isparent', 'tool_coursewrangler'),
+    get_string('table_course_modulescount', 'tool_coursewrangler'),
+    get_string('table_course_lastenrolment', 'tool_coursewrangler'),
+]);
+$table->sortable(1);
+$table->setup();
+
+
+$table->setup();
+foreach (find_relevant_course_data_lite() as $data) {
+    $table->add_data([
+        $data->course_id,
+        $data->course_fullname,
+        $data->course_shortname,
+        $data->course_startdate,
+        $data->course_enddate,
+        $data->course_timecreated,
+        $data->course_timemodified,
+        $data->course_visible,
+        $data->activity_type,
+        $data->activity_lastmodified,
+        $data->course_timeaccess,
+        $data->course_isparent,
+        $data->course_modulescount,
+        $data->course_lastenrolment,
+    ]);
+}
+echo $table->finish_output();
+echo $OUTPUT->footer();

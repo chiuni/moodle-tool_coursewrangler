@@ -23,3 +23,18 @@ $string['pageheading'] = 'Course Wrangler Tool';
 $string['pageheading'] = 'Course Wrangler Tool';
 
 $string['privacy:metadata'] = 'The course wrangler tool plugin does not store any personal data.';
+
+$string['table_course_id'] = 'Course ID';
+$string['table_course_fullname'] = 'Name';
+$string['table_course_shortname'] = 'Short name';
+$string['table_course_startdate'] = 'Start date';
+$string['table_course_enddate'] = 'End date';
+$string['table_course_timecreated'] = 'Created';
+$string['table_course_timemodified'] = 'Last modified';
+$string['table_course_visible'] = 'Visible';
+$string['table_activity_type'] = 'Activity type';
+$string['table_activity_lastmodified'] = 'Activities last modified';
+$string['table_course_timeaccess'] = 'Last access';
+$string['table_course_isparent'] = 'Parent';
+$string['table_course_modulescount'] = 'Total activities';
+$string['table_course_lastenrolment'] = 'Last enrolment';
