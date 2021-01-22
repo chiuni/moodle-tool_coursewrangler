@@ -23,6 +23,8 @@
 
 namespace tool_coursewrangler;
 
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 function find_relevant_course_data()
@@ -82,10 +84,12 @@ function find_relevant_course_data_lite()
     $meta_query = find_meta_parents();
     $parent_course_ids = array_keys($meta_query);
     foreach ($course_query as $key => $result) {
-        $result->course_timeaccess = $ula_query[$key]->timeaccess;
+        $result->course_timeaccess = $ula_query[$key]->timeaccess ?? 0;
         $result->course_isparent = in_array($result->course_id, $parent_course_ids) ? 1 : 0; // could we count this?
         $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? null;
         $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? null;
+        $result->course_students = new stdClass;
+        $result->course_students = find_course_students($result->course_id);
     }
     return $course_query;
 }
@@ -100,6 +104,55 @@ function find_last_enrolment($id)
 {
     global $DB;
     return $DB->get_record_sql("SELECT courseid AS course_id, MAX(timecreated) AS course_lastenrolment FROM {enrol} WHERE courseid=:id;", ['id' => $id]);
+}
+
+function find_course_students($id)
+{
+    global $DB;
+    $students = $DB->get_records_sql(
+        "SELECT ue.id AS ue_id, 
+                ue.userid AS userid, 
+                r.archetype AS role_type, 
+                ue.status AS enrol_status, 
+                e.enrol AS enrol_type 
+            FROM {user_enrolments} AS ue
+            JOIN {enrol} AS e  ON ue.enrolid=e.id
+            JOIN {role} AS r ON e.roleid=r.id
+            WHERE r.archetype='student' AND e.courseid=:id;",
+        ['id' => $id]
+    );
+    $course_students = new stdClass;
+    $course_students->total_enrol_count = count($students) ?? 0;
+    $course_students->active_enrol_count = 0;
+    $course_students->self_enrol_count = 0;
+    $course_students->manual_enrol_count = 0;
+    $course_students->meta_enrol_count = 0;
+    $course_students->other_enrol_count = 0;
+    foreach ($students as $student) {
+        switch ($student->enrol_status) {
+            case 0:
+                $course_students->active_enrol_count += 1;
+                break;
+            default:
+                break;
+        }
+        switch ($student->enrol_type) {
+            case 'self':
+                $course_students->self_enrol_count += 1;
+                break;
+            case 'manual':
+                $course_students->manual_enrol_count += 1;
+                break;
+            case 'meta':
+                $course_students->meta_enrol_count += 1;
+                break;
+            default:
+                $course_students->other_enrol_count += 1;
+                break;
+        }
+    }
+    $course_students->suspended_enrol_count = count($students) - $course_students->active_enrol_count ?? 0;
+    return $course_students;
 }
 
 function count_course_modules(int $id)
