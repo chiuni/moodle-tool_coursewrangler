@@ -44,7 +44,8 @@ $table->define_columns([
     'course_timeaccess',
     'course_isparent',
     'course_modulescount',
-    'course_lastenrolment'
+    'course_lastenrolment',
+    'course_deletionscore'
 ]);
 $table->define_headers([
     get_string('table_course_id', 'tool_coursewrangler'),
@@ -61,6 +62,7 @@ $table->define_headers([
     get_string('table_course_isparent', 'tool_coursewrangler'),
     get_string('table_course_modulescount', 'tool_coursewrangler'),
     get_string('table_course_lastenrolment', 'tool_coursewrangler'),
+    get_string('table_course_deletionscore', 'tool_coursewrangler'),
 ]);
 $table->sortable(1);
 $table->setup();
@@ -83,6 +85,7 @@ foreach (find_relevant_course_data_lite() as $data) {
         $data->course_isparent,
         $data->course_modulescount,
         process_date($date_format, $data->course_lastenrolment),
+        get_course_deletion_score($data, true, true) . '%' ,
     ]);
 }
 echo $table->finish_output();

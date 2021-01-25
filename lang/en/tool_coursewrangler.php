@@ -38,3 +38,4 @@ $string['table_course_timeaccess'] = 'Last access';
 $string['table_course_isparent'] = 'Parent';
 $string['table_course_modulescount'] = 'Total activities';
 $string['table_course_lastenrolment'] = 'Last enrolment';
+$string['table_course_deletionscore'] = 'Deletion Score';

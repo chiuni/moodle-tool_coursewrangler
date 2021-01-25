@@ -100,13 +100,13 @@ function find_meta_parents()
     return $DB->get_records_sql("SELECT customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
 }
 
-function find_last_enrolment($id)
+function find_last_enrolment(int $id)
 {
     global $DB;
     return $DB->get_record_sql("SELECT courseid AS course_id, MAX(timecreated) AS course_lastenrolment FROM {enrol} WHERE courseid=:id;", ['id' => $id]);
 }
 
-function find_course_students($id)
+function find_course_students(int $id)
 {
     global $DB;
     $students = $DB->get_records_sql(
@@ -221,7 +221,7 @@ function find_course_last_access()
     );
 }
 
-function process_date($format, $timestamp)
+function process_date(string $format, int $timestamp)
 {
     if ($timestamp < 1) {
         return '-';
@@ -232,7 +232,7 @@ function process_date($format, $timestamp)
     return time_ago($timestamp);
 }
 
-function time_ago($timestamp)
+function time_ago(int $timestamp)
 {
     $string_map = [
         'y' => 'year',
@@ -256,4 +256,113 @@ function time_ago($timestamp)
         break;
     }
     return $date_string;
+}
+
+function get_course_deletion_score(stdClass $course, bool $simplify = false, bool $ratio = false)
+{
+    $course_score = [];
+
+    $course_parent_weight = 10; // this makes parent courses more or less important
+    $low_enrolments_flag = 10; // this triggers a low score for courses with less enrolments than
+    $time_unit = 86400; // this makes each time unit = 1 score point
+    $ratio_limit = 200; // this is the score used for 100%
+
+    /**
+     * Course End Date score
+     * The information we have:
+     *      The assigned end date of the course, could be 0 if not set.
+     */
+    if ($course->course_enddate != 0) {
+        // how many time units have been from course end date to now = 1 score point
+        $course_enddate_score = (time() - $course->course_enddate) / $time_unit;
+    }
+
+    /**
+     * Course Last Access score
+     * The information we have:
+     *      The last access by anyone enroled to the course, could be 0 if not accessed.
+     *      The time the course was created
+     */
+    if ($course->course_timeaccess > $course->course_timecreated) {
+        // how many time units have been from course last access to now = 1 score point
+        $course_timeaccess_score = (time() - $course->course_timeaccess) / $time_unit;
+    }
+
+    /**
+     * Course Settings Time Modified score
+     * The information we have:
+     *      The last time someone edited course settings
+     *      The time the course was created
+     */
+    if ($course->course_timemodified != $course->course_timecreated) {
+        // how many time units have been from time created to course settings modified = 1 score point
+        $course_timemodified_score = ($course->course_timecreated - $course->course_timemodified) / $time_unit;
+    }
+
+    /**
+     * Activity Recently Modified score
+     * The information we have:
+     *      The last time an activity was changed
+     *      The time the course was created
+     */
+    if ($course->activity_lastmodified != $course->course_timecreated) {
+        // how many time units have been from time created to last activity modified = 1 score point
+        $activity_lastmodified_score = ($course->course_timecreated - $course->activity_lastmodified) / $time_unit;
+    }
+
+    /**
+     * Course Is Parent Score
+     * The information we have:
+     *      If the course is parent of other courses (meta enrolments count)
+     */
+    if ($course->course_isparent != 0) {
+        // if a course is parent to other courses, add negative weight to score
+        $course_isparent_score = 0 - ($course->course_isparent * $course_parent_weight);
+    }
+
+    /**
+     * Course Last Enrolment Score
+     * The information we have:
+     *      The date the last enrolment was created // TODO: should we make this student only role enrolment?
+     */
+    if ($course->course_lastenrolment > 0) {
+        // how many time units have been from last enrolment to now = 1 score point
+        $course_lastenrolment_score = (time() - $course->course_lastenrolment) / $time_unit;
+    }
+    /**
+     * Course Very Low Enrolment checker score
+     * The information we have:
+     *      The number of enrolments and type of enrolments per course
+     */
+    if ($course->course_students->total_enrol_count <= $low_enrolments_flag) {
+        // how many time units have been from last enrolment to now = 1 score point
+        $course_total_enrol_count_score = 50;
+    }
+
+    $course_visible_score = $course->course_visible ? -25 : 50;
+    $course_enddate_score = (int) ($course_enddate_score ?? 0);
+    $course_timeaccess_score = (int) ($course_timeaccess_score ?? 0);
+    $course_timemodified_score = (int) ($course_timemodified_score ?? 0);
+    $course_isparent_score = (int) ($course_isparent_score ?? 0);
+    $course_lastenrolment_score = (int) ($course_lastenrolment_score ?? 0);
+    $course_total_enrol_count_score = (int) ($course_total_enrol_count_score ?? 0);
+    $activity_lastmodified_score = (int) ($activity_lastmodified_score ?? 0);
+    
+    $course_score = [
+        'course_visible_score' => $course_visible_score,
+        'course_timeaccess_score' => $course_timeaccess_score,
+        'course_enddate_score' => $course_enddate_score,
+        'course_timemodified_score' => $course_timemodified_score,
+        'course_isparent_score' => $course_isparent_score,
+        'course_lastenrolment_score' => $course_lastenrolment_score,
+        'course_total_enrol_count_score' => $course_total_enrol_count_score,
+        'activity_lastmodified_score' => $activity_lastmodified_score,
+    ];
+    // sum scores
+    $final_score = array_sum($course_score);
+    // do ratio
+    $final_score = $ratio ? ((int) (($final_score / $ratio_limit) * 100)) : $final_score;
+    // simplify return
+    $score = $simplify ? $final_score : $course_score;
+    return $score;
 }

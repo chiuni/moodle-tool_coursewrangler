@@ -54,9 +54,12 @@ $timegap70 = time() - (86400 * 30 * 70);
 echo "time12=" . $timegap12 . "<br>";
 echo "time24=" . $timegap24;
 $query = find_relevant_course_data_lite();
-
 // $query = find_last_enrolment(44); 
 echo '<pre>:::<br>';
+foreach ($query as $key => $result) {
+    echo 'score';
+    print_r(get_course_deletion_score($result));
+}
 echo 'activities query:<br>';
 print_r($query, 0);
 // print_r($la_query, 0);
