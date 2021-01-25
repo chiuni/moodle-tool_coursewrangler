@@ -64,25 +64,25 @@ $table->define_headers([
 ]);
 $table->sortable(1);
 $table->setup();
-
-
-$table->setup();
+$date_format = $_GET['date_format'] ?? 'd/m/Y G:i:s';
 foreach (find_relevant_course_data_lite() as $data) {
+    $data->course_visible = $data->course_visible ? 'Yes' : 'No';
+    $data->course_isparent = $data->course_isparent ? 'Yes' : 'No';
     $table->add_data([
         $data->course_id,
         $data->course_fullname,
         $data->course_shortname,
-        $data->course_startdate,
-        $data->course_enddate,
-        $data->course_timecreated,
-        $data->course_timemodified,
+        process_date($date_format, $data->course_startdate),
+        process_date($date_format, $data->course_enddate),
+        process_date($date_format, $data->course_timecreated),
+        process_date($date_format, $data->course_timemodified),
         $data->course_visible,
         $data->activity_type,
-        $data->activity_lastmodified,
-        $data->course_timeaccess,
+        process_date($date_format, $data->activity_lastmodified),
+        process_date($date_format, $data->course_timeaccess),
         $data->course_isparent,
         $data->course_modulescount,
-        $data->course_lastenrolment,
+        process_date($date_format, $data->course_lastenrolment),
     ]);
 }
 echo $table->finish_output();

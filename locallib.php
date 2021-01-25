@@ -220,3 +220,40 @@ function find_course_last_access()
         ]
     );
 }
+
+function process_date($format, $timestamp)
+{
+    if ($timestamp < 1) {
+        return '-';
+    }
+    if ($format != 'timeago') {
+        return date($format, $timestamp);
+    }
+    return time_ago($timestamp);
+}
+
+function time_ago($timestamp)
+{
+    $string_map = [
+        'y' => 'year',
+        'm' => 'month',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+    ];
+    $date = new \DateTime();
+    $date->setTimestamp($timestamp);
+    $interval = $date->diff(new \DateTime('now'));
+    $date_string = '';
+    foreach ($interval as $key => $ago) {
+        $plural = '';
+        if ($ago <= 0) {
+            continue;
+        } else if ($ago > 1) {
+            $plural = 's';
+        }
+        $date_string .= $ago . ' ' . $string_map[$key] . $plural . ' ago';
+        break;
+    }
+    return $date_string;
+}
