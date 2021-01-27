@@ -45,6 +45,7 @@ $PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
 // OUTPUT HERE
+$time_unit_setting = get_config('tool_coursewrangler', 'timeunit') ?? 86400;
 echo "let's get some db queries going<br> ";
 global $DB;
 // months ago

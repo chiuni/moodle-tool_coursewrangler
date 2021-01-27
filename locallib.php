@@ -262,13 +262,12 @@ function time_ago(int $timestamp)
 function get_course_deletion_score(stdClass $course, bool $simplify = false)
 {
     $course_score = [];
-
-    $course_parent_weight = 10; // this makes parent courses more or less important
-    $low_enrolments_flag = 10; // this triggers a low score for courses with less enrolments than n enrolments
-    $time_unit = 86400; // this makes each time unit = 1 score point
-    $score_limiter_positive = 400; // this is the value used for limiting each score to a upper/lower limit
+    // deletion settings
+    $course_parent_weight = (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10; // this makes parent courses more or less important
+    $low_enrolments_flag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10; // this triggers a low score for courses with less enrolments than n enrolments
+    $time_unit = (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400; // this makes each time unit = 1 score point
+    $score_limiter_positive = (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400; // this is the value used for limiting each score to a upper/lower limit
     $score_limiter_negative = ($score_limiter_positive * -1);
-    // $ratio_limit = 200; // this is the score used for 100%
 
     /**
      * Course End Date score
@@ -386,8 +385,8 @@ function get_course_deletion_score(stdClass $course, bool $simplify = false)
     // find out max score value possible for percentage
     $ratio_limit = count($course_score) * $score_limiter_positive;
     // percentage calculation
-    $final_score_percentage = ((int) (($final_score / $ratio_limit) * 100)); // TODO: use this?
+    $final_score_percentage = round(($final_score / $ratio_limit) * 100, 2); // TODO: use this?
     // simplify return
     $score = $simplify ? $final_score : $course_score;
-    return $score;
+    return $final_score_percentage;
 }

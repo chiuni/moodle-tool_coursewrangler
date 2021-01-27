@@ -39,3 +39,13 @@ $string['table_course_isparent'] = 'Parent';
 $string['table_course_modulescount'] = 'Total activities';
 $string['table_course_lastenrolment'] = 'Last enrolment';
 $string['table_course_deletionscore'] = 'Deletion Score';
+
+// settings
+$string['settings_timeunit'] = 'Time Unit';
+$string['settings_timeunit_desc'] = 'The unit of time used for calculating points, where one time unit equals one point.';
+$string['settings_courseparentweight'] = 'Course Parent Weight';
+$string['settings_courseparentweight_desc'] = 'How important parent courses are when calculating score (meta enrolments).';
+$string['settings_lowenrolmentsflag'] = 'Low Enrolments Flag';
+$string['settings_lowenrolmentsflag_desc'] = 'The minimum number of enrolments before penalising a course in points.';
+$string['settings_scorelimiter'] = 'Score Limiter';
+$string['settings_scorelimiter_desc'] = 'The limiter used in calculations for percentages and score limiting (advanced).';
