@@ -67,7 +67,8 @@ $table->define_headers([
 $table->sortable(1);
 $table->setup();
 $date_format = $_GET['date_format'] ?? 'd/m/Y G:i:s';
-foreach (find_relevant_course_data_lite() as $data) {
+$score_handler = new deletion_score(find_relevant_course_data_lite());
+foreach ($score_handler->get_courses() as $data) {
     $data->course_visible = $data->course_visible ? 'Yes' : 'No';
     $data->course_isparent = $data->course_isparent ? 'Yes' : 'No';
     $table->add_data([
@@ -85,7 +86,7 @@ foreach (find_relevant_course_data_lite() as $data) {
         $data->course_isparent,
         $data->course_modulescount,
         process_date($date_format, $data->course_lastenrolment),
-        get_course_deletion_score($data, true),
+        $data->score->percentage . '%',
     ]);
 }
 echo $table->finish_output();

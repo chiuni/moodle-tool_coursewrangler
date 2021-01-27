@@ -258,7 +258,9 @@ function time_ago(int $timestamp)
     }
     return $date_string;
 }
-
+/**
+ * @deprecated use @class deletion_score instead 
+ */
 function get_course_deletion_score(stdClass $course, bool $simplify = false)
 {
     $course_score = [];
