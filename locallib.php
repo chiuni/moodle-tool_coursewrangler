@@ -383,6 +383,10 @@ function get_course_deletion_score(stdClass $course, bool $simplify = false)
 
     // sum scores
     $final_score = array_sum($course_score);
+    // find out max score value possible for percentage
+    $ratio_limit = count($course_score) * $score_limiter_positive;
+    // percentage calculation
+    $final_score_percentage = ((int) (($final_score / $ratio_limit) * 100)); // TODO: use this?
     // simplify return
     $score = $simplify ? $final_score : $course_score;
     return $score;
