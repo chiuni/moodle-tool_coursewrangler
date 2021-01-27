@@ -79,6 +79,7 @@ function find_relevant_course_data()
 
 function find_relevant_course_data_lite()
 {
+    // TODO: Consider ignoring courses that haven't yet started, do we really need to evaluate these??
     $course_query = find_activities_modified();
     $ula_query = find_course_last_access();
     $meta_query = find_meta_parents();
@@ -258,14 +259,16 @@ function time_ago(int $timestamp)
     return $date_string;
 }
 
-function get_course_deletion_score(stdClass $course, bool $simplify = false, bool $ratio = false)
+function get_course_deletion_score(stdClass $course, bool $simplify = false)
 {
     $course_score = [];
 
     $course_parent_weight = 10; // this makes parent courses more or less important
-    $low_enrolments_flag = 10; // this triggers a low score for courses with less enrolments than
+    $low_enrolments_flag = 10; // this triggers a low score for courses with less enrolments than n enrolments
     $time_unit = 86400; // this makes each time unit = 1 score point
-    $ratio_limit = 200; // this is the score used for 100%
+    $score_limiter_positive = 400; // this is the value used for limiting each score to a upper/lower limit
+    $score_limiter_negative = ($score_limiter_positive * -1);
+    // $ratio_limit = 200; // this is the score used for 100%
 
     /**
      * Course End Date score
@@ -283,6 +286,7 @@ function get_course_deletion_score(stdClass $course, bool $simplify = false, boo
      *      The last access by anyone enroled to the course, could be 0 if not accessed.
      *      The time the course was created
      */
+    // TODO: Consider courses that havent yet started, should we ignore them?
     if ($course->course_timeaccess > $course->course_timecreated) {
         // how many time units have been from course last access to now = 1 score point
         $course_timeaccess_score = (time() - $course->course_timeaccess) / $time_unit;
@@ -291,7 +295,7 @@ function get_course_deletion_score(stdClass $course, bool $simplify = false, boo
     /**
      * Course Settings Time Modified score
      * The information we have:
-     *      The last time someone edited course settings
+     *      The last time someone edited course settings (not including activies/resources on course page)
      *      The time the course was created
      */
     if ($course->course_timemodified != $course->course_timecreated) {
@@ -323,12 +327,13 @@ function get_course_deletion_score(stdClass $course, bool $simplify = false, boo
     /**
      * Course Last Enrolment Score
      * The information we have:
-     *      The date the last enrolment was created // TODO: should we make this student only role enrolment?
+     *      The date the last enrolment was created // TODO: should we make this student only role (architype) enrolment?
      */
     if ($course->course_lastenrolment > 0) {
         // how many time units have been from last enrolment to now = 1 score point
         $course_lastenrolment_score = (time() - $course->course_lastenrolment) / $time_unit;
     }
+    
     /**
      * Course Very Low Enrolment checker score
      * The information we have:
@@ -339,7 +344,14 @@ function get_course_deletion_score(stdClass $course, bool $simplify = false, boo
         $course_total_enrol_count_score = 50;
     }
 
-    $course_visible_score = $course->course_visible ? -25 : 50;
+    /** 
+     * Course Is Visible score
+     * The information we have:
+     *      Whether the course is visible or not
+     */
+    $course_visible_score = $course->course_visible ? -25 : 50; // -25 if the course is visible, +50 hidden
+
+    // Casting all scores to integer or setting to 0 if not set
     $course_enddate_score = (int) ($course_enddate_score ?? 0);
     $course_timeaccess_score = (int) ($course_timeaccess_score ?? 0);
     $course_timemodified_score = (int) ($course_timemodified_score ?? 0);
@@ -358,10 +370,19 @@ function get_course_deletion_score(stdClass $course, bool $simplify = false, boo
         'course_total_enrol_count_score' => $course_total_enrol_count_score,
         'activity_lastmodified_score' => $activity_lastmodified_score,
     ];
+
+    // Applying score limits
+    foreach ($course_score as $key => $cs) {
+        if ($cs > $score_limiter_positive) {
+            $course_score[$key] = $score_limiter_positive;
+        }
+        else if ($cs < $score_limiter_negative) {
+            $course_score[$key] = $score_limiter_negative;
+        }
+    }
+
     // sum scores
     $final_score = array_sum($course_score);
-    // do ratio
-    $final_score = $ratio ? ((int) (($final_score / $ratio_limit) * 100)) : $final_score;
     // simplify return
     $score = $simplify ? $final_score : $course_score;
     return $score;

@@ -85,7 +85,7 @@ foreach (find_relevant_course_data_lite() as $data) {
         $data->course_isparent,
         $data->course_modulescount,
         process_date($date_format, $data->course_lastenrolment),
-        get_course_deletion_score($data, true, true) . '%' ,
+        get_course_deletion_score($data, true),
     ]);
 }
 echo $table->finish_output();
