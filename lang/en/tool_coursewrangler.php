@@ -17,9 +17,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Course Wrangler Tool';
+$string['plugindesc'] = 'Course deletion tool for Moodle 3.8+';
 
 $string['pageheader'] = 'The course wrangler tool page header.';
-$string['pageheading'] = 'Course Wrangler Tool';
 $string['pageheading'] = 'Course Wrangler Tool';
 
 $string['privacy:metadata'] = 'The course wrangler tool plugin does not store any personal data.';
@@ -41,6 +41,7 @@ $string['table_course_lastenrolment'] = 'Last enrolment';
 $string['table_course_deletionscore'] = 'Deletion Score';
 
 // settings
+$string['settingspage_main'] = 'Main Settings';
 $string['settings_timeunit'] = 'Time Unit';
 $string['settings_timeunit_desc'] = 'The unit of time used for calculating points, where one time unit equals one point.';
 $string['settings_courseparentweight'] = 'Course Parent Weight';

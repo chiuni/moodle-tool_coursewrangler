@@ -24,7 +24,18 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('tool_coursewrangler', get_string('pluginname', 'tool_coursewrangler'));
+    // Courses tab navigation
+    $courses = new admin_externalpage(
+        'coursewrangler',
+        get_string('pluginname', 'tool_coursewrangler'),
+        new moodle_url('/admin/tool/coursewrangler/index.php')
+    );
+    $ADMIN->add('courses', $courses);
+    // Settings tab navigation
+    $settings = new theme_boost_admin_settingspage_tabs(
+        'tool_coursewrangler',
+        get_string('pluginname', 'tool_coursewrangler')
+    );
     $ADMIN->add('tools', $settings);
 
     $numbers = array();
@@ -40,34 +51,38 @@ if ($hassiteconfig) {
         $large_numbers[$i] = $i;
     }
 
-    $settings->add(new admin_setting_configduration(
+    $main_page = new admin_settingpage('tool_coursewrangler_main', get_string('settingspage_main', 'tool_coursewrangler'));
+
+    $main_page->add(new admin_setting_configduration(
         'tool_coursewrangler/timeunit',
-        new lang_string('settings_timeunit', 'tool_coursewrangler'),
-        new lang_string('settings_timeunit_desc', 'tool_coursewrangler'),
+        get_string('settings_timeunit', 'tool_coursewrangler'),
+        get_string('settings_timeunit_desc', 'tool_coursewrangler'),
         DAYSECS
     ));
 
-    $settings->add(new admin_setting_configselect_with_advanced(
+    $main_page->add(new admin_setting_configselect(
         'tool_coursewrangler/courseparentweight',
         get_string('settings_courseparentweight', 'tool_coursewrangler'),
         get_string('settings_courseparentweight_desc', 'tool_coursewrangler'),
-        array('value' => '10'),
+        10,
         $numbers
     ));
 
-    $settings->add(new admin_setting_configselect_with_advanced(
+    $main_page->add(new admin_setting_configselect(
         'tool_coursewrangler/lowenrolmentsflag',
         get_string('settings_lowenrolmentsflag', 'tool_coursewrangler'),
         get_string('settings_lowenrolmentsflag_desc', 'tool_coursewrangler'),
-        array('value' => '10'),
+        10,
         $numbers
     ));
 
-    $settings->add(new admin_setting_configselect_with_advanced(
+    $main_page->add(new admin_setting_configselect(
         'tool_coursewrangler/scorelimiter',
         get_string('settings_scorelimiter', 'tool_coursewrangler'),
         get_string('settings_scorelimiter_desc', 'tool_coursewrangler'),
-        array('value' => '400'),
+        400,
         $large_numbers
     ));
+
+    $settings->add($main_page);
 }
