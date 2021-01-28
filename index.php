@@ -27,7 +27,6 @@ namespace tool_coursewrangler;
 
 use context_system;
 use moodle_url;
-use flexible_table;
 
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
@@ -35,7 +34,7 @@ require_once(__DIR__ . '/locallib.php');
 require_once($CFG->libdir . '/tablelib.php');
 $context = context_system::instance();
 
-// require_capability('moodle/course:manageactivities', $coursecontext);
+require_capability('moodle/site:configview', $context);    
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
@@ -44,31 +43,8 @@ $PAGE->set_title(get_string('pageheader', 'tool_coursewrangler'));
 $PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
-// OUTPUT HERE
-$time_unit_setting = get_config('tool_coursewrangler', 'timeunit') ?? 86400;
-echo "let's get some db queries going<br> ";
-global $DB;
-// months ago
-$timegap12 = time() - (86400 * 30 * 12);
-$timegap24 = time() - (86400 * 30 * 24);
-$timegap70 = time() - (86400 * 30 * 70);
-echo "time12=" . $timegap12 . "<br>";
-echo "time24=" . $timegap24;
-$query = find_relevant_course_data_lite();
-$score_object = new deletion_score($query);
-$courses = $score_object->get_courses();
+echo $OUTPUT->heading(get_string('plugindesc', 'tool_coursewrangler'));
 
-// $query = find_last_enrolment(44); 
-echo '<pre>:::<br>';
-// foreach ($query as $key => $result) {
-//     echo 'score';
-//     print_r(get_course_deletion_score($result));
-// }
-echo 'activities query:<br>';
-print_r($courses, 0);
-// print_r($la_query, 0);
-echo 'la query:<br>';
-// print_r($la_query, 0);
-echo '</pre>';
+
 
 echo $OUTPUT->footer();
