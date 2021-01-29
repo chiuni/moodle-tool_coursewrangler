@@ -40,6 +40,9 @@ $string['table_course_modulescount'] = 'Total activities';
 $string['table_course_lastenrolment'] = 'Last enrolment';
 $string['table_course_deletionscore'] = 'Deletion Score';
 
+// buttons
+$string['button_generatereport'] = 'Generate Report';
+
 // settings
 $string['settingspage_main'] = 'Main Settings';
 $string['settings_timeunit'] = 'Time Unit';

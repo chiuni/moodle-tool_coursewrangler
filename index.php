@@ -46,5 +46,12 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('plugindesc', 'tool_coursewrangler'));
 
 
+echo '<div>SHOW LATEST INFO HERE,PERHAPS LOGS?</div>';
+echo $OUTPUT->single_button(
+    new moodle_url('/admin/tool/coursewrangler/generatereport.php'),
+    get_string('button_generatereport', 'tool_coursewrangler'),
+    'post',
+    ['primary' => 1]
+);
 
 echo $OUTPUT->footer();
