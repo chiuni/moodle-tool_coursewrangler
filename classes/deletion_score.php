@@ -51,18 +51,18 @@ class deletion_score
             return;
         }
         foreach ($courses as $course) {
-            $course = $this->make_rules($course) ?? $course;
-            $course = $this->make_score($course) ?? $course;
+            $course = $this->apply_rules($course);
+            $course = $this->make_score($course);
         }
         $this->courses = $courses;
     }
 
-    public function get_courses()
+    public function get_courses() : array
     {
         return $this->courses ?? [];
     }
 
-    protected function make_rules(stdClass $course)
+    protected function apply_rules(stdClass $course) : stdClass
     {
         $rules = [];
 
@@ -136,7 +136,7 @@ class deletion_score
         return $course;
     }
 
-    protected function make_score(stdClass $course)
+    protected function make_score(stdClass $course) : stdClass
     {
         $score = new stdClass;
         $score->raw = 0;

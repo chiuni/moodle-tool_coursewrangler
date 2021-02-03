@@ -71,7 +71,13 @@ $table->sortable(1);
 $table->setup();
 $date_format = $_GET['date_format'] ?? 'd/m/Y G:i:s';
 $score_handler = new deletion_score(find_relevant_course_data_lite());
-foreach ($score_handler->get_courses() as $data) {
+$courses = $score_handler->get_courses();
+// Sorts descending by raw score
+usort($courses, function ($item1, $item2) {
+    return $item2->score->raw <=> $item1->score->raw;
+});
+
+foreach ($courses as $data) {
     $data->course_visible = $data->course_visible ? 'Yes' : 'No';
     $data->course_isparent = $data->course_isparent ? 'Yes' : 'No';
     $table->add_data([
