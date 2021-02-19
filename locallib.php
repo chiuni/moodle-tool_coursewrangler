@@ -26,7 +26,9 @@ namespace tool_coursewrangler;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
-
+/**
+ * @deprecated use find_relevant_course_data_lite instead
+ */
 function find_relevant_course_data()
 {
     global $DB, $CFG;
@@ -72,7 +74,7 @@ function find_relevant_course_data()
         [
             'guestid' => 1,
             'siteadminids' => $CFG->siteadmins,
-            'sideid' => SITEID
+            'siteid' => SITEID
         ]
     );
 }
@@ -87,72 +89,124 @@ function find_relevant_course_data_lite()
     foreach ($course_query as $key => $result) {
         $result->course_timeaccess = $ula_query[$key]->timeaccess ?? 0;
         $result->course_isparent = in_array($result->course_id, $parent_course_ids) ? 1 : 0; // could we count this?
-        $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? null;
-        $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? null;
+        $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? 0;
+        $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? 0;
         $result->course_students = new stdClass;
         $result->course_students = find_course_students($result->course_id);
     }
     return $course_query;
 }
 
+function fetch_report_data_by_id(int $id)
+{
+    global $DB;
+    $report = $DB->get_record_sql("SELECT timecreated, type FROM {tool_coursewrangler_report} WHERE id = :id;", ['id' => $id]);
+    if ($report == false) {
+        // no report found
+        return false;
+    }
+    $report_data = $DB->get_records_sql(
+        "SELECT cmt.*, emt.*  FROM {tool_coursewrangler_coursemt} AS cmt 
+                        JOIN {tool_coursewrangler_enrolmt} AS emt 
+                            ON cmt.enrolmt_id=emt.id 
+                        WHERE report_id = :reportid;",
+        ['reportid' => $id]
+    );
+    // Formatting data to match find_relevant_course_data_lite
+    foreach ($report_data as $course) {
+        $course->course_students = new stdClass;
+        $course->course_students->total_enrol_count = $course->total_enrol_count;
+        unset($course->total_enrol_count);
+        $course->course_students->active_enrol_count = $course->active_enrol_count;
+        unset($course->active_enrol_count);
+        $course->course_students->self_enrol_count = $course->self_enrol_count;
+        unset($course->self_enrol_count);
+        $course->course_students->manual_enrol_count = $course->manual_enrol_count;
+        unset($course->manual_enrol_count);
+        $course->course_students->meta_enrol_count = $course->meta_enrol_count;
+        unset($course->meta_enrol_count);
+        $course->course_students->other_enrol_count = $course->other_enrol_count;
+        unset($course->other_enrol_count);
+        $course->course_students->other_enrol_count = $course->suspended_enrol_count;
+        unset($course->suspended_enrol_count);
+    }
+    return $report_data;
+}
+
 function find_meta_parents()
 {
     global $DB;
-    return $DB->get_records_sql("SELECT customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
+    return $DB->get_records_sql("SELECT id, customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
 }
 
 function find_last_enrolment(int $id)
 {
     global $DB;
-    return $DB->get_record_sql("SELECT courseid AS course_id, MAX(timecreated) AS course_lastenrolment FROM {enrol} WHERE courseid=:id;", ['id' => $id]);
+    return $DB->get_record_sql("SELECT id, courseid AS course_id, MAX(timecreated) AS course_lastenrolment FROM {enrol} WHERE courseid=:id;", ['id' => $id]);
 }
 
 function find_course_students(int $id)
 {
     global $DB;
-    $students = $DB->get_records_sql(
-        "SELECT ue.id AS ue_id, 
+    $archetype = 'student';
+    // To find course students, first select all enrol instances from mdl_enrol table
+    // status=0 means the enrolment method is enabled for this course
+    $enrol = $DB->get_records_sql("SELECT * FROM {enrol} AS e WHERE e.courseid=:id AND e.status=0;", ['id' => $id]);
+    // Then foreach result, depending on type of enrol (e.enrol), store that information
+    // also remember to check for students only, we do not want any other archetypes for now
+    $all_students = [];
+    foreach ($enrol as $enrol_instance) {
+        $students = $DB->get_records_sql(
+            "SELECT ue.id AS ue_id, 
                 ue.userid AS userid, 
                 r.archetype AS role_type, 
-                ue.status AS enrol_status, 
+                ue.status AS enrol_status,
                 e.enrol AS enrol_type 
             FROM {user_enrolments} AS ue
             JOIN {enrol} AS e  ON ue.enrolid=e.id
             JOIN {role} AS r ON e.roleid=r.id
-            WHERE r.archetype='student' AND e.courseid=:id;",
-        ['id' => $id]
-    );
+            WHERE r.archetype='$archetype' AND ue.enrolid=:enrolid;",
+            ['enrolid' => $enrol_instance->id]
+        );
+        $all_students[] = $students;
+    }
+
     $course_students = new stdClass;
-    $course_students->total_enrol_count = count($students) ?? 0;
+    $course_students->total_enrol_count = 0;
     $course_students->active_enrol_count = 0;
     $course_students->self_enrol_count = 0;
     $course_students->manual_enrol_count = 0;
     $course_students->meta_enrol_count = 0;
     $course_students->other_enrol_count = 0;
-    foreach ($students as $student) {
-        switch ($student->enrol_status) {
-            case 0:
-                $course_students->active_enrol_count += 1;
-                break;
-            default:
-                break;
+    $course_students->suspended_enrol_count = 0;
+    foreach ($all_students as $students) {
+        $course_students->total_enrol_count += count($students) ?? 0;
+        foreach ($students as $student) {
+            switch ($student->enrol_status) {
+                case 0:
+                    $course_students->active_enrol_count += 1;
+                    break;
+                default:
+                    break;
+            }
+            switch ($student->enrol_type) {
+                case 'self':
+                    $course_students->self_enrol_count += 1;
+                    break;
+                case 'manual':
+                    $course_students->manual_enrol_count += 1;
+                    break;
+                case 'meta':
+                    $course_students->meta_enrol_count += 1;
+                    break;
+                default:
+                    $course_students->other_enrol_count += 1;
+                    break;
+            }
         }
-        switch ($student->enrol_type) {
-            case 'self':
-                $course_students->self_enrol_count += 1;
-                break;
-            case 'manual':
-                $course_students->manual_enrol_count += 1;
-                break;
-            case 'meta':
-                $course_students->meta_enrol_count += 1;
-                break;
-            default:
-                $course_students->other_enrol_count += 1;
-                break;
-        }
+        $course_students->suspended_enrol_count += $course_students->total_enrol_count - $course_students->active_enrol_count ?? 0;
     }
-    $course_students->suspended_enrol_count = count($students) - $course_students->active_enrol_count ?? 0;
+
     return $course_students;
 }
 
@@ -203,7 +257,8 @@ function find_course_last_access()
 {
     global $DB, $CFG;
     return $DB->get_records_sql(
-        "SELECT ula.courseid, 
+        "SELECT ula.id,
+                ula.courseid, 
                 ula.userid, 
                 ula.timeaccess
         FROM    {user_lastaccess} AS ula
@@ -221,8 +276,10 @@ function find_course_last_access()
         ]
     );
 }
-
-function process_date(string $format, int $timestamp)
+/**
+ * @deprecated using moodle's userdate instead
+ */
+function process_date(int $timestamp, string $format = 'd/m/Y G:i:s')
 {
     if ($timestamp < 1) {
         return '-';
@@ -257,138 +314,4 @@ function time_ago(int $timestamp)
         break;
     }
     return $date_string;
-}
-/**
- * @deprecated use @class deletion_score instead 
- */
-function get_course_deletion_score(stdClass $course, bool $simplify = false)
-{
-    $course_score = [];
-    // deletion settings
-    $course_parent_weight = (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10; // this makes parent courses more or less important
-    $low_enrolments_flag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10; // this triggers a low score for courses with less enrolments than n enrolments
-    $time_unit = (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400; // this makes each time unit = 1 score point
-    $score_limiter_positive = (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400; // this is the value used for limiting each score to a upper/lower limit
-    $score_limiter_negative = ($score_limiter_positive * -1);
-
-    /**
-     * Course End Date score
-     * The information we have:
-     *      The assigned end date of the course, could be 0 if not set.
-     */
-    if ($course->course_enddate != 0) {
-        // how many time units have been from course end date to now = 1 score point
-        $course_enddate_score = (time() - $course->course_enddate) / $time_unit;
-    }
-
-    /**
-     * Course Last Access score
-     * The information we have:
-     *      The last access by anyone enroled to the course, could be 0 if not accessed.
-     *      The time the course was created
-     */
-    // TODO: Consider courses that havent yet started, should we ignore them?
-    if ($course->course_timeaccess > $course->course_timecreated) {
-        // how many time units have been from course last access to now = 1 score point
-        $course_timeaccess_score = (time() - $course->course_timeaccess) / $time_unit;
-    }
-
-    /**
-     * Course Settings Time Modified score
-     * The information we have:
-     *      The last time someone edited course settings (not including activies/resources on course page)
-     *      The time the course was created
-     */
-    if ($course->course_timemodified != $course->course_timecreated) {
-        // how many time units have been from time created to course settings modified = 1 score point
-        $course_timemodified_score = ($course->course_timecreated - $course->course_timemodified) / $time_unit;
-    }
-
-    /**
-     * Activity Recently Modified score
-     * The information we have:
-     *      The last time an activity was changed
-     *      The time the course was created
-     */
-    if ($course->activity_lastmodified != $course->course_timecreated) {
-        // how many time units have been from time created to last activity modified = 1 score point
-        $activity_lastmodified_score = ($course->course_timecreated - $course->activity_lastmodified) / $time_unit;
-    }
-
-    /**
-     * Course Is Parent Score
-     * The information we have:
-     *      If the course is parent of other courses (meta enrolments count)
-     */
-    if ($course->course_isparent != 0) {
-        // if a course is parent to other courses, add negative weight to score
-        $course_isparent_score = 0 - ($course->course_isparent * $course_parent_weight);
-    }
-
-    /**
-     * Course Last Enrolment Score
-     * The information we have:
-     *      The date the last enrolment was created // TODO: should we make this student only role (architype) enrolment?
-     */
-    if ($course->course_lastenrolment > 0) {
-        // how many time units have been from last enrolment to now = 1 score point
-        $course_lastenrolment_score = (time() - $course->course_lastenrolment) / $time_unit;
-    }
-    
-    /**
-     * Course Very Low Enrolment checker score
-     * The information we have:
-     *      The number of enrolments and type of enrolments per course
-     */
-    if ($course->course_students->total_enrol_count <= $low_enrolments_flag) {
-        // how many time units have been from last enrolment to now = 1 score point
-        $course_total_enrol_count_score = 50;
-    }
-
-    /** 
-     * Course Is Visible score
-     * The information we have:
-     *      Whether the course is visible or not
-     */
-    $course_visible_score = $course->course_visible ? -25 : 50; // -25 if the course is visible, +50 hidden
-
-    // Casting all scores to integer or setting to 0 if not set
-    $course_enddate_score = (int) ($course_enddate_score ?? 0);
-    $course_timeaccess_score = (int) ($course_timeaccess_score ?? 0);
-    $course_timemodified_score = (int) ($course_timemodified_score ?? 0);
-    $course_isparent_score = (int) ($course_isparent_score ?? 0);
-    $course_lastenrolment_score = (int) ($course_lastenrolment_score ?? 0);
-    $course_total_enrol_count_score = (int) ($course_total_enrol_count_score ?? 0);
-    $activity_lastmodified_score = (int) ($activity_lastmodified_score ?? 0);
-    
-    $course_score = [
-        'course_visible_score' => $course_visible_score,
-        'course_timeaccess_score' => $course_timeaccess_score,
-        'course_enddate_score' => $course_enddate_score,
-        'course_timemodified_score' => $course_timemodified_score,
-        'course_isparent_score' => $course_isparent_score,
-        'course_lastenrolment_score' => $course_lastenrolment_score,
-        'course_total_enrol_count_score' => $course_total_enrol_count_score,
-        'activity_lastmodified_score' => $activity_lastmodified_score,
-    ];
-
-    // Applying score limits
-    foreach ($course_score as $key => $cs) {
-        if ($cs > $score_limiter_positive) {
-            $course_score[$key] = $score_limiter_positive;
-        }
-        else if ($cs < $score_limiter_negative) {
-            $course_score[$key] = $score_limiter_negative;
-        }
-    }
-
-    // sum scores
-    $final_score = array_sum($course_score);
-    // find out max score value possible for percentage
-    $ratio_limit = count($course_score) * $score_limiter_positive;
-    // percentage calculation
-    $final_score_percentage = round(($final_score / $ratio_limit) * 100, 2); // TODO: use this?
-    // simplify return
-    $score = $simplify ? $final_score : $course_score;
-    return $final_score_percentage;
 }
