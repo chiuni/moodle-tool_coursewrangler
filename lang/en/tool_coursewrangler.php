@@ -25,8 +25,10 @@ $string['pageheading'] = 'Course Wrangler Tool';
 $string['privacy:metadata'] = 'The course wrangler tool plugin does not store any personal data.';
 
 $string['table_course_id'] = 'Course ID';
+$string['table_course_module_id'] = 'Course Module ID';
 $string['table_course_fullname'] = 'Name';
 $string['table_course_shortname'] = 'Short name';
+$string['table_course_idnumber'] = 'ID Number';
 $string['table_course_startdate'] = 'Start date';
 $string['table_course_enddate'] = 'End date';
 $string['table_course_timecreated'] = 'Created';
@@ -39,6 +41,16 @@ $string['table_course_isparent'] = 'Parent';
 $string['table_course_modulescount'] = 'Total activities';
 $string['table_course_lastenrolment'] = 'Last enrolment';
 $string['table_course_deletionscore'] = 'Deletion Score';
+$string['table_total_enrol_count'] = 'Total Enrolments';
+$string['table_active_enrol_count'] = 'Active Enrolments';
+$string['table_self_enrol_count'] = 'Self Enrolments';
+$string['table_manual_enrol_count'] = 'Manual Enrolments';
+$string['table_meta_enrol_count'] = 'Meta Enrolments';
+$string['table_other_enrol_count'] = 'Other Enrolments';
+$string['table_suspended_enrol_count'] = 'Suspended Enrolments';
+$string['table_score_raw'] = 'Raw Score';
+$string['table_score_rounded'] = 'Rounded Score';
+$string['table_score_percentage'] = 'Percentage';
 
 // buttons
 $string['button_generatereport'] = 'Generate Report';
@@ -53,3 +65,11 @@ $string['settings_lowenrolmentsflag'] = 'Low Enrolments Flag';
 $string['settings_lowenrolmentsflag_desc'] = 'The minimum number of enrolments before penalising a course in points.';
 $string['settings_scorelimiter'] = 'Score Limiter';
 $string['settings_scorelimiter_desc'] = 'The limiter used in calculations for percentages and score limiting (advanced).';
+
+// report_details page
+$string['reportdetails_pageheader'] = 'Report Details';
+$string['reportdetails_coursedetailsfor'] = 'Course details for: ';
+$string['report_details_report_date'] = 'Report created on';
+$string['report_details_enrolmentinformation'] = 'Enrolment Information';
+$string['report_details_scoreinformation'] = 'Deletion Score';
+$string['report_details_scorecreated'] = 'Score created on';
