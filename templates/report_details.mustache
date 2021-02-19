@@ -1,0 +1,148 @@
+<div class="row">
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{{course_title_link}}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{#str}}table_course_timeaccess, tool_coursewrangler{{/str}}: {{{course_timeaccess}}}</h6>
+                <hr>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_id, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_id}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_module_id, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_module_id}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_shortname, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_shortname}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_fullname, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_fullname}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>course_idnumber</dt> 
+                        <dd>{{{course_idnumber}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_timecreated, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_timecreated}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_timemodified, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_timemodified}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_startdate, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_startdate}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_enddate, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_enddate}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_visible, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_visible}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_isparent, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_isparent}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_modulescount, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_modulescount}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_timeaccess, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_timeaccess}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_course_lastenrolment, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{course_lastenrolment}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_activity_type, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{activity_type}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_activity_lastmodified, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{activity_lastmodified}}}</dd>
+                    </li>
+                </u>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{#str}}pluginname, tool_coursewrangler{{/str}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{#str}}report_details_report_date, tool_coursewrangler{{/str}}: {{{report_date}}}</h6>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 p-0 pb-1"><span><a href="#">Link</a></span></li>
+                    <li class="list-group-item border-0 p-0 pb-1"><span><a href="#">Link</a></span></li>
+                    <li class="list-group-item border-0 p-0 pb-1"><span><a href="#">Link</a></span></li>
+                    <li class="list-group-item border-0 p-0 pb-1"><span><a href="#">Link</a></span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                {{#score}}
+                <h5 class="card-title">{{#str}}report_details_scoreinformation, tool_coursewrangler{{/str}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{#str}}report_details_scorecreated, tool_coursewrangler{{/str}}: {{{timemodified}}}</h6>
+                <hr>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_score_raw, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{raw}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_score_percentage, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{percentage}}}%</dd>
+                    </li>
+                    {{/score}}
+                </u>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{#str}}report_details_enrolmentinformation, tool_coursewrangler{{/str}}</h5>
+                <hr>
+                <ul class="list-group list-group-flush">
+                    {{#enrol}}
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_total_enrol_count, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{total_enrol_count}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_active_enrol_count, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{active_enrol_count}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_self_enrol_count, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{self_enrol_count}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_manual_enrol_count, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{manual_enrol_count}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_meta_enrol_count, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{meta_enrol_count}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_other_enrol_count, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{other_enrol_count}}}</dd>
+                    </li>
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_suspended_enrol_count, tool_coursewrangler{{/str}}</dt> 
+                        <dd>{{{suspended_enrol_count}}}</dd>
+                    </li>
+                    {{/enrol}}
+                </u>
+            </div>
+        </div>
+    </div>
+</div>
