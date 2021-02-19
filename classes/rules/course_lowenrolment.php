@@ -58,6 +58,6 @@ class course_lowenrolment implements rule_interface
     }
     function calculate_score(array $components, array $settings = []): float
     {
-        return ((1 / $components['total_enrol_count']) * 50);
+        return ($components['total_enrol_count'] > 0) ? ((1 / $components['total_enrol_count']) * 50) : 0;
     }
 }

@@ -62,7 +62,7 @@ class deletion_score
         return $this->courses ?? [];
     }
 
-    protected function apply_rules(stdClass $course) : stdClass
+    public function apply_rules(stdClass $course) : stdClass
     {
         $rules = [];
 
@@ -116,13 +116,14 @@ class deletion_score
          * The information we have:
          *      The date the last enrolment was created // TODO: should we make this student only role (architype) enrolment?
          */
-        $rules['course_lastenrolment'] = new rules\course_lastenrolment($course->course_lastenrolment, $this->time_unit);
+        $lastenrolment = $course->course_lastenrolment ?? 0;
+        $rules['course_lastenrolment'] = new rules\course_lastenrolment($lastenrolment, $this->time_unit);
 
         /**
          * #R7
          * Course Low Enrolment Rule
          */
-        $rules['course_lowenrolment'] = new rules\course_lastenrolment($course->course_students->total_enrol_count, $this->low_enrolments_flag);
+        $rules['course_lowenrolment'] = new rules\course_lowenrolment($course->course_students->total_enrol_count, $this->low_enrolments_flag);
 
         /** 
          * #R8
@@ -136,7 +137,7 @@ class deletion_score
         return $course;
     }
 
-    protected function make_score(stdClass $course) : stdClass
+    public function make_score(stdClass $course) : stdClass
     {
         $score = new stdClass;
         $score->raw = 0;
