@@ -8,7 +8,6 @@
 namespace tool_coursewrangler;
 
 use moodle_url;
-use flexible_table;
 use context_system;
 
 require_once(__DIR__ . '/../../../config.php');
@@ -16,6 +15,18 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/tablelib.php');
 require_once(__DIR__ . '/locallib.php');
 $context = context_system::instance();
+
+$report_id = (int) optional_param('report_id', 0, PARAM_INT);
+$category_id = (int) optional_param('category_id', 0, PARAM_INT);
+$show_score = (bool) optional_param('show_score', false, PARAM_BOOL);
+
+if ($report_id == 0) {
+    $report = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC");
+    foreach ($report as $first) {
+        $report_id = $first->id;
+        break;
+    }
+}
 
 // require_capability('moodle/course:manageactivities', $coursecontext);
 
@@ -31,72 +42,7 @@ $PAGE->navbar->add(get_string('table', 'tool_coursewrangler'), new moodle_url('/
 // Print the page header
 // $PAGE->navbar->add('Testing table class', new moodle_url('/admin/tool/coursewrangler/table.php'));
 echo $OUTPUT->header();
-$table = new flexible_table('uniqueid');
-$table->define_baseurl(new moodle_url('/admin/tool/coursewrangler/table.php'));
-$table->define_columns([
-    'course_id',
-    'course_fullname',
-    'course_shortname',
-    'course_startdate',
-    'course_enddate',
-    'course_timecreated',
-    'course_timemodified',
-    'course_visible',
-    'activity_type',
-    'activity_lastmodified',
-    'course_timeaccess',
-    'course_isparent',
-    'course_modulescount',
-    'course_lastenrolment',
-    'course_deletionscore'
-]);
-$table->define_headers([
-    get_string('table_course_id', 'tool_coursewrangler'),
-    get_string('table_course_fullname', 'tool_coursewrangler'),
-    get_string('table_course_shortname', 'tool_coursewrangler'),
-    get_string('table_course_startdate', 'tool_coursewrangler'),
-    get_string('table_course_enddate', 'tool_coursewrangler'),
-    get_string('table_course_timecreated', 'tool_coursewrangler'),
-    get_string('table_course_timemodified', 'tool_coursewrangler'),
-    get_string('table_course_visible', 'tool_coursewrangler'),
-    get_string('table_activity_type', 'tool_coursewrangler'),
-    get_string('table_activity_lastmodified', 'tool_coursewrangler'),
-    get_string('table_course_timeaccess', 'tool_coursewrangler'),
-    get_string('table_course_isparent', 'tool_coursewrangler'),
-    get_string('table_course_modulescount', 'tool_coursewrangler'),
-    get_string('table_course_lastenrolment', 'tool_coursewrangler'),
-    get_string('table_course_deletionscore', 'tool_coursewrangler'),
-]);
-$table->sortable(1);
-$table->setup();
-$date_format = $_GET['date_format'] ?? 'd/m/Y G:i:s';
-$score_handler = new deletion_score(find_relevant_course_data_lite());
-$courses = $score_handler->get_courses();
-// Sorts descending by raw score
-usort($courses, function ($item1, $item2) {
-    return $item2->score->raw <=> $item1->score->raw;
-});
+$table = new report_table(new moodle_url('/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_id=' . $category_id . '&show_score=' . $show_score), $report_id, $show_score, $category_id);
+$table->out(50, false);
 
-foreach ($courses as $data) {
-    $data->course_visible = $data->course_visible ? 'Yes' : 'No';
-    $data->course_isparent = $data->course_isparent ? 'Yes' : 'No';
-    $table->add_data([
-        $data->course_id,
-        $data->course_fullname,
-        $data->course_shortname,
-        process_date($date_format, $data->course_startdate),
-        process_date($date_format, $data->course_enddate),
-        process_date($date_format, $data->course_timecreated),
-        process_date($date_format, $data->course_timemodified),
-        $data->course_visible,
-        $data->activity_type,
-        process_date($date_format, $data->activity_lastmodified),
-        process_date($date_format, $data->course_timeaccess),
-        $data->course_isparent,
-        $data->course_modulescount,
-        process_date($date_format, $data->course_lastenrolment),
-        $data->score->percentage . '%',
-    ]);
-}
-echo $table->finish_output();
 echo $OUTPUT->footer();
