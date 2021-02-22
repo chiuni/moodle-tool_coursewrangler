@@ -87,6 +87,7 @@
                 </ul>
             </div>
         </div>
+        
         <div class="card mb-4">
             <div class="card-body">
                 {{#score}}
@@ -101,11 +102,17 @@
                     <li class="list-group-item border-0 p-0 pb-2">
                         <dt>{{#str}}table_score_percentage, tool_coursewrangler{{/str}}</dt> 
                         <dd>{{{percentage}}}%</dd>
-                    </li>
-                    {{/score}}
+                    </li>    
                 </u>
+                {{/score}}
+                {{^score}}
+                    <h5 class="card-title">{{#str}}report_details_scoreinformation, tool_coursewrangler{{/str}}</h5>
+                    {{#str}}table_percentage_notavailable, tool_coursewrangler{{/str}}
+                {{/score}}
             </div>
         </div>
+        
+        
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">{{#str}}report_details_enrolmentinformation, tool_coursewrangler{{/str}}</h5>

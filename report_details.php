@@ -70,7 +70,11 @@ if ($report != false) {
     $course->enrol = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_enrolmt} WHERE id=:coursemt_id ', ['coursemt_id' => $course->id]);
     $course->report_date = userdate($report->timecreated);
     $course->score = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_score} WHERE coursemt_id=:coursemt_id ', ['coursemt_id' => $course->id]);
-    $course->score->timemodified = userdate($course->score->timemodified);
+    if ($course->score->timemodified == 0) {
+        $course->score = null;
+    } else {
+        $course->score->timemodified = userdate($course->score->timemodified);
+    }
 }
 
 if ($course == false) {

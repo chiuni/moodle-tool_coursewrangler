@@ -190,7 +190,7 @@ class report_table extends table_sql
      */
     function col_percentage($values)
     {
-        $display_value = $values->percentage ? $values->percentage . '%' : 'Not Available';
+        $display_value = $values->percentage ? $values->percentage . '%' : get_string('table_percentage_notavailable', 'tool_coursewrangler');
         return ($display_value);
     }
 }

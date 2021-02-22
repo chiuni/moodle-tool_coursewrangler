@@ -51,6 +51,7 @@ $string['table_suspended_enrol_count'] = 'Suspended Enrolments';
 $string['table_score_raw'] = 'Raw Score';
 $string['table_score_rounded'] = 'Rounded Score';
 $string['table_score_percentage'] = 'Percentage';
+$string['table_percentage_notavailable'] = 'Not Available';
 
 // buttons
 $string['button_generatereport'] = 'Generate Report';
