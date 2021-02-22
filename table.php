@@ -17,8 +17,8 @@ require_once(__DIR__ . '/locallib.php');
 $context = context_system::instance();
 
 $report_id = (int) optional_param('report_id', 0, PARAM_INT);
+// TODO: Support mutiple category ids?
 $category_id = (int) optional_param('category_id', 0, PARAM_INT);
-$show_score = (bool) optional_param('show_score', false, PARAM_BOOL);
 
 if ($report_id == 0) {
     $report = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC");
@@ -42,7 +42,34 @@ $PAGE->navbar->add(get_string('table', 'tool_coursewrangler'), new moodle_url('/
 // Print the page header
 // $PAGE->navbar->add('Testing table class', new moodle_url('/admin/tool/coursewrangler/table.php'));
 echo $OUTPUT->header();
-$table = new report_table(new moodle_url('/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_id=' . $category_id . '&show_score=' . $show_score), $report_id, $show_score, $category_id);
+
+//Instantiate simplehtml_form 
+$mform = new form\report_form();
+
+//Form processing and displaying is done here
+if ($mform->is_cancelled()) {
+    //Handle form cancel operation, if cancel button is present on form
+} else if ($fromform = $mform->get_data()) {
+    //In this case you process validated data. $mform->get_data() returns data posted in form.
+} else {
+    // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
+    // or on the first display of the form.
+
+    //Set default data (if any)
+    $mform->set_data($toform);
+    //displays the form
+    $mform->display();
+}
+
+
+$table = new table\report_table(
+    new moodle_url(
+        '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_id=' . $category_id
+    ),
+    $report_id,
+    1,
+    $category_id
+);
 $table->out(50, false);
 
 echo $OUTPUT->footer();

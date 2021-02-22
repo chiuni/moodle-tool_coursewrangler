@@ -24,7 +24,7 @@
  */
 
 
-namespace tool_coursewrangler;
+namespace tool_coursewrangler\table;
 
 use html_writer;
 use moodle_url;
@@ -43,10 +43,9 @@ class report_table extends table_sql
     /**
      * Sets up the table.
      */
-    public function __construct($baseurl, int $report_id, bool $show_score = false, int $category_id = 0)
+    public function __construct($baseurl, int $report_id, int $category_id = 0)
     {
         parent::__construct('tool_coursewrangler-report');
-        $this->show_score = $show_score ?? false;
         $this->context = \context_system::instance();
         // This object should not be used without the right permissions. TODO: THIS ->
         // require_capability('moodle/badges:manageglobalsettings', $this->context);
@@ -82,11 +81,9 @@ class report_table extends table_sql
             'course_timeaccess' => get_string('table_course_timeaccess', 'tool_coursewrangler'),
             // 'course_lastenrolment' => get_string('table_course_lastenrolment', 'tool_coursewrangler'),
             // 'activity_type' => get_string('table_activity_type', 'tool_coursewrangler'),
-            // 'activity_lastmodified' => get_string('table_activity_lastmodified', 'tool_coursewrangler')
+            // 'activity_lastmodified' => get_string('table_activity_lastmodified', 'tool_coursewrangler'),
+            'percentage' => get_string('table_course_deletionscore', 'tool_coursewrangler')
         ];
-        if ($this->show_score) {
-            $cols['percentage'] = get_string('table_course_deletionscore', 'tool_coursewrangler');
-        }
         $this->define_columns(array_keys($cols));
         $this->define_headers(array_values($cols));
     }
@@ -106,11 +103,15 @@ class report_table extends table_sql
      */
     protected function define_table_sql($report_id, $category_id)
     {
-        $join_score = '';
-        if ($this->show_score) {
-            $join_score = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
-        }
         global $DB;
+        $join_score = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
+        // check score has been calculated
+        $score_check = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_coursemt} AS cwc $join_score WHERE report_id=:report_id", ['report_id' => $report_id]);
+        if (count($score_check) < 1) {
+            // if score not found, change query
+            $join_score = '';
+        }
+        // check category exists
         if ($category_id > 0) {
             $category = $DB->get_record_sql("SELECT * FROM {course_categories} WHERE id = :id;", ['id' => $category_id]);
             if ($category != false) {
@@ -125,9 +126,10 @@ class report_table extends table_sql
                 $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id AND course_id IN ($ids_string)");
                 return true;
             }
-            $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "1=2");
+            $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id");
             return false;
         }
+
         $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id");
     }
 
@@ -188,6 +190,7 @@ class report_table extends table_sql
      */
     function col_percentage($values)
     {
-        return ($values->percentage . '%');
+        $display_value = $values->percentage ? $values->percentage . '%' : 'Not Available';
+        return ($display_value);
     }
 }
