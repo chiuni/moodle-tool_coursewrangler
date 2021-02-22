@@ -18,7 +18,7 @@ $context = context_system::instance();
 
 $report_id = (int) optional_param('report_id', 0, PARAM_INT);
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
-$category_ids_array = is_array($category_ids) ? $category_ids : [];
+$category_ids_array = is_array($category_ids) ? $category_ids : ((array) unserialize($category_ids) ?? []);
 
 // TODO OPTIMISE THIS
 if ($report_id == 0) {
@@ -46,7 +46,7 @@ echo $OUTPUT->header();
 
 //Instantiate simplehtml_form 
 $mform = new form\report_form(null, ['report_id' => $report_id, 'category_ids' => $category_ids_array], 'get');
-
+print_r($category_ids);
 //Set default data (if any)
 $mform->set_data(['report_id' => $report_id, 'category_ids' => $category_ids_array]);
 //displays the form
@@ -66,7 +66,7 @@ if ($mform->is_cancelled()) {
 
 $table = new table\report_table(
     new moodle_url(
-        '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_ids=' . $category_ids_array
+        '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_ids=' . serialize($category_ids_array)
     ),
     $report_id,
     $category_ids_array
