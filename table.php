@@ -67,7 +67,6 @@ $table = new table\report_table(
         '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_id=' . $category_id
     ),
     $report_id,
-    1,
     $category_id
 );
 $table->out(50, false);
