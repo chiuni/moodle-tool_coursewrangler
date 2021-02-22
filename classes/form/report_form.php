@@ -56,7 +56,9 @@ class report_form extends moodleform
             'multiple' => false,
             'noselectionstring' => get_string('report_form_filter_reports_noselectionstring', 'tool_coursewrangler'),
         );
-        
+        // HEADER FILTER OPTIONS
+        $mform->addElement('header', 'filter', get_string('report_form_filter_options', 'tool_coursewrangler'));
+
         $mform->addElement('autocomplete', 'report_id', get_string('report_form_filter_reports', 'tool_coursewrangler'), $report_areanames, $report_options);
 
         // autocomplete search box for categories
@@ -72,9 +74,21 @@ class report_form extends moodleform
             );
         $mform->addElement('autocomplete', 'category_ids', get_string('report_form_filter_categories', 'tool_coursewrangler'), $category_areanames, $category_options);
 
+        // HEADER FILTER OPTIONS
+        $mform->addElement('header', 'filter', get_string('report_form_date_options', 'tool_coursewrangler'));
+
+        $course_startdate_after = 0;
+        $course_startdate_before = 0;
+
+        $mform->addElement('date_selector', 'course_startdate_after', get_string('report_form_filter_course_startdate_after', 'tool_coursewrangler'), ['optional' => true]);
+        if ($course_startdate_after > 0) {
+            $mform->setDefault('startdate', $course_startdate_after);
+        }
+
+        $mform->addElement('date_selector', 'course_startdate_before', get_string('report_form_filter_course_startdate_before', 'tool_coursewrangler'), ['optional' => true]);
+
         // filter button
-        $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('report_form_filter_results', 'tool_coursewrangler'));
-        $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
+        $this->add_action_buttons(null, get_string('report_form_filter_results', 'tool_coursewrangler'));
 
     }
     //Custom validation should be added here

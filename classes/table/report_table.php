@@ -43,7 +43,7 @@ class report_table extends table_sql
     /**
      * Sets up the table.
      */
-    public function __construct($baseurl, int $report_id, array $category_ids = [])
+    public function __construct($baseurl, int $report_id, array $params = [])
     {
         parent::__construct('tool_coursewrangler-report');
         $this->context = \context_system::instance();
@@ -56,8 +56,14 @@ class report_table extends table_sql
         // Define configs.
         $this->define_table_configs();
 
+        $this->report_id = $report_id;
+        // optional params setting
+        $this->category_ids = $params['category_ids'] ?? [];
+        $this->course_startdate_after = $params['course_startdate_after'] ?? [];
+        $this->course_startdate_before = $params['course_startdate_before'] ?? [];
+
         $this->define_baseurl($baseurl);
-        $this->define_table_sql($report_id, $category_ids);
+        $this->define_table_sql();
     }
 
     /**
@@ -101,20 +107,25 @@ class report_table extends table_sql
     /**
      * Define table SQL
      */
-    protected function define_table_sql($report_id, $category_ids)
+    protected function define_table_sql()
     {
+        if (!isset($this->report_id)) {
+            return false;
+        }
         global $DB;
-        $join_score = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
+        $where_sql = "report_id=$this->report_id";
+        $from_sql = "{tool_coursewrangler_coursemt} AS cwc";
+        $join_score_sql = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
         // check score has been calculated
-        $score_check = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_coursemt} AS cwc $join_score WHERE report_id=:report_id", ['report_id' => $report_id]);
+        $score_check = $DB->get_records_sql("SELECT * FROM $from_sql $join_score_sql WHERE report_id=:report_id", ['report_id' => $this->report_id]);
         if (count($score_check) < 1) {
             // if score not found, change query
-            $join_score = '';
+            $join_score_sql = '';
         }
         // check categories exists
-        if (count($category_ids) > 0) {
+        if (count($this->category_ids) > 0) {
             $categories = [];
-            foreach ($category_ids as $key => $category_id) {
+            foreach ($this->category_ids as $key => $category_id) {
                 if ($category_id <= 0) {
                     continue;
                 }
@@ -133,11 +144,12 @@ class report_table extends table_sql
                     }
                 }
                 $ids_string = implode(',', $id_courses_array);
-                $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id AND course_id IN ($ids_string)");
+                $and_categories_sql = "AND course_id IN ($ids_string)";
+                $this->set_sql("*", "$from_sql $join_score_sql", "$where_sql $and_categories_sql");
                 return true;
             }
         }
-        $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id");
+        $this->set_sql("*", "$from_sql $join_score_sql", $where_sql);
     }
 
     /**

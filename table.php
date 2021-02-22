@@ -21,6 +21,10 @@ $report_id = (int) optional_param('report_id', 0, PARAM_INT);
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
 $category_ids = is_array($category_ids) ? $category_ids : (array) explode(',', $category_ids);
 
+// dates optional params
+$course_startdate_after = optional_param('course_startdate_after', -1, PARAM_INT);
+$course_startdate_before = optional_param('course_startdate_before', -1, PARAM_INT);
+
 // TODO OPTIMISE THIS
 if ($report_id == 0) {
     $report = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC");
@@ -63,14 +67,18 @@ if ($mform->is_cancelled()) {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
 }
-
+print_r($course_startdate_after);
+$table_options = [];
+$table_options['category_ids'] = $category_ids ?? [];
+$table_options['course_startdate_after'] = $course_startdate_after ?? -1;
+$table_options['course_startdate_before'] = $course_startdate_before ?? -1;
 
 $table = new table\report_table(
     new moodle_url(
         '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_ids=' . implode(',', $category_ids)
     ),
     $report_id,
-    $category_ids
+    $table_options
 );
 $table->out(50, false);
 
