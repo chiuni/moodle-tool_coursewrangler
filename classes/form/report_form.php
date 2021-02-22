@@ -45,7 +45,6 @@ class report_form extends moodleform
         $mform = $this->_form; // Don't forget the underscore!
         $customdata = $this->_customdata;
 
-
         // autocomplete search box for reports
         $reports = $DB->get_records('tool_coursewrangler_report', [], 'timecreated DESC');
         $report_areanames = array();

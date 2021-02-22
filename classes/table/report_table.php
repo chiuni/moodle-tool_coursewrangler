@@ -114,23 +114,28 @@ class report_table extends table_sql
         // check categories exists
         if (count($category_ids) > 0) {
             $categories = [];
-            foreach ($category_ids as $key => $category_id) { 
+            foreach ($category_ids as $key => $category_id) {
+                if ($category_id <= 0) {
+                    continue;
+                }
                 // TODO use record_exists instead?
                 $categories[$category_id] = $DB->get_record_sql("SELECT * FROM {course_categories} WHERE id = :id;", ['id' => $category_id]);
             }
-            $id_courses_array = [];
-            foreach ($categories as $id => $category) {
-                if ($category != false) {
-                    // Category found, exists
-                    $id_courses = $DB->get_records_sql("SELECT c.id FROM {course} AS c JOIN {course_categories} AS cc ON c.category=cc.id WHERE cc.id=:id;", ['id' => $id]);
-                    foreach ($id_courses as $course) {
-                        $id_courses_array[] = $course->id;
+            if (count($categories) > 0) {
+                $id_courses_array = [];
+                foreach ($categories as $id => $category) {
+                    if ($category != false) {
+                        // Category found, exists
+                        $id_courses = $DB->get_records_sql("SELECT c.id FROM {course} AS c JOIN {course_categories} AS cc ON c.category=cc.id WHERE cc.id=:id;", ['id' => $id]);
+                        foreach ($id_courses as $course) {
+                            $id_courses_array[] = $course->id;
+                        }
                     }
                 }
+                $ids_string = implode(',', $id_courses_array);
+                $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id AND course_id IN ($ids_string)");
+                return true;
             }
-            $ids_string = implode(',', $id_courses_array);
-            $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id AND course_id IN ($ids_string)");
-            return true;
         }
         $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id");
     }

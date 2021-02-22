@@ -1,4 +1,5 @@
-<?php // $Id$
+<?php
+
 /**
  * Simple file test.php to drop into root of Moodle installation.
  * This is the skeleton code to print a downloadable, paged, sorted table of
@@ -18,7 +19,7 @@ $context = context_system::instance();
 
 $report_id = (int) optional_param('report_id', 0, PARAM_INT);
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
-$category_ids_array = is_array($category_ids) ? $category_ids : ((array) unserialize($category_ids) ?? []);
+$category_ids = is_array($category_ids) ? $category_ids : (array) explode(',', $category_ids);
 
 // TODO OPTIMISE THIS
 if ($report_id == 0) {
@@ -45,10 +46,10 @@ $PAGE->navbar->add(get_string('table', 'tool_coursewrangler'), new moodle_url('/
 echo $OUTPUT->header();
 
 //Instantiate simplehtml_form 
-$mform = new form\report_form(null, ['report_id' => $report_id, 'category_ids' => $category_ids_array], 'get');
-print_r($category_ids);
+$mform = new form\report_form(null, ['report_id' => $report_id, 'category_ids' => $category_ids], 'get');
+
 //Set default data (if any)
-$mform->set_data(['report_id' => $report_id, 'category_ids' => $category_ids_array]);
+$mform->set_data(['report_id' => $report_id, 'category_ids' => $category_ids]);
 //displays the form
 $mform->display();
 
@@ -66,10 +67,10 @@ if ($mform->is_cancelled()) {
 
 $table = new table\report_table(
     new moodle_url(
-        '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_ids=' . serialize($category_ids_array)
+        '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_ids=' . implode(',', $category_ids)
     ),
     $report_id,
-    $category_ids_array
+    $category_ids
 );
 $table->out(50, false);
 
