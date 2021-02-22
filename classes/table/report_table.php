@@ -43,7 +43,7 @@ class report_table extends table_sql
     /**
      * Sets up the table.
      */
-    public function __construct($baseurl, int $report_id, int $category_id = 0)
+    public function __construct($baseurl, int $report_id, array $category_ids = [])
     {
         parent::__construct('tool_coursewrangler-report');
         $this->context = \context_system::instance();
@@ -57,7 +57,7 @@ class report_table extends table_sql
         $this->define_table_configs();
 
         $this->define_baseurl($baseurl);
-        $this->define_table_sql($report_id, $category_id);
+        $this->define_table_sql($report_id, $category_ids);
     }
 
     /**
@@ -101,7 +101,7 @@ class report_table extends table_sql
     /**
      * Define table SQL
      */
-    protected function define_table_sql($report_id, $category_id)
+    protected function define_table_sql($report_id, $category_ids)
     {
         global $DB;
         $join_score = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
@@ -111,25 +111,27 @@ class report_table extends table_sql
             // if score not found, change query
             $join_score = '';
         }
-        // check category exists
-        if ($category_id > 0) {
-            $category = $DB->get_record_sql("SELECT * FROM {course_categories} WHERE id = :id;", ['id' => $category_id]);
-            if ($category != false) {
-                // Category found, exists
-                // TODO use record_exists instead
-                $id_courses = $DB->get_records_sql("SELECT c.id FROM {course} AS c JOIN {course_categories} AS cc ON c.category=cc.id WHERE cc.id=:id;", ['id' => $category_id]);
-                $id_courses_array = [];
-                foreach ($id_courses as $course) {
-                    $id_courses_array[] = $course->id;
-                }
-                $ids_string = implode(',', $id_courses_array);
-                $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id AND course_id IN ($ids_string)");
-                return true;
+        // check categories exists
+        if (count($category_ids) > 0) {
+            $categories = [];
+            foreach ($category_ids as $key => $category_id) { 
+                // TODO use record_exists instead?
+                $categories[$category_id] = $DB->get_record_sql("SELECT * FROM {course_categories} WHERE id = :id;", ['id' => $category_id]);
             }
-            $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id");
-            return false;
+            $id_courses_array = [];
+            foreach ($categories as $id => $category) {
+                if ($category != false) {
+                    // Category found, exists
+                    $id_courses = $DB->get_records_sql("SELECT c.id FROM {course} AS c JOIN {course_categories} AS cc ON c.category=cc.id WHERE cc.id=:id;", ['id' => $id]);
+                    foreach ($id_courses as $course) {
+                        $id_courses_array[] = $course->id;
+                    }
+                }
+            }
+            $ids_string = implode(',', $id_courses_array);
+            $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id AND course_id IN ($ids_string)");
+            return true;
         }
-
         $this->set_sql("*", "{tool_coursewrangler_coursemt} AS cwc $join_score", "report_id=$report_id");
     }
 

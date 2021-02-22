@@ -42,7 +42,7 @@ $course_id = required_param('course_id', PARAM_INT);
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
 $PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/report_details.php'));
-$PAGE->set_title(get_string('reportdetails_pageheader', 'tool_coursewrangler'));
+$PAGE->set_title(get_string('report_details_pageheader', 'tool_coursewrangler'));
 $PAGE->set_pagelayout('admin');
 
 global $DB;
@@ -82,7 +82,7 @@ if ($course == false) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('reportdetails_coursedetailsfor', 'tool_coursewrangler'));
+echo $OUTPUT->heading(get_string('report_details_coursedetailsfor', 'tool_coursewrangler'));
 
 echo $OUTPUT->render_from_template('tool_coursewrangler/report_details', $course);
 

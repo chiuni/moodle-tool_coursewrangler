@@ -43,31 +43,47 @@ class report_form extends moodleform
         global $DB;
 
         $mform = $this->_form; // Don't forget the underscore!
+        $customdata = $this->_customdata;
 
-        $mform->addElement('text', 'email', get_string('missingstring', 'tool_coursewrangler')); // Add elements to your form
-        $mform->setType('email', PARAM_NOTAGS); //Set type of element
-        $mform->setDefault('email', 'Something here'); //Default value
+
+        // autocomplete search box for reports
+        $reports = $DB->get_records('tool_coursewrangler_report', [], 'timecreated DESC');
+        $report_areanames = array();
+        foreach ($reports as $id => $report) {
+            $report->timecreated = userdate($report->timecreated);
+            $report_areanames[$id] = $report->id . ' - ' . $report->timecreated . ' - ' . ucfirst($report->type) ;
+        }
+        $report_options = array(
+            'multiple' => false,
+            'noselectionstring' => get_string('report_form_filter_reports_noselectionstring', 'tool_coursewrangler'),
+        );
+        
+        $mform->addElement('autocomplete', 'report_id', get_string('report_form_filter_reports', 'tool_coursewrangler'), $report_areanames, $report_options);
 
         // autocomplete search box for categories
         $categories = $DB->get_records('course_categories', ['parent' => 0], 'name ASC');
-        $areanames = array();
+        $category_areanames = array();
         foreach ($categories as $id => $category) {
             $category->idnumber = $category->idnumber ?? '*no id number*';
-            $areanames[$id] = $category->name . ": $category->idnumber";
+            $category_areanames[$id] = $category->name . ": $category->idnumber";
         }
-        $options = array(
+        $category_options = array(
                 'multiple' => true,
-                'noselectionstring' => get_string('missingstring', 'tool_coursewrangler'),
+                'noselectionstring' => get_string('report_form_filter_categories_noselectionstring', 'tool_coursewrangler'),
             );
-        $mform->addElement('autocomplete', 'categoryids', get_string('missingstring', 'tool_coursewrangler'), $areanames, $options);
+        $mform->addElement('autocomplete', 'category_ids', get_string('report_form_filter_categories', 'tool_coursewrangler'), $category_areanames, $category_options);
 
+        // filter button
+        $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('report_form_filter_results', 'tool_coursewrangler'));
+        $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
 
-        // show score button
-        $mform->addElement('button', 'show_scores', get_string('missingstring', 'tool_coursewrangler'));
     }
     //Custom validation should be added here
     function validation($data, $files)
     {
         return array();
     }
+
+
+
 }

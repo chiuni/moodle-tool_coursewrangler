@@ -68,9 +68,16 @@ $string['settings_scorelimiter'] = 'Score Limiter';
 $string['settings_scorelimiter_desc'] = 'The limiter used in calculations for percentages and score limiting (advanced).';
 
 // report_details page
-$string['reportdetails_pageheader'] = 'Report Details';
-$string['reportdetails_coursedetailsfor'] = 'Course details for: ';
+$string['report_details_pageheader'] = 'Report Details';
+$string['report_details_coursedetailsfor'] = 'Course details for: ';
 $string['report_details_report_date'] = 'Report created on';
 $string['report_details_enrolmentinformation'] = 'Enrolment Information';
 $string['report_details_scoreinformation'] = 'Deletion Score';
 $string['report_details_scorecreated'] = 'Score created on';
+
+// form stuff
+$string['report_form_filter_results'] = 'Filter Results';
+$string['report_form_filter_categories'] = 'Filter by category';
+$string['report_form_filter_categories_noselectionstring'] = 'Select a category';
+$string['report_form_filter_reports'] = 'Select a report';
+$string['report_form_filter_reports_noselectionstring'] = 'Showing latest report';
