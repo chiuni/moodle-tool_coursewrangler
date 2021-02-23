@@ -315,3 +315,9 @@ function time_ago(int $timestamp)
     }
     return $date_string;
 }
+
+function moodletime_to_unixtimestamp(array $timearray)
+{
+    $timestring = $timearray['day'] . '-' . $timearray['month'] . '-' . $timearray['year'];
+    return (strtotime($timestring) ?? 0);
+}

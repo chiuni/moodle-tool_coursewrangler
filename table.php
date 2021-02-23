@@ -25,6 +25,10 @@ $category_ids = is_array($category_ids) ? $category_ids : (array) explode(',', $
 $course_startdate_after = optional_param('course_startdate_after', -1, PARAM_INT);
 $course_startdate_before = optional_param('course_startdate_before', -1, PARAM_INT);
 
+// turning dates into timestamps
+$course_startdate_after = $course_startdate_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_startdate_after) : $course_startdate_after;
+$course_startdate_before = $course_startdate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_startdate_before) : $course_startdate_before;
+
 // TODO OPTIMISE THIS
 if ($report_id == 0) {
     $report = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC");
@@ -67,11 +71,11 @@ if ($mform->is_cancelled()) {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
 }
-print_r($course_startdate_after);
+
 $table_options = [];
 $table_options['category_ids'] = $category_ids ?? [];
-$table_options['course_startdate_after'] = $course_startdate_after ?? -1;
-$table_options['course_startdate_before'] = $course_startdate_before ?? -1;
+$table_options['course_startdate_after'] = $course_startdate_after > 0 ? $course_startdate_after : null;
+$table_options['course_startdate_before'] = $course_startdate_before > 0 ? $course_startdate_before : null;
 
 $table = new table\report_table(
     new moodle_url(

@@ -55,12 +55,12 @@ class report_table extends table_sql
 
         // Define configs.
         $this->define_table_configs();
-
+        print_r($params);
         $this->report_id = $report_id;
         // optional params setting
         $this->category_ids = $params['category_ids'] ?? [];
-        $this->course_startdate_after = $params['course_startdate_after'] ?? [];
-        $this->course_startdate_before = $params['course_startdate_before'] ?? [];
+        $this->course_startdate_after = $params['course_startdate_after'] ?? null;
+        $this->course_startdate_before = $params['course_startdate_before'] ?? null;
 
         $this->define_baseurl($baseurl);
         $this->define_table_sql();
@@ -116,6 +116,17 @@ class report_table extends table_sql
         $where_sql = "report_id=$this->report_id";
         $from_sql = "{tool_coursewrangler_coursemt} AS cwc";
         $join_score_sql = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
+
+        // date sql options
+        if (isset($this->course_startdate_after)) {
+            // Option where COURSE_STARTDATE is AFTER specified date.
+            $where_sql .= " AND cwc.course_startdate > $this->course_startdate_after";
+        }
+        if (isset($this->course_startdate_before)) {
+            // Option where COURSE_STARTDATE is BEFORE specified date.
+            $where_sql .= " AND cwc.course_startdate < $this->course_startdate_before";
+        }
+
         // check score has been calculated
         $score_check = $DB->get_records_sql("SELECT * FROM $from_sql $join_score_sql WHERE report_id=:report_id", ['report_id' => $this->report_id]);
         if (count($score_check) < 1) {

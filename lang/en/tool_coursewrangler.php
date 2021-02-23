@@ -83,5 +83,5 @@ $string['report_form_filter_reports'] = 'Select a report';
 $string['report_form_filter_reports_noselectionstring'] = 'Showing latest report';
 $string['report_form_filter_options'] = 'Filter Options';
 $string['report_form_date_options'] = 'Date Options';
-$string['report_form_filter_course_startdate_after'] = 'Created After';
-$string['report_form_filter_course_startdate_before'] = 'Created Before';
+$string['report_form_filter_course_startdate_after'] = 'Start Date After';
+$string['report_form_filter_course_startdate_before'] = 'Start Date Before';
