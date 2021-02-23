@@ -65,6 +65,12 @@ class report_table extends table_sql
         $this->course_startdate_before = $params['course_startdate_before'] ?? null;
         $this->course_enddate_after = $params['course_enddate_after'] ?? null;
         $this->course_enddate_before = $params['course_enddate_before'] ?? null;
+        $this->course_timeaccess_after = $params['course_timeaccess_after'] ?? null;
+        $this->course_timeaccess_before = $params['course_timeaccess_before'] ?? null;
+        $this->course_timecreated_notset = $params['course_timecreated_notset'] ?? false;
+        $this->course_startdate_notset = $params['course_startdate_notset'] ?? false;
+        $this->course_enddate_notset = $params['course_enddate_notset'] ?? false;
+        $this->course_timeaccess_notset = $params['course_timeaccess_notset'] ?? false;
 
         $this->define_baseurl($baseurl);
         $this->define_table_sql();
@@ -122,29 +128,57 @@ class report_table extends table_sql
         $join_score_sql = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
 
         // date sql options
-        if (isset($this->course_timecreated_after)) {
-            // Option where COURSE_TIMECREATED is AFTER specified date.
-            $where_sql .= " AND cwc.course_timecreated > $this->course_timecreated_after";
+        if ($this->course_timecreated_notset) {
+            // IF NOTSET option for COURSE_TIMECREATED is set, filter all missing time created
+            $where_sql .= " AND cwc.course_timecreated = 0";
+        } else {
+            if (isset($this->course_timecreated_after)) {
+                // Option where COURSE_TIMECREATED is AFTER specified date.
+                $where_sql .= " AND cwc.course_timecreated > $this->course_timecreated_after";
+            }
+            if (isset($this->course_timecreated_before)) {
+                // Option where COURSE_TIMECREATED is BEFORE specified date.
+                $where_sql .= " AND cwc.course_timecreated < $this->course_timecreated_before";
+            }
         }
-        if (isset($this->course_timecreated_before)) {
-            // Option where COURSE_TIMECREATED is BEFORE specified date.
-            $where_sql .= " AND cwc.course_timecreated < $this->course_timecreated_before";
+        if ($this->course_startdate_notset) {
+            // IF NOTSET option for COURSE_STARTDATE is set, filter all missing time created
+            $where_sql .= " AND cwc.course_startdate = 0";
+        } else {
+            if (isset($this->course_startdate_after)) {
+                // Option where COURSE_STARTDATE is AFTER specified date.
+                $where_sql .= " AND cwc.course_startdate > $this->course_startdate_after";
+            }
+            if (isset($this->course_startdate_before)) {
+                // Option where COURSE_STARTDATE is BEFORE specified date.
+                $where_sql .= " AND cwc.course_startdate < $this->course_startdate_before";
+            }
         }
-        if (isset($this->course_startdate_after)) {
-            // Option where COURSE_STARTDATE is AFTER specified date.
-            $where_sql .= " AND cwc.course_startdate > $this->course_startdate_after";
+        if ($this->course_enddate_notset) {
+            // IF NOTSET option for COURSE_ENDDATE is set, filter all missing time created
+            $where_sql .= " AND cwc.course_enddate = 0";
+        } else {
+            if (isset($this->course_enddate_after)) {
+                // Option where COURSE_ENDDATE is AFTER specified date.
+                $where_sql .= " AND cwc.course_enddate > $this->course_enddate_after";
+            }
+            if (isset($this->course_enddate_before)) {
+                // Option where COURSE_ENDDATE is BEFORE specified date.
+                $where_sql .= " AND cwc.course_enddate < $this->course_enddate_before";
+            }
         }
-        if (isset($this->course_startdate_before)) {
-            // Option where COURSE_STARTDATE is BEFORE specified date.
-            $where_sql .= " AND cwc.course_startdate < $this->course_startdate_before";
-        }
-        if (isset($this->course_enddate_after)) {
-            // Option where COURSE_ENDDATE is AFTER specified date.
-            $where_sql .= " AND cwc.course_enddate > $this->course_enddate_after";
-        }
-        if (isset($this->course_enddate_before)) {
-            // Option where COURSE_ENDDATE is BEFORE specified date.
-            $where_sql .= " AND cwc.course_enddate < $this->course_enddate_before";
+        if ($this->course_timeaccess_notset) {
+            // IF NOTSET option for COURSE_TIMEACCESS is set, filter all missing time created
+            $where_sql .= " AND cwc.course_timeaccess = 0";
+        } else {
+            if (isset($this->course_timeaccess_after)) {
+                // Option where COURSE_TIMEACCESS is AFTER specified date.
+                $where_sql .= " AND cwc.course_timeaccess > $this->course_timeaccess_after";
+            }
+            if (isset($this->course_timeaccess_before)) {
+                // Option where COURSE_TIMEACCESS is BEFORE specified date.
+                $where_sql .= " AND cwc.course_timeaccess < $this->course_timeaccess_before";
+            }
         }
 
         // check score has been calculated

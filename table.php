@@ -28,6 +28,8 @@ $course_startdate_after = optional_param('course_startdate_after', -1, PARAM_INT
 $course_startdate_before = optional_param('course_startdate_before', -1, PARAM_INT);
 $course_enddate_after = optional_param('course_enddate_after', -1, PARAM_INT);
 $course_enddate_before = optional_param('course_enddate_before', -1, PARAM_INT);
+$course_timeaccess_after = optional_param('course_timeaccess_after', -1, PARAM_INT);
+$course_timeaccess_before = optional_param('course_timeaccess_before', -1, PARAM_INT);
 
 // turning dates into timestamps
 $course_timecreated_after = $course_timecreated_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timecreated_after) : $course_timecreated_after;
@@ -36,6 +38,8 @@ $course_startdate_after = $course_startdate_after['enabled'] == 1 ? moodletime_t
 $course_startdate_before = $course_startdate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_startdate_before) : $course_startdate_before;
 $course_enddate_after = $course_enddate_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_after) : $course_enddate_after;
 $course_enddate_before = $course_enddate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_before) : $course_enddate_before;
+$course_timeaccess_after = $course_timeaccess_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timeaccess_after) : $course_timeaccess_after;
+$course_timeaccess_before = $course_timeaccess_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timeaccess_before) : $course_timeaccess_before;
 
 // validating timestamps
 $course_timecreated_after = $course_timecreated_after > 0 ? $course_timecreated_after : null;
@@ -44,6 +48,15 @@ $course_startdate_after = $course_startdate_after > 0 ? $course_startdate_after 
 $course_startdate_before = $course_startdate_before > 0 ? $course_startdate_before : null;
 $course_enddate_after = $course_enddate_after > 0 ? $course_enddate_after : null;
 $course_enddate_before = $course_enddate_before > 0 ? $course_enddate_before : null;
+$course_timeaccess_after = $course_timeaccess_after > 0 ? $course_timeaccess_after : null;
+$course_timeaccess_before = $course_timeaccess_before > 0 ? $course_timeaccess_before : null;
+
+// flag parameters
+$course_timecreated_notset = optional_param('course_timecreated_notset', false, PARAM_BOOL);
+$course_startdate_notset = optional_param('course_startdate_notset', false, PARAM_BOOL);
+$course_enddate_notset = optional_param('course_enddate_notset', false, PARAM_BOOL);
+$course_timeaccess_notset = optional_param('course_timeaccess_notset', false, PARAM_BOOL);
+
 
 // TODO OPTIMISE THIS
 if ($report_id == 0) {
@@ -78,7 +91,13 @@ $mform = new form\report_form(null, [
     'course_startdate_after' => $course_startdate_after,
     'course_startdate_before' => $course_startdate_before,
     'course_enddate_after' => $course_enddate_after,
-    'course_enddate_before' => $course_enddate_before
+    'course_enddate_before' => $course_enddate_before,
+    'course_timeaccess_after' => $course_timeaccess_after,
+    'course_timeaccess_before' => $course_timeaccess_before,
+    'course_timecreated_notset' => $course_timecreated_notset,
+    'course_startdate_notset' => $course_startdate_notset,
+    'course_endate_notset' => $course_endate_notset,
+    'course_timeaccess_notset' => $course_timeaccess_notset
 
 ], 'get');
 
@@ -91,7 +110,13 @@ $mform->set_data([
     'course_startdate_after' => $course_startdate_after,
     'course_startdate_before' => $course_startdate_before,
     'course_enddate_after' => $course_enddate_after,
-    'course_enddate_before' => $course_enddate_before
+    'course_enddate_before' => $course_enddate_before,
+    'course_timeaccess_after' => $course_timeaccess_after,
+    'course_timeaccess_before' => $course_timeaccess_before,
+    'course_timecreated_notset' => $course_timecreated_notset,
+    'course_startdate_notset' => $course_startdate_notset,
+    'course_endate_notset' => $course_endate_notset,
+    'course_timeaccess_notset' => $course_timeaccess_notset
 ]);
 //displays the form
 $mform->display();
@@ -116,6 +141,12 @@ $table_options['course_startdate_after'] = $course_startdate_after > 0 ? $course
 $table_options['course_startdate_before'] = $course_startdate_before > 0 ? $course_startdate_before : null;
 $table_options['course_enddate_after'] = $course_enddate_after > 0 ? $course_enddate_after : null;
 $table_options['course_enddate_before'] = $course_enddate_before > 0 ? $course_enddate_before : null;
+$table_options['course_timeaccess_after'] = $course_timeaccess_after > 0 ? $course_timeaccess_after : null;
+$table_options['course_timeaccess_before'] = $course_timeaccess_before > 0 ? $course_timeaccess_before : null;
+$table_options['course_timecreated_notset'] = $course_timecreated_notset ?? false;
+$table_options['course_startdate_notset'] = $course_startdate_notset ?? false;
+$table_options['course_endate_notset'] = $course_endate_notset ?? false;
+$table_options['course_timeaccess_notset'] = $course_timeaccess_notset ?? false;
 
 // creating url params
 $base_url_str = '/admin/tool/coursewrangler/table.php?report_id=' . $report_id;
@@ -126,6 +157,12 @@ $base_url_str .= $course_startdate_after > 0 ? '&course_startdate_after=' . $cou
 $base_url_str .= $course_startdate_before > 0 ? '&course_startdate_before=' . $course_startdate_before : '';
 $base_url_str .= $course_enddate_after > 0 ? '&course_enddate_after=' . $course_enddate_after : '';
 $base_url_str .= $course_enddate_before > 0 ? '&course_enddate_before=' . $course_enddate_before : '';
+$base_url_str .= $course_timeaccess_after > 0 ? '&course_timeaccess_after=' . $course_timeaccess_after : '';
+$base_url_str .= $course_timeaccess_before > 0 ? '&course_timeaccess_before=' . $course_timeaccess_before : '';
+$base_url_str .= $course_timecreated_notset ? '&course_timecreated_notset=' . $course_timecreated_notset : '';
+$base_url_str .= $course_startdate_notset ? '&course_startdate_notset=' . $course_startdate_notset : '';
+$base_url_str .= $course_endate_notset ? '&course_endate_notset=' . $course_endate_notset : '';
+$base_url_str .= $course_timeaccess_notset ? '&course_timeaccess_notset=' . $course_timeaccess_notset : '';
 
 $base_url = new moodle_url($base_url_str);
 
