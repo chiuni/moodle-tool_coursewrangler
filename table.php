@@ -37,6 +37,14 @@ $course_startdate_before = $course_startdate_before['enabled'] == 1 ? moodletime
 $course_enddate_after = $course_enddate_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_after) : $course_enddate_after;
 $course_enddate_before = $course_enddate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_before) : $course_enddate_before;
 
+// validating timestamps
+$course_timecreated_after = $course_timecreated_after > 0 ? $course_timecreated_after : null;
+$course_timecreated_before = $course_timecreated_before > 0 ? $course_timecreated_before : null;
+$course_startdate_after = $course_startdate_after > 0 ? $course_startdate_after : null;
+$course_startdate_before = $course_startdate_before > 0 ? $course_startdate_before : null;
+$course_enddate_after = $course_enddate_after > 0 ? $course_enddate_after : null;
+$course_enddate_before = $course_enddate_before > 0 ? $course_enddate_before : null;
+
 // TODO OPTIMISE THIS
 if ($report_id == 0) {
     $report = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC");
@@ -62,10 +70,29 @@ $PAGE->navbar->add(get_string('table', 'tool_coursewrangler'), new moodle_url('/
 echo $OUTPUT->header();
 
 //Instantiate simplehtml_form 
-$mform = new form\report_form(null, ['report_id' => $report_id, 'category_ids' => $category_ids], 'get');
+$mform = new form\report_form(null, [
+    'report_id' => $report_id,
+    'category_ids' => $category_ids,
+    'course_timecreated_after' => $course_timecreated_after,
+    'course_timecreated_before' => $course_timecreated_before,
+    'course_startdate_after' => $course_startdate_after,
+    'course_startdate_before' => $course_startdate_before,
+    'course_enddate_after' => $course_enddate_after,
+    'course_enddate_before' => $course_enddate_before
+
+], 'get');
 
 //Set default data (if any)
-$mform->set_data(['report_id' => $report_id, 'category_ids' => $category_ids]);
+$mform->set_data([
+    'report_id' => $report_id,
+    'category_ids' => $category_ids,
+    'course_timecreated_after' => $course_timecreated_after,
+    'course_timecreated_before' => $course_timecreated_before,
+    'course_startdate_after' => $course_startdate_after,
+    'course_startdate_before' => $course_startdate_before,
+    'course_enddate_after' => $course_enddate_after,
+    'course_enddate_before' => $course_enddate_before
+]);
 //displays the form
 $mform->display();
 
@@ -73,6 +100,7 @@ $mform->display();
 if ($mform->is_cancelled()) {
     //Handle form cancel operation, if cancel button is present on form
 } else if ($fromform = $mform->get_data()) {
+    print_r($fromform);
     $report_id = $fromform->report_id ?? $report_id;
     //In this case you process validated data. $mform->get_data() returns data posted in form.
 } else {
@@ -89,10 +117,20 @@ $table_options['course_startdate_before'] = $course_startdate_before > 0 ? $cour
 $table_options['course_enddate_after'] = $course_enddate_after > 0 ? $course_enddate_after : null;
 $table_options['course_enddate_before'] = $course_enddate_before > 0 ? $course_enddate_before : null;
 
+// creating url params
+$base_url_str = '/admin/tool/coursewrangler/table.php?report_id=' . $report_id;
+$base_url_str .= '&category_ids=' . implode(',', $category_ids);
+$base_url_str .= $course_timecreated_after > 0 ? '&course_timecreated_after=' . $course_timecreated_after : '';
+$base_url_str .= $course_timecreated_before > 0 ? '&course_timecreated_before=' . $course_timecreated_before : '';
+$base_url_str .= $course_startdate_after > 0 ? '&course_startdate_after=' . $course_startdate_after : '';
+$base_url_str .= $course_startdate_before > 0 ? '&course_startdate_before=' . $course_startdate_before : '';
+$base_url_str .= $course_enddate_after > 0 ? '&course_enddate_after=' . $course_enddate_after : '';
+$base_url_str .= $course_enddate_before > 0 ? '&course_enddate_before=' . $course_enddate_before : '';
+
+$base_url = new moodle_url($base_url_str);
+
 $table = new table\report_table(
-    new moodle_url(
-        '/admin/tool/coursewrangler/table.php?report_id=' . $report_id . '&category_ids=' . implode(',', $category_ids)
-    ),
+    $base_url,
     $report_id,
     $table_options
 );

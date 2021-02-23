@@ -74,41 +74,25 @@ class report_form extends moodleform
             );
         $mform->addElement('autocomplete', 'category_ids', get_string('report_form_filter_categories', 'tool_coursewrangler'), $category_areanames, $category_options);
 
-        // HEADER FILTER OPTIONS
+        // HEADER DATE OPTIONS
         $mform->addElement('header', 'filter', get_string('report_form_date_options', 'tool_coursewrangler'));
 
         // COURSE_TIMECREATED
-        $course_timecreated_after = 0;
-        $course_timecreated_before = 0;
-
         $mform->addElement('date_selector', 'course_timecreated_after', get_string('report_form_filter_course_timecreated_after', 'tool_coursewrangler'), ['optional' => true]);
-        if ($course_timecreated_after > 0) {
-            $mform->setDefault('timecreated', $course_timecreated_after);
-        }
-
         $mform->addElement('date_selector', 'course_timecreated_before', get_string('report_form_filter_course_timecreated_before', 'tool_coursewrangler'), ['optional' => true]);
 
         // COURSE_STARTDATE
-        $course_startdate_after = 0;
-        $course_startdate_before = 0;
 
         $mform->addElement('date_selector', 'course_startdate_after', get_string('report_form_filter_course_startdate_after', 'tool_coursewrangler'), ['optional' => true]);
-        if ($course_startdate_after > 0) {
-            $mform->setDefault('startdate', $course_startdate_after);
-        }
-
         $mform->addElement('date_selector', 'course_startdate_before', get_string('report_form_filter_course_startdate_before', 'tool_coursewrangler'), ['optional' => true]);
 
         // COURSE_ENDDATE
-        $course_enddate_after = 0;
-        $course_enddate_before = 0;
 
         $mform->addElement('date_selector', 'course_enddate_after', get_string('report_form_filter_course_enddate_after', 'tool_coursewrangler'), ['optional' => true]);
-        if ($course_enddate_after > 0) {
-            $mform->setDefault('enddate', $course_enddate_after);
-        }
-
         $mform->addElement('date_selector', 'course_enddate_before', get_string('report_form_filter_course_enddate_before', 'tool_coursewrangler'), ['optional' => true]);
+
+        // HEADER FLAG OPTIONS
+        $mform->addElement('header', 'filter', get_string('report_form_flag_options', 'tool_coursewrangler'));
 
         // filter button
         $this->add_action_buttons(null, get_string('report_form_filter_results', 'tool_coursewrangler'));

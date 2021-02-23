@@ -55,7 +55,7 @@ class report_table extends table_sql
 
         // Define configs.
         $this->define_table_configs();
-        print_r($params);
+
         $this->report_id = $report_id;
         // optional params setting
         $this->category_ids = $params['category_ids'] ?? [];
@@ -176,6 +176,9 @@ class report_table extends table_sql
                 }
                 $ids_string = implode(',', $id_courses_array);
                 $and_categories_sql = "AND course_id IN ($ids_string)";
+                if (strlen($ids_string) < 1) {
+                    $and_categories_sql = '';
+                }
                 $this->set_sql("*", "$from_sql $join_score_sql", "$where_sql $and_categories_sql");
                 return true;
             }
