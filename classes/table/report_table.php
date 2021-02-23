@@ -59,8 +59,12 @@ class report_table extends table_sql
         $this->report_id = $report_id;
         // optional params setting
         $this->category_ids = $params['category_ids'] ?? [];
+        $this->course_timecreated_after = $params['course_timecreated_after'] ?? null;
+        $this->course_timecreated_before = $params['course_timecreated_before'] ?? null;
         $this->course_startdate_after = $params['course_startdate_after'] ?? null;
         $this->course_startdate_before = $params['course_startdate_before'] ?? null;
+        $this->course_enddate_after = $params['course_enddate_after'] ?? null;
+        $this->course_enddate_before = $params['course_enddate_before'] ?? null;
 
         $this->define_baseurl($baseurl);
         $this->define_table_sql();
@@ -118,6 +122,14 @@ class report_table extends table_sql
         $join_score_sql = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
 
         // date sql options
+        if (isset($this->course_timecreated_after)) {
+            // Option where COURSE_TIMECREATED is AFTER specified date.
+            $where_sql .= " AND cwc.course_timecreated > $this->course_timecreated_after";
+        }
+        if (isset($this->course_timecreated_before)) {
+            // Option where COURSE_TIMECREATED is BEFORE specified date.
+            $where_sql .= " AND cwc.course_timecreated < $this->course_timecreated_before";
+        }
         if (isset($this->course_startdate_after)) {
             // Option where COURSE_STARTDATE is AFTER specified date.
             $where_sql .= " AND cwc.course_startdate > $this->course_startdate_after";
@@ -125,6 +137,14 @@ class report_table extends table_sql
         if (isset($this->course_startdate_before)) {
             // Option where COURSE_STARTDATE is BEFORE specified date.
             $where_sql .= " AND cwc.course_startdate < $this->course_startdate_before";
+        }
+        if (isset($this->course_enddate_after)) {
+            // Option where COURSE_ENDDATE is AFTER specified date.
+            $where_sql .= " AND cwc.course_enddate > $this->course_enddate_after";
+        }
+        if (isset($this->course_enddate_before)) {
+            // Option where COURSE_ENDDATE is BEFORE specified date.
+            $where_sql .= " AND cwc.course_enddate < $this->course_enddate_before";
         }
 
         // check score has been calculated

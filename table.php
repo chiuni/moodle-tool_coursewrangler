@@ -22,12 +22,20 @@ $category_ids = optional_param('category_ids', null, PARAM_RAW);
 $category_ids = is_array($category_ids) ? $category_ids : (array) explode(',', $category_ids);
 
 // dates optional params
+$course_timecreated_after = optional_param('course_timecreated_after', -1, PARAM_INT);
+$course_timecreated_before = optional_param('course_timecreated_before', -1, PARAM_INT);
 $course_startdate_after = optional_param('course_startdate_after', -1, PARAM_INT);
 $course_startdate_before = optional_param('course_startdate_before', -1, PARAM_INT);
+$course_enddate_after = optional_param('course_enddate_after', -1, PARAM_INT);
+$course_enddate_before = optional_param('course_enddate_before', -1, PARAM_INT);
 
 // turning dates into timestamps
+$course_timecreated_after = $course_timecreated_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timecreated_after) : $course_timecreated_after;
+$course_timecreated_before = $course_timecreated_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timecreated_before) : $course_timecreated_before;
 $course_startdate_after = $course_startdate_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_startdate_after) : $course_startdate_after;
 $course_startdate_before = $course_startdate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_startdate_before) : $course_startdate_before;
+$course_enddate_after = $course_enddate_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_after) : $course_enddate_after;
+$course_enddate_before = $course_enddate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_before) : $course_enddate_before;
 
 // TODO OPTIMISE THIS
 if ($report_id == 0) {
@@ -74,8 +82,12 @@ if ($mform->is_cancelled()) {
 
 $table_options = [];
 $table_options['category_ids'] = $category_ids ?? [];
+$table_options['course_timecreated_after'] = $course_timecreated_after > 0 ? $course_timecreated_after : null;
+$table_options['course_timecreated_before'] = $course_timecreated_before > 0 ? $course_timecreated_before : null;
 $table_options['course_startdate_after'] = $course_startdate_after > 0 ? $course_startdate_after : null;
 $table_options['course_startdate_before'] = $course_startdate_before > 0 ? $course_startdate_before : null;
+$table_options['course_enddate_after'] = $course_enddate_after > 0 ? $course_enddate_after : null;
+$table_options['course_enddate_before'] = $course_enddate_before > 0 ? $course_enddate_before : null;
 
 $table = new table\report_table(
     new moodle_url(
