@@ -276,19 +276,6 @@ function find_course_last_access()
         ]
     );
 }
-/**
- * @deprecated using moodle's userdate instead
- */
-function process_date(int $timestamp, string $format = 'd/m/Y G:i:s')
-{
-    if ($timestamp < 1) {
-        return '-';
-    }
-    if ($format != 'timeago') {
-        return date($format, $timestamp);
-    }
-    return time_ago($timestamp);
-}
 
 function time_ago(int $timestamp)
 {
