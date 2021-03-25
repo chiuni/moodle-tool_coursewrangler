@@ -29,6 +29,7 @@ namespace tool_coursewrangler\table;
 use html_writer;
 use moodle_url;
 use table_sql;
+use renderable;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,27 +38,30 @@ require_once($CFG->libdir . '/tablelib.php');
 /**
  * Table that lists all report data.
  */
-class report_table extends table_sql
+class report_table extends table_sql implements renderable
 {
 
     /**
      * Sets up the table.
      */
-    public function __construct($baseurl, int $report_id, array $params = [])
-    {
+    public function __construct($baseurl, int $report_id, array $params = []) {
         parent::__construct('tool_coursewrangler-report');
         $this->context = \context_system::instance();
         // This object should not be used without the right permissions. TODO: THIS ->
         // require_capability('moodle/badges:manageglobalsettings', $this->context);
 
-        // Define columns in the table.
+        // Action table data trigger.
+        $this->display_action_data = $params['display_action_data'] ?? false;
+
+        // Define columns and headers in the table.
         $this->define_table_columns();
 
         // Define configs.
         $this->define_table_configs();
 
         $this->report_id = $report_id;
-        // optional params setting
+
+        // Optional params setting.
         $this->category_ids = $params['category_ids'] ?? [];
         $this->course_timecreated_after = $params['course_timecreated_after'] ?? null;
         $this->course_timecreated_before = $params['course_timecreated_before'] ?? null;
@@ -72,6 +76,10 @@ class report_table extends table_sql
         $this->course_enddate_notset = $params['course_enddate_notset'] ?? false;
         $this->course_timeaccess_notset = $params['course_timeaccess_notset'] ?? false;
 
+        // Preparing data for building urls in edit col.
+        $params['category_ids'] = implode(',', $params['category_ids']);
+        $this->url_params = $params;
+
         $this->define_baseurl($baseurl);
         $this->define_table_sql();
     }
@@ -79,9 +87,27 @@ class report_table extends table_sql
     /**
      * Setup the headers for the table.
      */
-    protected function define_table_columns()
-    {
+    protected function define_table_columns() {
+        $selectlabel = \html_writer::tag(
+            'label',
+            get_string('table_selectall', 'tool_coursewrangler'),
+            ['class' => 'accesshide', 'for' => "selectall"]
+        );
+        $selectcheckbox = \html_writer::tag(
+            'input',
+            '',
+            ['type' => 'checkbox',
+            'id' => "selectall",
+            'name' => 'selectall',
+            'title' => get_string('table_selectall', 'tool_coursewrangler')]
+        );
+        $selecthtml = \html_writer::tag(
+            'div',
+            $selectlabel . $selectcheckbox,
+            ['class' => 'selectall']
+        );
         $cols = [
+            'row_select' => get_string('table_row_select', 'tool_coursewrangler') . $selecthtml,
             'course_id' => get_string('table_course_id', 'tool_coursewrangler'),
             // 'course_module_id' => get_string('table_course_module_id', 'tool_coursewrangler'),
             'course_shortname' => get_string('table_course_shortname', 'tool_coursewrangler'),
@@ -100,6 +126,17 @@ class report_table extends table_sql
             // 'activity_lastmodified' => get_string('table_activity_lastmodified', 'tool_coursewrangler'),
             'percentage' => get_string('table_course_deletionscore', 'tool_coursewrangler')
         ];
+
+        // Prepare to display table with action data.
+        if ($this->display_action_data) {
+            $cols['action'] = 'Action';
+            $cols['status'] = 'Action Status';
+            // Unsetting some data as no space on screen.
+            unset($cols['course_timecreated']);
+            unset($cols['course_startdate']);
+            unset($cols['course_enddate']);
+        }
+
         $this->define_columns(array_keys($cols));
         $this->define_headers(array_values($cols));
     }
@@ -107,25 +144,48 @@ class report_table extends table_sql
     /**
      * Define table configs.
      */
-    protected function define_table_configs()
-    {
-        $this->collapsible(true);
+    protected function define_table_configs() {
         $this->sortable(true, 'course_id', SORT_ASC);
+        $this->no_sorting('row_select');
         $this->pageable(true);
     }
 
     /**
-     * Define table SQL
+     * Override the table show_hide_link to not show for select column.
+     * Taken from 'assign/gradingtable.php' but slightly modified.
+     *
+     * @param string $column the column name, index into various names.
+     * @param int $index numerical index of the column.
+     * @return string HTML fragment.
      */
-    protected function define_table_sql()
-    {
+    protected function show_hide_link($column, $index) {
+        if ($column != 'row_select' && $column != 'course_id') {
+            return parent::show_hide_link($column, $index);
+        }
+        return '';
+    }
+
+    /**
+     * Define table SQL.
+     */
+    protected function define_table_sql() {
         if (!isset($this->report_id)) {
             return false;
         }
         global $DB;
-        $where_sql = "report_id=$this->report_id";
+        $what_sql = "*";
+        $where_sql = "cwc.report_id=$this->report_id";
         $from_sql = "{tool_coursewrangler_coursemt} AS cwc";
-        $join_score_sql = ' JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ';
+        $join_score_sql = " JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ";
+
+        $join_action_data = '';
+
+        if ($this->display_action_data) {
+            $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS act ON cwc.report_id=act.report_id AND cwc.course_id=act.course_id ";
+            $what_sql = "cwc.*, cws.*, act.status, act.action";
+        }
+
+        $full_join_score_sql = $join_score_sql . $join_action_data;
 
         // date sql options
         if ($this->course_timecreated_notset) {
@@ -209,65 +269,55 @@ class report_table extends table_sql
                     }
                 }
                 $ids_string = implode(',', $id_courses_array);
-                $and_categories_sql = "AND course_id IN ($ids_string)";
+                $and_categories_sql = "AND cwc.course_id IN ($ids_string)";
                 if (strlen($ids_string) < 1) {
                     $and_categories_sql = '';
                 }
-                $this->set_sql("*", "$from_sql $join_score_sql", "$where_sql $and_categories_sql");
+                $this->set_sql($what_sql, "$from_sql $full_join_score_sql", "$where_sql $and_categories_sql");
                 return true;
             }
         }
-        $this->set_sql("*", "$from_sql $join_score_sql", $where_sql);
+        $this->set_sql($what_sql, "$from_sql $full_join_score_sql", $where_sql);
     }
 
     /**
      * Processing dates for table
      */
-    function col_course_timecreated($values)
-    {
-        return ($values->course_timecreated == 0) ?  '-' : userdate($values->course_timecreated);
+    function col_course_timecreated($values) : string {
+        return ($values->course_timecreated == 0) ? '-' : userdate($values->course_timecreated);
     }
-    function col_course_timemodified($values)
-    {
-        return ($values->course_timemodified == 0) ?  '-' : userdate($values->course_timemodified);
+    function col_course_timemodified($values) : string {
+        return ($values->course_timemodified == 0) ? '-' : userdate($values->course_timemodified);
     }
-    function col_course_startdate($values)
-    {
-        return ($values->course_startdate == 0) ?  '-' : userdate($values->course_startdate);
+    function col_course_startdate($values) : string {
+        return ($values->course_startdate == 0) ? '-' : userdate($values->course_startdate);
     }
-    function col_course_enddate($values)
-    {
-        return ($values->course_enddate == 0) ?  '-' : userdate($values->course_enddate);
+    function col_course_enddate($values) : string {
+        return ($values->course_enddate == 0) ? '-' : userdate($values->course_enddate);
     }
-    function col_course_timeaccess($values)
-    {
-        return ($values->course_timeaccess == 0) ?  '-' : userdate($values->course_timeaccess);
+    function col_course_timeaccess($values) : string {
+        return ($values->course_timeaccess == 0) ? '-' : userdate($values->course_timeaccess);
     }
-    function col_course_lastenrolment($values)
-    {
-        return ($values->course_lastenrolment == 0) ?  '-' : userdate($values->course_lastenrolment);
+    function col_course_lastenrolment($values) : string {
+        return ($values->course_lastenrolment == 0) ? '-' : userdate($values->course_lastenrolment);
     }
-    function col_activity_lastmodified($values)
-    {
-        return ($values->activity_lastmodified == 0) ?  '-' : userdate($values->activity_lastmodified);
+    function col_activity_lastmodified($values) : string {
+        return ($values->activity_lastmodified == 0) ? '-' : userdate($values->activity_lastmodified);
     }
     /**
      * Processing visible and parent cols
      */
-    function col_course_visible($values)
-    {
+    function col_course_visible($values) : string {
         return ($values->course_visible ? 'Yes' : 'No');
     }
-    function col_course_isparent($values)
-    {
+    function col_course_isparent($values) : string {
         return ($values->course_isparent ? 'Yes' : 'No');
     }
     /**
      * Turning course name into link for details area
      * TODO: Improve this into a link that goes to a details page within coursewrangler
      */
-    function col_course_fullname($values)
-    {
+    function col_course_fullname($values) : string {
         $url = new moodle_url('/admin/tool/coursewrangler/report_details.php?course_id=' . $values->course_id . '&report_id=' . $values->report_id, []);
         $link = html_writer::link($url, $values->course_fullname);
         return $link;
@@ -275,9 +325,55 @@ class report_table extends table_sql
     /**
      * Creating the score when required
      */
-    function col_percentage($values)
-    {
+    function col_percentage($values) : string {
         $display_value = $values->percentage ? $values->percentage . '%' : get_string('table_percentage_notavailable', 'tool_coursewrangler');
         return ($display_value);
     }
+
+    /**
+     * Creating the action col
+     */
+    function col_action($values) : string {
+        $display_value = $values->action ?? get_string('table_value_notavailable', 'tool_coursewrangler');
+        return ($display_value);
+    }
+    /**
+     * Creating the action status col
+     */
+    function col_status($values) : string {
+        $display_value = $values->status ?? get_string('table_value_notavailable', 'tool_coursewrangler');
+        return ($display_value);
+    }
+
+    /**
+     * Creating the select col.
+     */
+    function col_row_select($values) : string {
+        $course_id = $values->course_id;
+        $labelcontent = get_string('table_row_select', 'tool_coursewrangler') . " $values->course_fullname";
+        $label = \html_writer::tag(
+            'label',
+            $labelcontent,
+            ['class' => 'accesshide', 'for' => "selectcourse_$course_id"]
+        );
+        $checkbox = \html_writer::tag(
+            'input',
+            '',
+            ['type' => "checkbox",
+            'id' => "selectcourse_$course_id",
+            'class' => "selectcourses",
+            'name' => "selectedcourseids",
+            'value' => $course_id]
+        );
+        // $input = \html_writer::tag(
+        //     'input',
+        //     '',
+        //     ['type' => 'hidden',
+        //     'id' => "selectcourse_$course_id",
+        //     'name' => "courseid_$course_id",
+        //     'value' => $course_id]
+        // ); 
+        return $label . $checkbox . $input;
+    }
+
 }

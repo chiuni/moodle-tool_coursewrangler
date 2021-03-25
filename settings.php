@@ -57,7 +57,8 @@ if ($hassiteconfig) {
         'tool_coursewrangler/timeunit',
         get_string('settings_timeunit', 'tool_coursewrangler'),
         get_string('settings_timeunit_desc', 'tool_coursewrangler'),
-        DAYSECS
+        DAYSECS,
+        86400
     ));
 
     $main_page->add(new admin_setting_configselect(

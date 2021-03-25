@@ -74,6 +74,7 @@ class report_form extends moodleform
             );
         $mform->addElement('autocomplete', 'category_ids', get_string('report_form_filter_categories', 'tool_coursewrangler'), $category_areanames, $category_options);
 
+        $mform->addElement('checkbox', 'display_action_data', get_string('report_form_filter_display_action_data', 'tool_coursewrangler'));
 
         // HEADER DATE OPTIONS
         $mform->addElement('header', 'header_date_options', get_string('report_form_date_options', 'tool_coursewrangler'));

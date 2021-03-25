@@ -39,4 +39,5 @@ $DB->execute("TRUNCATE {tool_coursewrangler_report}");
 $DB->execute("TRUNCATE {tool_coursewrangler_coursemt}");
 $DB->execute("TRUNCATE {tool_coursewrangler_enrolmt}");
 $DB->execute("TRUNCATE {tool_coursewrangler_score}");
+$DB->execute("TRUNCATE {tool_coursewrangler_action}");
 echo 'End of script.' . PHP_EOL;

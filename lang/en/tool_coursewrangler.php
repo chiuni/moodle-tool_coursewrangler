@@ -24,6 +24,13 @@ $string['pageheading'] = 'Course Wrangler Tool';
 
 $string['privacy:metadata'] = 'The course wrangler tool plugin does not store any personal data.';
 
+$string['table_tablename'] = 'CWT Table';
+$string['table_row_select'] = 'Select';
+$string['table_selectall'] = 'Select All';
+$string['table_edit'] = 'Edit';
+$string['table_action_delete'] = 'Delete';
+
+
 $string['table_course_id'] = 'Course ID';
 $string['table_course_module_id'] = 'Course Module ID';
 $string['table_course_fullname'] = 'Name';
@@ -52,6 +59,7 @@ $string['table_score_raw'] = 'Raw Score';
 $string['table_score_rounded'] = 'Rounded Score';
 $string['table_score_percentage'] = 'Percentage';
 $string['table_percentage_notavailable'] = 'Not Available';
+$string['table_value_notavailable'] = 'Not Available';
 
 // buttons
 $string['button_generatereport'] = 'Generate Report';
@@ -74,6 +82,7 @@ $string['report_details_report_date'] = 'Report created on';
 $string['report_details_enrolmentinformation'] = 'Enrolment Information';
 $string['report_details_scoreinformation'] = 'Deletion Score';
 $string['report_details_scorecreated'] = 'Score created on';
+$string['report_details_action_delete'] = 'Schedule Deletion';
 
 // form stuff
 $string['report_form_filter_results'] = 'Filter Results';
@@ -96,3 +105,9 @@ $string['report_form_filter_course_timecreated_notset'] = 'Time Created Not Set 
 $string['report_form_filter_course_startdate_notset'] = 'Start Date Not Set (or equals 0)';
 $string['report_form_filter_course_enddate_notset'] = 'End Date Not Set (or equals 0)';
 $string['report_form_filter_course_timeaccess_notset'] = 'Last Access Not Set (or equals 0)';
+$string['report_form_filter_display_action_data'] = 'Display Action Data';
+
+// action_form
+$string['action_form_withselected'] = 'With selected...';
+$string['action_form_scheduledelete'] = 'Schedule Deletion';
+$string['action_form_resetaction'] = 'Reset Action';
