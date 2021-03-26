@@ -39,6 +39,8 @@ require_capability('moodle/site:configview', $context);
 $report_id = required_param('report_id', PARAM_INT);
 $course_id = required_param('course_id', PARAM_INT);
 
+$return_link = optional_param('return_link', null, PARAM_URL);
+
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
 $PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/report_details.php'));
@@ -80,6 +82,10 @@ if ($report != false) {
 if ($course == false) {
     // throw not found error?
 }
+
+$course->links = [
+    'return_link' => $return_link
+];
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('report_details_coursedetailsfor', 'tool_coursewrangler'));

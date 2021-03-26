@@ -79,7 +79,7 @@ class report_table extends table_sql implements renderable
         // Preparing data for building urls in edit col.
         $params['category_ids'] = implode(',', $params['category_ids']);
         $this->url_params = $params;
-
+        $this->return_link = $baseurl->out();
         $this->define_baseurl($baseurl);
         $this->define_table_sql();
     }
@@ -318,6 +318,15 @@ class report_table extends table_sql implements renderable
      * TODO: Improve this into a link that goes to a details page within coursewrangler
      */
     function col_course_fullname($values) : string {
+        $url_params = [
+            'report_id' => $values->report_id,
+            'course_id' => $values->course_id,
+            'return_link' => $this->return_link
+        ];
+        $url = new moodle_url('/admin/tool/coursewrangler/report_details.php', $url_params);
+        $link = html_writer::link($url, $values->course_fullname);
+        return $link;
+
         $url = new moodle_url('/admin/tool/coursewrangler/report_details.php?course_id=' . $values->course_id . '&report_id=' . $values->report_id, []);
         $link = html_writer::link($url, $values->course_fullname);
         return $link;

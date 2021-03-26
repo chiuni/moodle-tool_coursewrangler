@@ -29,7 +29,7 @@ $rows_selected = is_array($rows_selected) ? $rows_selected : array_filter( (arra
 $report_id = (int) optional_param('report_id', 0, PARAM_INT);
 // $report_id = $report_id ?? $rfd['report_id'] ?? 0;
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
-$category_ids = is_array($category_ids) ? $category_ids : (array) explode(',', $category_ids);
+$category_ids = is_array($category_ids) ? $category_ids : array_filter( (array) explode(',', $category_ids) );
 // $category_ids = $category_ids ?? $rfd['category_ids'] ?? null;
 
 // Dates optional params.
