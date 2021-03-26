@@ -108,49 +108,31 @@ $PAGE->navbar->add(get_string('table_tablename', 'tool_coursewrangler'), new moo
 // $PAGE->navbar->add('Testing table class', new moodle_url('/admin/tool/coursewrangler/table.php'));
 echo $OUTPUT->header();
 
-//Instantiate simplehtml_form .
+$options_array = [];
+$options_array['report_id'] = $report_id;
+$options_array['category_ids'] = $category_ids ?? [];
+$options_array['course_timecreated_after'] = $course_timecreated_after > 0 ? $course_timecreated_after : null;
+$options_array['course_timecreated_before'] = $course_timecreated_before > 0 ? $course_timecreated_before : null;
+$options_array['course_startdate_after'] = $course_startdate_after > 0 ? $course_startdate_after : null;
+$options_array['course_startdate_before'] = $course_startdate_before > 0 ? $course_startdate_before : null;
+$options_array['course_enddate_after'] = $course_enddate_after > 0 ? $course_enddate_after : null;
+$options_array['course_enddate_before'] = $course_enddate_before > 0 ? $course_enddate_before : null;
+$options_array['course_timeaccess_after'] = $course_timeaccess_after > 0 ? $course_timeaccess_after : null;
+$options_array['course_timeaccess_before'] = $course_timeaccess_before > 0 ? $course_timeaccess_before : null;
+$options_array['course_timecreated_notset'] = $course_timecreated_notset ?? false;
+$options_array['course_startdate_notset'] = $course_startdate_notset ?? false;
+$options_array['course_endate_notset'] = $course_endate_notset ?? false;
+$options_array['course_timeaccess_notset'] = $course_timeaccess_notset ?? false;
+$options_array['display_action_data'] = $display_action_data ?? false;
 
+//Instantiate report_form .
 $mform = new form\report_form(
     null,
-    [   
-        'report_id' => $report_id,
-        'category_ids' => $category_ids,
-        'course_timecreated_after' => $course_timecreated_after,
-        'course_timecreated_before' => $course_timecreated_before,
-        'course_startdate_after' => $course_startdate_after,
-        'course_startdate_before' => $course_startdate_before,
-        'course_enddate_after' => $course_enddate_after,
-        'course_enddate_before' => $course_enddate_before,
-        'course_timeaccess_after' => $course_timeaccess_after,
-        'course_timeaccess_before' => $course_timeaccess_before,
-        'course_timecreated_notset' => $course_timecreated_notset,
-        'course_startdate_notset' => $course_startdate_notset,
-        'course_endate_notset' => $course_endate_notset,
-        'course_timeaccess_notset' => $course_timeaccess_notset,
-        'display_action_data' => $display_action_data
-    ],
+    $options_array,
     'post'
 );
-
-
 //Set default data (if any).
-$mform->set_data([
-    'report_id' => $report_id,
-    'category_ids' => $category_ids,
-    'course_timecreated_after' => $course_timecreated_after,
-    'course_timecreated_before' => $course_timecreated_before,
-    'course_startdate_after' => $course_startdate_after,
-    'course_startdate_before' => $course_startdate_before,
-    'course_enddate_after' => $course_enddate_after,
-    'course_enddate_before' => $course_enddate_before,
-    'course_timeaccess_after' => $course_timeaccess_after,
-    'course_timeaccess_before' => $course_timeaccess_before,
-    'course_timecreated_notset' => $course_timecreated_notset,
-    'course_startdate_notset' => $course_startdate_notset,
-    'course_endate_notset' => $course_endate_notset,
-    'course_timeaccess_notset' => $course_timeaccess_notset,
-    'display_action_data' => $display_action_data
-]);
+$mform->set_data($options_array);
 
 //Displays the form.
 $mform->display();
@@ -168,49 +150,21 @@ if ($mform->is_cancelled()) {
     // or on the first display of the form.
 }
 
-$table_options = [];
-$table_options['category_ids'] = $category_ids ?? [];
-$table_options['course_timecreated_after'] = $course_timecreated_after > 0 ? $course_timecreated_after : null;
-$table_options['course_timecreated_before'] = $course_timecreated_before > 0 ? $course_timecreated_before : null;
-$table_options['course_startdate_after'] = $course_startdate_after > 0 ? $course_startdate_after : null;
-$table_options['course_startdate_before'] = $course_startdate_before > 0 ? $course_startdate_before : null;
-$table_options['course_enddate_after'] = $course_enddate_after > 0 ? $course_enddate_after : null;
-$table_options['course_enddate_before'] = $course_enddate_before > 0 ? $course_enddate_before : null;
-$table_options['course_timeaccess_after'] = $course_timeaccess_after > 0 ? $course_timeaccess_after : null;
-$table_options['course_timeaccess_before'] = $course_timeaccess_before > 0 ? $course_timeaccess_before : null;
-$table_options['course_timecreated_notset'] = $course_timecreated_notset ?? false;
-$table_options['course_startdate_notset'] = $course_startdate_notset ?? false;
-$table_options['course_endate_notset'] = $course_endate_notset ?? false;
-$table_options['course_timeaccess_notset'] = $course_timeaccess_notset ?? false;
-$table_options['display_action_data'] = $display_action_data ?? false;
-
 // Creating url params.
-$base_url_str = '/admin/tool/coursewrangler/table.php?report_id=' . $report_id;
-$base_url_str .= '&category_ids=' . implode(',', $category_ids);
-$base_url_str .= $course_timecreated_after > 0 ? '&course_timecreated_after=' . $course_timecreated_after : '';
-$base_url_str .= $course_timecreated_before > 0 ? '&course_timecreated_before=' . $course_timecreated_before : '';
-$base_url_str .= $course_startdate_after > 0 ? '&course_startdate_after=' . $course_startdate_after : '';
-$base_url_str .= $course_startdate_before > 0 ? '&course_startdate_before=' . $course_startdate_before : '';
-$base_url_str .= $course_enddate_after > 0 ? '&course_enddate_after=' . $course_enddate_after : '';
-$base_url_str .= $course_enddate_before > 0 ? '&course_enddate_before=' . $course_enddate_before : '';
-$base_url_str .= $course_timeaccess_after > 0 ? '&course_timeaccess_after=' . $course_timeaccess_after : '';
-$base_url_str .= $course_timeaccess_before > 0 ? '&course_timeaccess_before=' . $course_timeaccess_before : '';
-$base_url_str .= $course_timecreated_notset ? '&course_timecreated_notset=' . $course_timecreated_notset : '';
-$base_url_str .= $course_startdate_notset ? '&course_startdate_notset=' . $course_startdate_notset : '';
-$base_url_str .= $course_endate_notset ? '&course_endate_notset=' . $course_endate_notset : '';
-$base_url_str .= $course_timeaccess_notset ? '&course_timeaccess_notset=' . $course_timeaccess_notset : '';
-$base_url_str .= $display_action_data ? '&display_action_data=' . $display_action_data : '';
-
-$base_url = new moodle_url($base_url_str);
+$base_url_str = '/admin/tool/coursewrangler/table.php';
+$url_params = $options_array;
+// Parameter category_ids must be string.
+$url_params['category_ids'] = implode(',', $category_ids) ?? null;
+$url_params = array_filter($url_params);
+$base_url = new moodle_url($base_url_str, $url_params);
 
 $table = new table\report_table(
     $base_url,
-    $report_id,
-    $table_options
+    $options_array
 );
 $table->out(50, false);
 
-$aform = new form\action_form(null, ['report_form_data_json' => json_encode($table_options)]);
+$aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
 $aform->display();
 
 //Form processing and displaying is done here.

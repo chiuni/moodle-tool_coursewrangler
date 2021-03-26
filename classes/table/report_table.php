@@ -44,7 +44,7 @@ class report_table extends table_sql implements renderable
     /**
      * Sets up the table.
      */
-    public function __construct($baseurl, int $report_id, array $params = []) {
+    public function __construct(\moodle_url $baseurl, array $params = []) {
         parent::__construct('tool_coursewrangler-report');
         $this->context = \context_system::instance();
         // This object should not be used without the right permissions. TODO: THIS ->
@@ -59,7 +59,7 @@ class report_table extends table_sql implements renderable
         // Define configs.
         $this->define_table_configs();
 
-        $this->report_id = $report_id;
+        $this->report_id = $params['report_id'];
 
         // Optional params setting.
         $this->category_ids = $params['category_ids'] ?? [];
@@ -373,7 +373,7 @@ class report_table extends table_sql implements renderable
         //     'name' => "courseid_$course_id",
         //     'value' => $course_id]
         // ); 
-        return $label . $checkbox . $input;
+        return $label . $checkbox;
     }
 
 }
