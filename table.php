@@ -174,15 +174,36 @@ if ($display_action_data == true) {
     if ($fromform = $aform->get_data()) {
         print_r($fromform);
         $report_id = $fromform->report_id ?? $report_id;
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
+        //In this case you process validated data. $mform->get_data() returns data posted in form.
+        echo 'submitted?<br>';
+        if (isset($rows_selected) && isset($action)) {
+            echo 'is set';
+            $form_handler = new action_handler($report_id);
+            switch ($action) {
+                case 'delete':
+                    foreach ($rows_selected as $course_id) {
+                        $form_handler->schedule_delete($course_id);
+                    }
+                    break;
+                case 'reset':
+                    foreach ($rows_selected as $course_id) {
+                        $form_handler->hard_reset($course_id);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            redirect($base_url);
+            exit;
+        }
     } else {
         echo 'else';
         // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
-    // or on the first display of the form.
+        // or on the first display of the form.
     }
 }
 print_r($rows_selected);
-print_r($report_form_data_json);
+// print_r($report_form_data_json);
 
 static $initialised = false;
 if (!$initialised) {
