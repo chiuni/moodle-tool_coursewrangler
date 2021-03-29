@@ -125,7 +125,7 @@ class report_form extends moodleform
         $mform->addElement('checkbox', 'course_timeaccess_notset', get_string('report_form_filter_course_timeaccess_notset', 'tool_coursewrangler'));
 
         // filter button
-        $this->add_action_buttons(null, get_string('report_form_filter_results', 'tool_coursewrangler'));
+        $this->add_action_buttons(true, get_string('report_form_filter_results', 'tool_coursewrangler'));
 
     }
     //Custom validation should be added here

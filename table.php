@@ -26,11 +26,11 @@ $action = optional_param('action', null, PARAM_RAW);
 $rows_selected = optional_param('rows_selected', null, PARAM_RAW);
 $rows_selected = is_array($rows_selected) ? $rows_selected : array_filter( (array) explode(',', $rows_selected) );
 
-$report_id = (int) optional_param('report_id', 0, PARAM_INT);
-// $report_id = $report_id ?? $rfd['report_id'] ?? 0;
+$report_id = optional_param('report_id', null, PARAM_INT);
+$report_id = $report_id ?? $report_form_data_json->report_id ?? null;
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
 $category_ids = is_array($category_ids) ? $category_ids : array_filter( (array) explode(',', $category_ids) );
-// $category_ids = $category_ids ?? $rfd['category_ids'] ?? null;
+$category_ids = $category_ids ?? $report_form_data_json->category_ids ?? null;
 
 // Dates optional params.
 $course_timecreated_after = optional_param('course_timecreated_after', null, PARAM_INT);
@@ -85,12 +85,9 @@ $display_action_data = optional_param('display_action_data', null, PARAM_BOOL);
 $display_action_data = $display_action_data ?? $report_form_data_json->display_action_data ?? false;
 
 // TODO OPTIMISE THIS
-if ($report_id == 0) {
-    $report = $DB->get_records_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC");
-    foreach ($report as $first) {
-        $report_id = $first->id;
-        break;
-    }
+if ($report_id === null) {
+    $report = $DB->get_record_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC", [],IGNORE_MULTIPLE);
+    $report_id = $report->id;
 }
 
 // require_capability('moodle/course:manageactivities', $coursecontext);
@@ -124,31 +121,20 @@ $options_array['course_startdate_notset'] = $course_startdate_notset ?? false;
 $options_array['course_endate_notset'] = $course_endate_notset ?? false;
 $options_array['course_timeaccess_notset'] = $course_timeaccess_notset ?? false;
 $options_array['display_action_data'] = $display_action_data ?? false;
+$options_array = array_filter($options_array);
 
-//Instantiate report_form .
+// Instantiate report_form .
 $mform = new form\report_form(
     null,
     $options_array,
     'post'
 );
-//Set default data (if any).
+// Set default data (if any) do not remove!
+// This is for setting additional data so the form doesn't lose it.
 $mform->set_data($options_array);
 
 //Displays the form.
 $mform->display();
-
-//Form processing and displaying is done here.
-if ($mform->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form.
-} else if ($fromform = $mform->get_data()) {
-    print_r($fromform);
-    $report_id = $fromform->report_id ?? $report_id;
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
-} else {
-    echo 'else';
-    // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
-    // or on the first display of the form.
-}
 
 // Creating url params.
 $base_url_str = '/admin/tool/coursewrangler/table.php';
@@ -157,6 +143,24 @@ $url_params = $options_array;
 $url_params['category_ids'] = implode(',', $category_ids) ?? null;
 $url_params = array_filter($url_params);
 $base_url = new moodle_url($base_url_str, $url_params);
+$base_url_reset = new moodle_url($base_url_str);
+
+//Form processing and displaying is done here.
+if ($mform->is_cancelled()) {
+    //Handle form cancel operation, if cancel button is present on form.
+    // This is the default way Moodle handles cancelled forms.
+    redirect($base_url_reset);
+    exit;
+} elseif ($fromform = $mform->get_data()) {
+    print_r($fromform);
+    $report_id = $fromform->report_id ?? $report_id;
+    //In this case you process validated data. $mform->get_data() returns data posted in form.
+} else {
+    echo 'else';
+    // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
+    // or on the first display of the form.
+}
+print_r($report_form_data_json);
 
 $table = new table\report_table(
     $base_url,
@@ -164,21 +168,18 @@ $table = new table\report_table(
 );
 $table->out(50, false);
 
-$aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
-$aform->display();
-
-//Form processing and displaying is done here.
-if ($aform->is_cancelled()) {
-    echo 'cancelled';
-    //Handle form cancel operation, if cancel button is present on form.
-} elseif ($fromform = $aform->get_data()) {
-    print_r($fromform);
-    $report_id = $fromform->report_id ?? $report_id;
-//In this case you process validated data. $mform->get_data() returns data posted in form.
-} else {
-    echo 'else';
-    // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
+if ($display_action_data == true) {
+    $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
+    $aform->display();
+    if ($fromform = $aform->get_data()) {
+        print_r($fromform);
+        $report_id = $fromform->report_id ?? $report_id;
+    //In this case you process validated data. $mform->get_data() returns data posted in form.
+    } else {
+        echo 'else';
+        // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
+    }
 }
 print_r($rows_selected);
 print_r($report_form_data_json);
