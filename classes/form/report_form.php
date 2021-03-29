@@ -57,7 +57,6 @@ class report_form extends moodleform
             'noselectionstring' => get_string('report_form_filter_reports_noselectionstring', 'tool_coursewrangler'),
         );
         // HEADER FILTER OPTIONS
-        $mform->addElement('header', 'header_filter_options', get_string('report_form_filter_options', 'tool_coursewrangler'));
 
         $mform->addElement('autocomplete', 'report_id', get_string('report_form_filter_reports', 'tool_coursewrangler'), $report_areanames, $report_options);
 
