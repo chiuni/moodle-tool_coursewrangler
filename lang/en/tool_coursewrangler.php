@@ -84,6 +84,8 @@ $string['report_details_scoreinformation'] = 'Deletion Score';
 $string['report_details_scorecreated'] = 'Score created on';
 $string['report_details_action_delete'] = 'Schedule Deletion';
 $string['report_details_return'] = 'Return to Table';
+$string['report_details_action_reset'] = 'Undo Action';
+$string['report_details_action_logs'] = 'Action History Log';
 
 // form stuff
 $string['report_form_filter_results'] = 'Filter Results';
