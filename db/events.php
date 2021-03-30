@@ -18,7 +18,7 @@
  * This file defines observers needed by the tool.
  * 
  * @package   tool_coursewrangler
- * @author    Mark Sharp <m.sharp@chi.ac.uk>
+ * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
