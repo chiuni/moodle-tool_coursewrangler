@@ -30,7 +30,7 @@ $report_id = optional_param('report_id', null, PARAM_INT);
 $report_id = $report_id ?? $report_form_data_json->report_id ?? null;
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
 $category_ids = is_array($category_ids) ? $category_ids : array_filter( (array) explode(',', $category_ids) );
-$category_ids = $category_ids ?? $report_form_data_json->category_ids ?? null;
+$category_ids = empty($category_ids) ? $report_form_data_json->category_ids : $category_ids;
 
 // Dates optional params.
 $course_timecreated_after = optional_param('course_timecreated_after', null, PARAM_INT);
@@ -84,13 +84,10 @@ $course_timeaccess_notset = $course_timeaccess_notset ?? $report_form_data_json-
 $display_action_data = optional_param('display_action_data', null, PARAM_BOOL);
 $display_action_data = $display_action_data ?? $report_form_data_json->display_action_data ?? false;
 
-// TODO OPTIMISE THIS
 if ($report_id === null) {
     $report = $DB->get_record_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC", [],IGNORE_MULTIPLE);
     $report_id = $report->id;
 }
-
-// require_capability('moodle/course:manageactivities', $coursecontext);
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
@@ -101,8 +98,6 @@ $PAGE->navbar->add(get_string('administrationsite'), new moodle_url('/admin/sear
 $PAGE->navbar->add(get_string('pluginname', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/index.php'));
 $PAGE->navbar->add(get_string('table_tablename', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/table.php'));
 
-// Print the page header.
-// $PAGE->navbar->add('Testing table class', new moodle_url('/admin/tool/coursewrangler/table.php'));
 echo $OUTPUT->header();
 
 $options_array = [];
@@ -140,7 +135,7 @@ $mform->display();
 $base_url_str = '/admin/tool/coursewrangler/table.php';
 $url_params = $options_array;
 // Parameter category_ids must be string.
-$url_params['category_ids'] = implode(',', $category_ids) ?? null;
+$url_params['category_ids'] = is_array($category_ids) ? implode(',', $category_ids) : $category_ids;
 $url_params = array_filter($url_params);
 $base_url = new moodle_url($base_url_str, $url_params);
 $base_url_reset = new moodle_url($base_url_str);
@@ -152,15 +147,16 @@ if ($mform->is_cancelled()) {
     redirect($base_url_reset);
     exit;
 } elseif ($fromform = $mform->get_data()) {
-    print_r($fromform);
+    cwt_debugger($fromform, 'From form');
     $report_id = $fromform->report_id ?? $report_id;
     //In this case you process validated data. $mform->get_data() returns data posted in form.
 } else {
-    echo 'else';
+    cwt_debugger(null, 'Else');
     // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
 }
-print_r($report_form_data_json);
+cwt_debugger($report_form_data_json, 'Report form data');
+cwt_debugger($url_params, 'url_params');
 
 $table = new table\report_table(
     $base_url,
@@ -172,7 +168,7 @@ if ($display_action_data == true) {
     $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
     $aform->display();
     if ($fromform = $aform->get_data()) {
-        print_r($fromform);
+        cwt_debugger($fromform, 'From second form');
         $report_id = $fromform->report_id ?? $report_id;
         //In this case you process validated data. $mform->get_data() returns data posted in form.
         echo 'submitted?<br>';
@@ -197,13 +193,12 @@ if ($display_action_data == true) {
             exit;
         }
     } else {
-        echo 'else';
+        cwt_debugger(null, 'Else');
         // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
         // or on the first display of the form.
     }
 }
-print_r($rows_selected);
-// print_r($report_form_data_json);
+cwt_debugger($rows_selected, 'Rows selected');
 
 static $initialised = false;
 if (!$initialised) {
