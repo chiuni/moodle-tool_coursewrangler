@@ -66,8 +66,11 @@ $string['button_generatereport'] = 'Generate Report';
 
 // settings
 $string['settingspage_main'] = 'Main Settings';
+$string['settingspage_dev'] = 'Developer Settings';
 $string['settings_timeunit'] = 'Time Unit';
 $string['settings_timeunit_desc'] = 'The unit of time used for calculating points, where one time unit equals one point.';
+$string['settings_debugmode'] = 'Debug Mode';
+$string['settings_debugmode_desc'] = 'Enables debug output for plugin-specific interactions. No need to use this if site-wide debug mode is enabled.';
 $string['settings_courseparentweight'] = 'Course Parent Weight';
 $string['settings_courseparentweight_desc'] = 'How important parent courses are when calculating score (meta enrolments).';
 $string['settings_lowenrolmentsflag'] = 'Low Enrolments Flag';

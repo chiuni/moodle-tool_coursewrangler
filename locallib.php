@@ -308,3 +308,21 @@ function moodletime_to_unixtimestamp(array $timearray)
     $timestring = $timearray['day'] . '-' . $timearray['month'] . '-' . $timearray['year'];
     return (strtotime($timestring) ?? 0);
 }
+
+function cwt_debugger($data, string $leadingtext = 'Debug') {
+    $debugmode = get_config('tool_coursewrangler', 'debugmode');
+    // To do: check if Moodle is in debug mode.
+    if (!$debugmode){
+        return false;
+    }
+    $id = 'coursewrangler_debug_' . random_int(100, 100000);
+    echo "<p><button class=\"btn btn-dark\" type=\"button\" data-toggle=\"collapse\" data-target=\"#$id\">Debug data</button></p>"; 
+    echo '<div class="collapse" id="'.$id.'"><pre>' . $leadingtext . ': <br>';
+    if ($data === null) {
+        echo "Data is null.";
+    } else {
+        print_r($data);
+    }
+    echo '</pre></div>';
+    return true;
+}
