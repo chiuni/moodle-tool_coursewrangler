@@ -117,3 +117,6 @@ $string['report_form_filter_display_action_data'] = 'Display Action Data';
 $string['action_form_withselected'] = 'With selected...';
 $string['action_form_scheduledelete'] = 'Schedule Deletion';
 $string['action_form_resetaction'] = 'Reset Action';
+
+// tasks
+$string['task_wrangle'] = 'Wrangle';
