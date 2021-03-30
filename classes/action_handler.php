@@ -54,7 +54,7 @@ class action_handler
         //     // Course was not found.
         //     return false;
         // }
-        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id, 'report_id' => $this->report_id], '*');
+        $action = action::find_action($course_id, $this->report_id);
         if ($action == false) {
             $action = null;
             $action = new stdClass();
@@ -64,11 +64,13 @@ class action_handler
             $action->coursemt_id = $coursemt->id;
             $action->action = 'delete';
             $action->status = 'scheduled';
+            $action->lastupdated = time();
             $new_action_id = $DB->insert_record('tool_coursewrangler_action', $action);
             return $new_action_id;
         }
         $action->action = 'delete';
         $action->status = 'scheduled';
+        $action->updated = time();
         $upated_action = $DB->update_record('tool_coursewrangler_action', $action);
         return $upated_action;
     }

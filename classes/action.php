@@ -45,5 +45,15 @@ class action {
         return true;
     }
 
-    
+    static function find_action(int $course_id, int $report_id) {
+        if ($course_id < 1 || $report_id < 1) {
+            return null;
+        }
+        global $DB;
+        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id, 'report_id' => $report_id], '*');
+        if ($action == false) {
+            return false;
+        }
+        return new action($action->id);
+    }
 }
