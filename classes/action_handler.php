@@ -35,7 +35,7 @@ class action_handler
             return null;
         }
         global $DB;
-        $this->report =$DB->get_record('tool_coursewrangler_report', ['id' => $report_id], '*', MUST_EXIST);
+        $this->report = $DB->get_record('tool_coursewrangler_report', ['id' => $report_id], '*', MUST_EXIST);
         if ($this->report === false) {
             return null;
         }

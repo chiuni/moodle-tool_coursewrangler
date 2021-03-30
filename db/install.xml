@@ -74,6 +74,7 @@
         <FIELD NAME="report_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="coursemt_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="status" TYPE="char" LENGTH="250" NOTNULL="true" SEQUENCE="false" COMMENT="The status of the action taken."/>
+        <FIELD NAME="lastupdated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

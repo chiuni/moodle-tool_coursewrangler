@@ -15,16 +15,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * This file is an Action class for managing courses.
+ * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
+namespace tool_coursewrangler;
 
-$plugin->version = 2021032503;
-$plugin->requires = 2019111800;
-$plugin->component = 'tool_coursewrangler';
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '0.0.1';
+class action {
+    function __construct(int $id = 0) {
+        if ($id < 1) {
+            $this->id_not_valid = true;
+            return null;
+        }
+        global $DB;
+        $action_class = $DB->get_record('tool_coursewrangler_report', ['id' => $id], '*', MUST_EXIST);
+        if (!$action_class) {
+            $this->action_not_found = true;
+            return false;
+        }
+        foreach ($action_class as $key => $value) {
+            $this->$key = $value;
+        }
+
+        return true;
+    }
+
+    
+}
