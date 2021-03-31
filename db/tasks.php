@@ -27,12 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [
-        'classname' => 'tool_coursewrangler\task\cache_purge',
+        'classname' => 'tool_coursewrangler\task\wrangle',
         'blocking' => 0,
         'minute' => '00',
-        'hour' => '2-5',
-        'day' => '*/2',
+        'hour' => '2-5', // Between 2 and 5 AM.
+        'day' => '*',
         'month' => '*',
-        'dayofweek' => '*',
+        'dayofweek' => '0', // Every sunday.
     ],
 ];
