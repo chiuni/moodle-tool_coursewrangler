@@ -35,4 +35,13 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '0', // Every sunday.
     ],
+    [
+        'classname' => 'tool_coursewrangler\task\score',
+        'blocking' => 0,
+        'minute' => '00',
+        'hour' => '2-5', // Between 2 and 5 AM.
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*', // Every day.
+    ],
 ];

@@ -119,4 +119,5 @@ $string['action_form_scheduledelete'] = 'Schedule Deletion';
 $string['action_form_resetaction'] = 'Reset Action';
 
 // tasks
-$string['task_wrangle'] = 'Wrangle';
+$string['task_wrangle'] = 'Wrangle Task';
+$string['task_score'] = 'Score Task';
