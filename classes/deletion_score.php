@@ -123,7 +123,7 @@ class deletion_score
          * #R7
          * Course Low Enrolment Rule
          */
-        $rules['course_lowenrolment'] = new rules\course_lowenrolment($course->course_students->total_enrol_count, $this->low_enrolments_flag);
+        $rules['course_lowenrolment'] = new rules\course_lowenrolment($course->total_enrol_count, $this->low_enrolments_flag);
 
         /** 
          * #R8

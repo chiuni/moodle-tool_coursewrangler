@@ -23,8 +23,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021032503;
+$plugin->version = 2021040700;
 $plugin->requires = 2019111800;
 $plugin->component = 'tool_coursewrangler';
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '0.0.1';
+$plugin->release = '0.0.2';

@@ -26,8 +26,6 @@ $action = optional_param('action', null, PARAM_RAW);
 $rows_selected = optional_param('rows_selected', null, PARAM_RAW);
 $rows_selected = is_array($rows_selected) ? $rows_selected : array_filter( (array) explode(',', $rows_selected) );
 
-$report_id = optional_param('report_id', null, PARAM_INT);
-$report_id = $report_id ?? $report_form_data_json->report_id ?? null;
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
 $category_ids = is_array($category_ids) ? $category_ids : array_filter( (array) explode(',', $category_ids) );
 $category_ids = empty($category_ids) ? $report_form_data_json->category_ids : $category_ids;
@@ -84,11 +82,6 @@ $course_timeaccess_notset = $course_timeaccess_notset ?? $report_form_data_json-
 $display_action_data = optional_param('display_action_data', null, PARAM_BOOL);
 $display_action_data = $display_action_data ?? $report_form_data_json->display_action_data ?? false;
 
-if ($report_id === null) {
-    $report = $DB->get_record_sql("SELECT * FROM {tool_coursewrangler_report} ORDER BY timecreated DESC", [],IGNORE_MULTIPLE);
-    $report_id = $report->id;
-}
-
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
 $PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/table.php'));
@@ -101,7 +94,6 @@ $PAGE->navbar->add(get_string('table_tablename', 'tool_coursewrangler'), new moo
 echo $OUTPUT->header();
 
 $options_array = [];
-$options_array['report_id'] = $report_id;
 $options_array['category_ids'] = $category_ids ?? [];
 $options_array['course_timecreated_after'] = $course_timecreated_after > 0 ? $course_timecreated_after : null;
 $options_array['course_timecreated_before'] = $course_timecreated_before > 0 ? $course_timecreated_before : null;
@@ -148,7 +140,6 @@ if ($mform->is_cancelled()) {
     exit;
 } elseif ($fromform = $mform->get_data()) {
     cwt_debugger($fromform, 'From form');
-    $report_id = $fromform->report_id ?? $report_id;
     //In this case you process validated data. $mform->get_data() returns data posted in form.
 } else {
     cwt_debugger(null, 'Else');
@@ -164,26 +155,28 @@ $table = new table\report_table(
 );
 $table->out(50, false);
 
+cwt_debugger($table->sql, 'Table');
+
 if ($display_action_data == true) {
     $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
     $aform->display();
     if ($fromform = $aform->get_data()) {
         cwt_debugger($fromform, 'From second form');
-        $report_id = $fromform->report_id ?? $report_id;
         //In this case you process validated data. $mform->get_data() returns data posted in form.
         echo 'submitted?<br>';
         if (isset($rows_selected) && isset($action)) {
             echo 'is set';
-            $form_handler = new action_handler($report_id);
+            $form_handler = new action_handler();
             switch ($action) {
                 case 'delete':
-                    foreach ($rows_selected as $course_id) {
-                        $form_handler->schedule_delete($course_id);
+                    foreach ($rows_selected as $row_course_id) {
+                        echo($row_course_id);
+                        $form_handler->schedule_delete($row_course_id);
                     }
                     break;
                 case 'reset':
-                    foreach ($rows_selected as $course_id) {
-                        $form_handler->hard_reset($course_id);
+                    foreach ($rows_selected as $row_course_id) {
+                        $form_handler->hard_reset($row_course_id);
                     }
                     break;
                 default:

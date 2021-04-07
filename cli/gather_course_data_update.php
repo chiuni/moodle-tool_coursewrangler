@@ -27,6 +27,7 @@
 namespace tool_coursewrangler;
 
 use context_system;
+use stdClass;
 
 define('CLI_SCRIPT', true);
 
@@ -36,23 +37,29 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/../locallib.php');
 $context = context_system::instance();
 
-echo 'tool_coursewrangler ::: Generating score entries script' . PHP_EOL;
-
-$data = $DB->get_records('tool_coursewrangler_metrics');
-$scorekeeper = new deletion_score($data);
-$courses = $scorekeeper->get_courses();
-
-$scores = [];
-foreach ($courses as $metrics) {
-    $score_data = [
-        'metrics_id' => $metrics->id,
-        'timemodified' => time(),
-        'raw' => $metrics->score->raw,
-        'rounded' => $metrics->score->rounded,
-        'percentage' => $metrics->score->percentage,
-    ];
-    $DB->insert_record('tool_coursewrangler_score', $score_data, true) ?? false;
+$start_time = time();
+$start_time_formatted = date('r', $start_time);
+echo PHP_EOL .'tool_coursewrangler ::: Gather Course Data PHP Script' . PHP_EOL;
+echo '=====================================================' . PHP_EOL;
+echo '=============== Starting DB Queries =================' . PHP_EOL;
+echo '=====================================================' . PHP_EOL;
+echo "Start time: $start_time_formatted" . PHP_EOL . PHP_EOL;
+$course_data = find_relevant_course_data_lite();
+$metrics_data = $DB->get_records('tool_coursewrangler_metrics');
+$db_end_time = time();
+echo 'Queries took a total of: ' . ($db_end_time - $start_time) . ' seconds' . PHP_EOL;
+echo 'Creating metrics data.' . PHP_EOL;
+print_r($course_data);
+foreach ($course_data as $data) {
+    $data->metrics_updated = time();
+    $entry_id = $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
+    // echo $data->course_fullname . PHP_EOL;
+    // echo $entry_id . PHP_EOL;
 }
-$time = time();
-// file_put_contents("./score_$time.json", json_encode($courses));
+$script_end_time = time();
+exit;
+$score_handler = new deletion_score($course_data);
+$courses = $score_handler->get_courses();
 echo 'End of script.' . PHP_EOL;
+echo 'Triggering generate_score.php...' . PHP_EOL;
+shell_exec("php7.4 ./generate_score.php");

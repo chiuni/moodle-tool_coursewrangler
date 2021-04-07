@@ -59,8 +59,6 @@ class report_table extends table_sql implements renderable
         // Define configs.
         $this->define_table_configs();
 
-        $this->report_id = $params['report_id'];
-
         // Optional params setting.
         $this->category_ids = $params['category_ids'] ?? [];
         $this->course_timecreated_after = $params['course_timecreated_after'] ?? null;
@@ -167,21 +165,23 @@ class report_table extends table_sql implements renderable
 
     /**
      * Define table SQL.
+     * 
+     * Table definitions:
+     *     metrics table => cwc
+     *     score table => cws
+     *     action table => act
      */
     protected function define_table_sql() {
-        if (!isset($this->report_id)) {
-            return false;
-        }
         global $DB;
-        $what_sql = "*";
-        $where_sql = "cwc.report_id=$this->report_id";
-        $from_sql = "{tool_coursewrangler_coursemt} AS cwc";
-        $join_score_sql = " JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.coursemt_id ";
+        $what_sql = "cwc.*, cws.*";
+        $where_sql = "1=1";
+        $from_sql = "{tool_coursewrangler_metrics} AS cwc";
+        $join_score_sql = " JOIN {tool_coursewrangler_score} AS cws ON cwc.id=cws.metrics_id ";
 
         $join_action_data = '';
 
         if ($this->display_action_data) {
-            $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS act ON cwc.report_id=act.report_id AND cwc.course_id=act.course_id ";
+            $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS act ON cwc.course_id=act.course_id ";
             $what_sql = "cwc.*, cws.*, act.status, act.action";
         }
 
@@ -240,9 +240,9 @@ class report_table extends table_sql implements renderable
                 $where_sql .= " AND cwc.course_timeaccess < $this->course_timeaccess_before";
             }
         }
-
+        // To do: What the hell is this?
         // check score has been calculated
-        $score_check = $DB->get_records_sql("SELECT * FROM $from_sql $join_score_sql WHERE report_id=:report_id", ['report_id' => $this->report_id]);
+        $score_check = $DB->get_records_sql("SELECT * FROM $from_sql $join_score_sql WHERE 1=1", []);
         if (count($score_check) < 1) {
             // if score not found, change query
             $join_score_sql = '';
@@ -273,8 +273,8 @@ class report_table extends table_sql implements renderable
                 if (strlen($ids_string) < 1) {
                     $and_categories_sql = '';
                 }
-                $this->set_sql($what_sql, "$from_sql $full_join_score_sql", "$where_sql $and_categories_sql");
-                return true;
+                $this->debug_sql = "$what_sql $from_sql $full_join_score_sql $where_sql $and_categories_sql";
+                $where_sql = "$where_sql $and_categories_sql";
             }
         }
         $this->set_sql($what_sql, "$from_sql $full_join_score_sql", $where_sql);
@@ -319,7 +319,6 @@ class report_table extends table_sql implements renderable
      */
     function col_course_fullname($values) : string {
         $url_params = [
-            'report_id' => $values->report_id,
             'course_id' => $values->course_id,
             'return_link' => $this->return_link
         ];
@@ -327,7 +326,7 @@ class report_table extends table_sql implements renderable
         $link = html_writer::link($url, $values->course_fullname);
         return $link;
 
-        $url = new moodle_url('/admin/tool/coursewrangler/report_details.php?course_id=' . $values->course_id . '&report_id=' . $values->report_id, []);
+        $url = new moodle_url('/admin/tool/coursewrangler/report_details.php?course_id=' . $values->course_id, []);
         $link = html_writer::link($url, $values->course_fullname);
         return $link;
     }
@@ -374,14 +373,6 @@ class report_table extends table_sql implements renderable
             'name' => "selectedcourseids",
             'value' => $course_id]
         );
-        // $input = \html_writer::tag(
-        //     'input',
-        //     '',
-        //     ['type' => 'hidden',
-        //     'id' => "selectcourse_$course_id",
-        //     'name' => "courseid_$course_id",
-        //     'value' => $course_id]
-        // ); 
         return $label . $checkbox;
     }
 

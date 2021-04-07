@@ -36,7 +36,6 @@ $context = context_system::instance();
 
 require_capability('moodle/site:configview', $context);
 
-$report_id = required_param('report_id', PARAM_INT);
 $course_id = required_param('course_id', PARAM_INT);
 
 $return_link = optional_param('return_link', null, PARAM_URL);
@@ -48,35 +47,26 @@ $PAGE->set_title(get_string('report_details_pageheader', 'tool_coursewrangler'))
 $PAGE->set_pagelayout('admin');
 
 global $DB;
-$report = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_report} WHERE id=:id', ['id' => $report_id]);
-if ($report == false) {
-    $course = false;
-}
-if ($report != false) {
-    $course = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_coursemt} WHERE report_id=:report_id AND course_id=:course_id', ['report_id' => $report_id, 'course_id' => $course_id]);
-    // creating course link
-    $course_url = new moodle_url('/course/view.php?id=' . $course->course_id, []);
-    $course->course_title_link = \html_writer::link($course_url, $course->course_shortname . ': ' . $course->course_fullname);
-    // Processing dates into human readable format
-    $course->course_timecreated = ($course->course_timecreated == 0) ?  '-' : userdate($course->course_timecreated);
-    $course->course_timemodified = ($course->course_timemodified == 0) ?  '-' : userdate($course->course_timemodified);
-    $course->course_startdate = ($course->course_startdate == 0) ?  '-' : userdate($course->course_startdate);
-    $course->course_enddate = ($course->course_enddate == 0) ?  '-' : userdate($course->course_enddate);
-    $course->course_timeaccess = ($course->course_timeaccess == 0) ?  '-' : userdate($course->course_timeaccess);
-    $course->course_lastenrolment = ($course->course_lastenrolment == 0) ?  '-' : userdate($course->course_lastenrolment);
-    $course->activity_lastmodified = ($course->activity_lastmodified == 0) ?  '-' : userdate($course->activity_lastmodified);
-    // Processing visible and parent
-    $course->course_visible = ($course->course_visible == 0) ? 'No' : 'Yes';
-    $course->course_isparent = ($course->course_isparent == 0) ? 'No' : 'Yes';
-    // Enrolment info
-    $course->enrol = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_enrolmt} WHERE id=:coursemt_id ', ['coursemt_id' => $course->id]);
-    $course->report_date = userdate($report->timecreated);
-    $course->score = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_score} WHERE coursemt_id=:coursemt_id ', ['coursemt_id' => $course->id]);
-    if ($course->score->timemodified == 0) {
-        $course->score = null;
-    } else {
-        $course->score->timemodified = userdate($course->score->timemodified);
-    }
+$course = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_metrics} WHERE course_id=:course_id', ['course_id' => $course_id]);
+// creating course link
+$course_url = new moodle_url('/course/view.php?id=' . $course->course_id, []);
+$course->course_title_link = \html_writer::link($course_url, $course->course_shortname . ': ' . $course->course_fullname);
+// Processing dates into human readable format
+$course->course_timecreated = ($course->course_timecreated == 0) ?  '-' : userdate($course->course_timecreated);
+$course->course_timemodified = ($course->course_timemodified == 0) ?  '-' : userdate($course->course_timemodified);
+$course->course_startdate = ($course->course_startdate == 0) ?  '-' : userdate($course->course_startdate);
+$course->course_enddate = ($course->course_enddate == 0) ?  '-' : userdate($course->course_enddate);
+$course->course_timeaccess = ($course->course_timeaccess == 0) ?  '-' : userdate($course->course_timeaccess);
+$course->course_lastenrolment = ($course->course_lastenrolment == 0) ?  '-' : userdate($course->course_lastenrolment);
+$course->activity_lastmodified = ($course->activity_lastmodified == 0) ?  '-' : userdate($course->activity_lastmodified);
+// Processing visible and parent
+$course->course_visible = ($course->course_visible == 0) ? 'No' : 'Yes';
+$course->course_isparent = ($course->course_isparent == 0) ? 'No' : 'Yes';
+$course->score = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_score} WHERE metrics_id=:metrics_id ', ['metrics_id' => $course->id]);
+if ($course->score->timemodified == 0) {
+    $course->score = null;
+} else {
+    $course->score->timemodified = userdate($course->score->timemodified);
 }
 
 if ($course == false) {

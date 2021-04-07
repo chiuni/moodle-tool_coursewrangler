@@ -24,3 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+function xmldb_tool_coursewrangler_uninstall() {
+    global $DB;
+}

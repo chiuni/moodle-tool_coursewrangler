@@ -45,20 +45,7 @@ class report_form extends moodleform
         $mform = $this->_form; // Don't forget the underscore!
         $customdata = $this->_customdata;
 
-        // autocomplete search box for reports
-        $reports = $DB->get_records('tool_coursewrangler_report', [], 'timecreated DESC');
-        $report_areanames = array();
-        foreach ($reports as $id => $report) {
-            $report->timecreated = userdate($report->timecreated);
-            $report_areanames[$id] = $report->id . ' - ' . $report->timecreated . ' - ' . ucfirst($report->type) ;
-        }
-        $report_options = array(
-            'multiple' => false,
-            'noselectionstring' => get_string('report_form_filter_reports_noselectionstring', 'tool_coursewrangler'),
-        );
         // HEADER FILTER OPTIONS
-
-        $mform->addElement('autocomplete', 'report_id', get_string('report_form_filter_reports', 'tool_coursewrangler'), $report_areanames, $report_options);
 
         // autocomplete search box for categories
         $categories = $DB->get_records('course_categories', ['parent' => 0], 'name ASC');

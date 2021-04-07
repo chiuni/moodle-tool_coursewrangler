@@ -30,17 +30,9 @@ use stdClass;
 
 class action_handler
 {
-    function __construct(int $report_id) {
-        if ($report_id < 1) {
-            return null;
-        }
+    function __construct() {
         global $DB;
-        $this->report = $DB->get_record('tool_coursewrangler_report', ['id' => $report_id], '*', MUST_EXIST);
-        if ($this->report === false) {
-            return null;
-        }
-        $this->report_id = $report_id;
-        $this->actions = $DB->get_records('tool_coursewrangler_action', ['report_id' => $this->report_id]);
+        $this->actions = $DB->get_records('tool_coursewrangler_action', []);
     }
 
     public function schedule_delete(int $course_id) {
@@ -54,11 +46,10 @@ class action_handler
         //     // Course was not found.
         //     return false;
         // }
-        $action = action::find_action($course_id, $this->report_id);
+        $action = action::find_action($course_id);
         if ($action == false) {
             $action = null;
             $action = new stdClass();
-            $action->report_id = $this->report_id;
             $action->course_id = $course_id;
             $coursemt = $DB->get_record('tool_coursewrangler_coursemt', ['course_id' => $course_id, 'report_id' => $this->report_id], '*', MUST_EXIST);
             $action->coursemt_id = $coursemt->id;

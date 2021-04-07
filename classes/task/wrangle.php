@@ -26,6 +26,8 @@
 
 namespace tool_coursewrangler\task;
 
+use tool_coursewrangler\action;
+
 defined('MOODLE_INTERNAL') || die();
 
 class wrangle extends \core\task\scheduled_task {
@@ -43,16 +45,36 @@ class wrangle extends \core\task\scheduled_task {
      * Execute the task.
      */
     public function execute() {
+        global $DB;
         mtrace("Starting tool_coursewrangler wrangle task");
-        $cache = \cache::make('tool_coursewrangler', 'website_previews');
-        $websitepreviews = $cache->get('website_previews') ?? null;
-        foreach ($websitepreviews as $hash => $preview) {
-            if ($preview['ttl'] < time()) {
-                mtrace("unsetting cache for website preview: " . $preview['url']);
-                unset($websitepreviews[$hash]);
+        $scheduled_actions = $DB->get_records('tool_coursewrangler_action', ['status' => 'scheduled']);
+        $emailed_actions = $DB->get_records('tool_coursewrangler_action', ['status' => 'emailed']);
+        $hidden_actions = $DB->get_records('tool_coursewrangler_action', ['status' => 'hidden']);
+        $waiting_actions = $DB->get_records('tool_coursewrangler_action', ['status' => 'waiting']);
+        foreach ($waiting_actions as $action) {
+            mtrace("Processing waiting action for $action->id:");
+            mtrace("Deleting course $action->course_id:");
+            $action_object = new action($action->id);
+            $delete_status = $action_object->delete_course();
+            if ($delete_status) {
+                // Log in database the success?
+                mtrace("Delete successfull.");
+            } else {
+                // Log in database the failure.
             }
         }
-        $cache->set('website_previews', $websitepreviews);
-        mtrace("Finished filter_thefeed cache_purge task");
+        foreach($hidden_actions as $action) {
+            mtrace("Processing hidden action for $action->id:");
+            mtrace("Switching to waiting...");
+            $action_object = new action($action->id);
+            $wait_status = $action_object->wait();
+            if ($wait_status) {
+                // Log in database the success?
+                mtrace("Delete successfull.");
+            } else {
+                // Log in database the failure.
+            }
+        }
+        mtrace("Finished tool_coursewrangler wrangle task");
     }
 }

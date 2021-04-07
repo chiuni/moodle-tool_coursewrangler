@@ -37,7 +37,8 @@ require_once(__DIR__ . '/../locallib.php');
 $context = context_system::instance();
 
 echo 'tool_coursewrangler ::: Produce Score JSON script' . PHP_EOL;
-$data = fetch_report_data_by_id(1);
+
+$data = $DB->get_records('tool_coursewrangler_metrics');
 $score_handler = new deletion_score($data);
 $courses = $score_handler->get_courses();
 // Sorts descending by raw score

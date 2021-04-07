@@ -33,7 +33,7 @@ class action {
             return null;
         }
         global $DB;
-        $action_class = $DB->get_record('tool_coursewrangler_report', ['id' => $id], '*', MUST_EXIST);
+        $action_class = $DB->get_record('tool_coursewrangler_action', ['id' => $id], '*', MUST_EXIST);
         if (!$action_class) {
             $this->action_not_found = true;
             return false;
@@ -45,15 +45,54 @@ class action {
         return true;
     }
 
-    static function find_action(int $course_id, int $report_id) {
-        if ($course_id < 1 || $report_id < 1) {
+    static function find_action(int $course_id) {
+        if ($course_id < 1) {
             return null;
         }
         global $DB;
-        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id, 'report_id' => $report_id], '*');
+        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id], '*');
         if ($action == false) {
             return false;
         }
         return new action($action->id);
+    }
+
+    function delete_course() { 
+        if (!isset($this->course_id) || !is_integer((int) $this->course_id) || $this->course_id < 1) {
+            return false;
+        }
+        // Double check course exits:
+        $course = get_course($this->course_id, false);
+        if ($course == false) {
+            return false;
+        }
+        \core_php_time_limit::raise();
+        // We do this here because it spits out feedback as it goes.
+        $delete_status = delete_course($this->course_id);
+        if ($delete_status) {
+            global $DB;
+            $this->status = 'deleted';
+            $this->lastupdated = time();
+            $DB->update_record('tool_coursewrangler_action', $this);
+        }
+        return $delete_status;
+    }
+
+    function wait() {
+        if ($this->status != 'hidden') {
+            // Log here that it must be hidden before waiting.
+            return false;
+        }
+        global $DB;
+        $this->status = 'waiting';
+        $DB->update_record('tool_coursewrangler_action', $this);
+    }
+
+    function hide_course() {
+        if (!isset($this->course_id) || !is_integer((int) $this->course_id) || $this->course_id < 1) {
+            return false;
+        }
+        global $DB;
+
     }
 }

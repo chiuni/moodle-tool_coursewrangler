@@ -91,27 +91,21 @@ function find_relevant_course_data_lite()
         $result->course_isparent = in_array($result->course_id, $parent_course_ids) ? 1 : 0; // could we count this?
         $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? 0;
         $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? 0;
-        $result->course_students = new stdClass;
-        $result->course_students = find_course_students($result->course_id);
+        $course_students = find_course_students($result->course_id);
+        foreach ($course_students as $key => $value) {
+            $result->$key = $value;
+        }
     }
     return $course_query;
 }
-
-function fetch_report_data_by_id(int $id)
+/**
+ * @deprecated
+ */
+function fetch_report_data()
 {
     global $DB;
-    $report = $DB->get_record_sql("SELECT timecreated, type FROM {tool_coursewrangler_report} WHERE id = :id;", ['id' => $id]);
-    if ($report == false) {
-        // no report found
-        return false;
-    }
-    $report_data = $DB->get_records_sql(
-        "SELECT cmt.*, emt.*  FROM {tool_coursewrangler_coursemt} AS cmt 
-                        JOIN {tool_coursewrangler_enrolmt} AS emt 
-                            ON cmt.enrolmt_id=emt.id 
-                        WHERE report_id = :reportid;",
-        ['reportid' => $id]
-    );
+    $report_data = $DB->get_records('tool_coursewrangler_metrics');
+    return $report_data;
     // Formatting data to match find_relevant_course_data_lite
     foreach ($report_data as $course) {
         $course->course_students = new stdClass;
@@ -130,7 +124,7 @@ function fetch_report_data_by_id(int $id)
         $course->course_students->other_enrol_count = $course->suspended_enrol_count;
         unset($course->suspended_enrol_count);
     }
-    return $report_data;
+    
 }
 
 function find_meta_parents()
@@ -276,7 +270,9 @@ function find_course_last_access()
         ]
     );
 }
-
+/**
+ * @deprecated
+ */
 function time_ago(int $timestamp)
 {
     $string_map = [
@@ -309,6 +305,9 @@ function moodletime_to_unixtimestamp(array $timearray)
     return (strtotime($timestring) ?? 0);
 }
 
+/**
+ * Temporary function
+ */
 function cwt_debugger($data, string $leadingtext = 'Debug') {
     $debugmode = get_config('tool_coursewrangler', 'debugmode');
     // To do: check if Moodle is in debug mode.
