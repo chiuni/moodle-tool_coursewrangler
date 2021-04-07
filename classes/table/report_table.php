@@ -40,7 +40,6 @@ require_once($CFG->libdir . '/tablelib.php');
  */
 class report_table extends table_sql implements renderable
 {
-
     /**
      * Sets up the table.
      */
@@ -81,7 +80,6 @@ class report_table extends table_sql implements renderable
         $this->define_baseurl($baseurl);
         $this->define_table_sql();
     }
-
     /**
      * Setup the headers for the table.
      */
@@ -138,7 +136,6 @@ class report_table extends table_sql implements renderable
         $this->define_columns(array_keys($cols));
         $this->define_headers(array_values($cols));
     }
-
     /**
      * Define table configs.
      */
@@ -147,7 +144,6 @@ class report_table extends table_sql implements renderable
         $this->no_sorting('row_select');
         $this->pageable(true);
     }
-
     /**
      * Override the table show_hide_link to not show for select column.
      * Taken from 'assign/gradingtable.php' but slightly modified.
@@ -162,14 +158,19 @@ class report_table extends table_sql implements renderable
         }
         return '';
     }
-
     /**
      * Define table SQL.
      */
     protected function define_table_sql() {
         global $DB;
-        $what_sql = "metrics.*, score.*";
-        $where_sql = "1=1";
+        // Make sure that metrics.course_id is ALWAYS first item in fields section of the query.
+        $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_module_id, metrics.course_shortname, metrics.course_fullname, metrics.course_idnumber, metrics.course_timecreated, metrics.course_timemodified, metrics.course_startdate, metrics.course_enddate, metrics.course_visible, metrics.course_isparent, metrics.course_modulescount, metrics.course_timeaccess, metrics.course_lastenrolment, metrics.activity_type, metrics.activity_lastmodified, metrics.total_enrol_count, metrics.active_enrol_count, metrics.self_enrol_count, metrics.manual_enrol_count, metrics.meta_enrol_count, metrics.other_enrol_count, metrics.suspended_enrol_count, metrics.metrics_updated";
+        $what_score_sql = "score.id, score.metrics_id, score.timemodified, score.raw, score.rounded, score.percentage";
+        $what_sql = "$what_metrics_sql, $what_score_sql";
+        // Default where statement should at least have one statement,
+        // so we use true as the initial statement to avoid Moodle
+        // errors and other undesired behaviour.
+        $where_sql = "true";
         $from_sql = "{tool_coursewrangler_metrics} AS metrics";
         $join_score_sql = " LEFT JOIN {tool_coursewrangler_score} AS score ON metrics.id=score.metrics_id ";
 
@@ -177,14 +178,15 @@ class report_table extends table_sql implements renderable
 
         if ($this->display_action_data) {
             $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS action ON metrics.course_id=action.course_id ";
-            $what_sql = "metrics.*, score.*, action.status, action.action";
+            $what_sql .= ", action.id, action.action, action.course_id, action.status, action.lastupdated";
+            $where_sql = "action.id != 0";
         }
 
         $full_join_score_sql = $join_score_sql . $join_action_data;
 
-        // date sql options
+        // Date SQL options.
         if ($this->course_timecreated_notset) {
-            // IF NOTSET option for COURSE_TIMECREATED is set, filter all missing time created
+            // IF NOTSET option for COURSE_TIMECREATED is set, filter all missing time created.
             $where_sql .= " AND metrics.course_timecreated = 0";
         } else {
             if (isset($this->course_timecreated_after)) {
@@ -197,7 +199,7 @@ class report_table extends table_sql implements renderable
             }
         }
         if ($this->course_startdate_notset) {
-            // IF NOTSET option for COURSE_STARTDATE is set, filter all missing time created
+            // IF NOTSET option for COURSE_STARTDATE is set, filter all missing time created.
             $where_sql .= " AND metrics.course_startdate = 0";
         } else {
             if (isset($this->course_startdate_after)) {
@@ -210,7 +212,7 @@ class report_table extends table_sql implements renderable
             }
         }
         if ($this->course_enddate_notset) {
-            // IF NOTSET option for COURSE_ENDDATE is set, filter all missing time created
+            // IF NOTSET option for COURSE_ENDDATE is set, filter all missing time created.
             $where_sql .= " AND metrics.course_enddate = 0";
         } else {
             if (isset($this->course_enddate_after)) {
@@ -223,7 +225,7 @@ class report_table extends table_sql implements renderable
             }
         }
         if ($this->course_timeaccess_notset) {
-            // IF NOTSET option for COURSE_TIMEACCESS is set, filter all missing time created
+            // IF NOTSET option for COURSE_TIMEACCESS is set, filter all missing time created.
             $where_sql .= " AND metrics.course_timeaccess = 0";
         } else {
             if (isset($this->course_timeaccess_after)) {
@@ -236,13 +238,13 @@ class report_table extends table_sql implements renderable
             }
         }
         // To do: What the hell is this?
-        // check score has been calculated
+        // Check score has been calculated.
         $score_check = $DB->get_records_sql("SELECT * FROM $from_sql $join_score_sql WHERE 1=1", []);
         if (count($score_check) < 1) {
-            // if score not found, change query
+            // If score not found, change query.
             $join_score_sql = '';
         }
-        // check categories exists
+        // Check categories exists.
         if (count($this->category_ids) > 0) {
             $categories = [];
             foreach ($this->category_ids as $key => $category_id) {
@@ -256,7 +258,7 @@ class report_table extends table_sql implements renderable
                 $id_courses_array = [];
                 foreach ($categories as $id => $category) {
                     if ($category != false) {
-                        // Category found, exists
+                        // Category found, exists.
                         $id_courses = $DB->get_records_sql("SELECT c.id FROM {course} AS c JOIN {course_categories} AS cc ON c.category=cc.id WHERE cc.id=:id;", ['id' => $id]);
                         foreach ($id_courses as $course) {
                             $id_courses_array[] = $course->id;
@@ -274,9 +276,8 @@ class report_table extends table_sql implements renderable
         }
         $this->set_sql($what_sql, "$from_sql $full_join_score_sql", $where_sql);
     }
-
     /**
-     * Processing dates for table
+     * Processing dates for table.
      */
     function col_course_timecreated($values) : string {
         return ($values->course_timecreated == 0) ? '-' : userdate($values->course_timecreated);
@@ -300,7 +301,7 @@ class report_table extends table_sql implements renderable
         return ($values->activity_lastmodified == 0) ? '-' : userdate($values->activity_lastmodified);
     }
     /**
-     * Processing visible and parent cols
+     * Processing visible and parent cols.
      */
     function col_course_visible($values) : string {
         return ($values->course_visible ? 'Yes' : 'No');
@@ -309,8 +310,8 @@ class report_table extends table_sql implements renderable
         return ($values->course_isparent ? 'Yes' : 'No');
     }
     /**
-     * Turning course name into link for details area
-     * TODO: Improve this into a link that goes to a details page within coursewrangler
+     * Turning course name into link for details area.
+     * TODO: Improve this into a link that goes to a details page within coursewrangler?
      */
     function col_course_fullname($values) : string {
         $url_params = [
@@ -326,28 +327,26 @@ class report_table extends table_sql implements renderable
         return $link;
     }
     /**
-     * Creating the score when required
+     * Creating the score when required.
      */
     function col_percentage($values) : string {
         $display_value = $values->percentage ? $values->percentage . '%' : get_string('table_percentage_notavailable', 'tool_coursewrangler');
         return ($display_value);
     }
-
     /**
-     * Creating the action col
+     * Creating the action col.
      */
     function col_action($values) : string {
         $display_value = $values->action ?? get_string('table_value_notavailable', 'tool_coursewrangler');
         return ($display_value);
     }
     /**
-     * Creating the action status col
+     * Creating the action status col.
      */
     function col_status($values) : string {
         $display_value = $values->status ?? get_string('table_value_notavailable', 'tool_coursewrangler');
         return ($display_value);
     }
-
     /**
      * Creating the select col.
      */
@@ -370,5 +369,4 @@ class report_table extends table_sql implements renderable
         );
         return $label . $checkbox;
     }
-
 }
