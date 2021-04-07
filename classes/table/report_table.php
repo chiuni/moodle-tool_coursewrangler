@@ -177,9 +177,9 @@ class report_table extends table_sql implements renderable
         $join_action_data = '';
 
         if ($this->display_action_data) {
-            $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS action ON metrics.course_id=action.course_id ";
-            $what_sql .= ", action.id, action.action, action.course_id, action.status, action.lastupdated";
-            $where_sql = "action.id != 0";
+            $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.course_id=act.course_id ";
+            // Make sure not to double select course_id here, otherwise ambiguous error appears.
+            $what_sql .= ", act.id, act.action, act.status, act.lastupdated";
         }
 
         $full_join_score_sql = $join_score_sql . $join_action_data;
