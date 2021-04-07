@@ -27,8 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 
 function xmldb_tool_coursewrangler_install() {
     // This install script generates the initial metrics load.
+    $eol = "\n";
     if (!CLI_SCRIPT) {
-        $eol = '<br>'; 
+        $eol = "<br>"; 
     }
     $format = "r";
     $start_time = time();
