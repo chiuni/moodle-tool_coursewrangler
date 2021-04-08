@@ -67,6 +67,7 @@ $string['button_generatereport'] = 'Generate Report';
 // settings
 $string['settingspage_main'] = 'Main Settings';
 $string['settingspage_dev'] = 'Developer Settings';
+$string['settingspage_tasks'] = 'Scheduled Task Settings';
 $string['settings_timeunit'] = 'Time Unit';
 $string['settings_timeunit_desc'] = 'The unit of time used for calculating points, where one time unit equals one point.';
 $string['settings_debugmode'] = 'Debug Mode';
@@ -77,6 +78,16 @@ $string['settings_lowenrolmentsflag'] = 'Low Enrolments Flag';
 $string['settings_lowenrolmentsflag_desc'] = 'The minimum number of enrolments before penalising a course in points.';
 $string['settings_scorelimiter'] = 'Score Limiter';
 $string['settings_scorelimiter_desc'] = 'The limiter used in calculations for percentages and score limiting (advanced).';
+$string['settings_minimumage'] = 'Minimum Course Age';
+$string['settings_minimumage_desc'] = 'The minimum age a course must be to be considered for deletion.';
+$string['settings_scheduledduration'] = 'Scheduled Phase Task Length.';
+$string['settings_scheduledduration_desc'] = 'The time it takes for the "scheduled" task to be executed.';
+$string['settings_emailedduration'] = 'Emailed Phase Task Length.';
+$string['settings_emailedduration_desc'] = 'The time it takes for the "emailed" task to be executed.';
+$string['settings_hiddenduration'] = 'Hidden Phase Task Length.';
+$string['settings_hiddenduration_desc'] = 'The time it takes for the "hidden" task to be executed.';
+$string['settings_waitingduration'] = 'Waiting Phase Task Length.';
+$string['settings_waitingduration_desc'] = 'The time it takes for the "waiting" task to be executed.';
 
 // report_details page
 $string['report_details_pageheader'] = 'Report Details';

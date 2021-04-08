@@ -86,8 +86,52 @@ if ($hassiteconfig) {
         $large_numbers
     ));
 
+    $main_page->add(new admin_setting_configduration(
+        'tool_coursewrangler/minimumage',
+        get_string('settings_minimumage', 'tool_coursewrangler'),
+        get_string('settings_minimumage_desc', 'tool_coursewrangler'),
+        52 * WEEKSECS, 
+        WEEKSECS
+    ));
+
     $settings->add($main_page);
     
+    $tasks_page = new admin_settingpage('tool_coursewrangler_tasks', get_string('settingspage_tasks', 'tool_coursewrangler'));
+
+    $tasks_page->add(new admin_setting_configduration(
+        'tool_coursewrangler/scheduledduration',
+        get_string('settings_scheduledduration', 'tool_coursewrangler'),
+        get_string('settings_scheduledduration_desc', 'tool_coursewrangler'),
+        7 * DAYSECS, 
+        DAYSECS
+    ));
+
+    $tasks_page->add(new admin_setting_configduration(
+        'tool_coursewrangler/emailedduration',
+        get_string('settings_emailedduration', 'tool_coursewrangler'),
+        get_string('settings_emailedduration_desc', 'tool_coursewrangler'),
+        7 * DAYSECS, 
+        DAYSECS
+    ));
+
+    $tasks_page->add(new admin_setting_configduration(
+        'tool_coursewrangler/hiddenduration',
+        get_string('settings_hiddenduration', 'tool_coursewrangler'),
+        get_string('settings_hiddenduration_desc', 'tool_coursewrangler'),
+        7 * DAYSECS, 
+        DAYSECS
+    ));
+
+    $tasks_page->add(new admin_setting_configduration(
+        'tool_coursewrangler/waitingduration',
+        get_string('settings_waitingduration', 'tool_coursewrangler'),
+        get_string('settings_waitingduration_desc', 'tool_coursewrangler'),
+        7 * DAYSECS, 
+        DAYSECS
+    ));
+    
+    $settings->add($tasks_page);
+
     $dev_page = new admin_settingpage('tool_coursewrangler_dev', get_string('settingspage_dev', 'tool_coursewrangler'));
 
     $dev_page->add(new admin_setting_configcheckbox(
