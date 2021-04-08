@@ -197,12 +197,12 @@ if ($display_action_data == true) {
                 case 'delete':
                     foreach ($rows_selected as $row_course_id) {
                         echo($row_course_id);
-                        $form_handler->schedule_delete($row_course_id);
+                        action_handler::schedule($row_course_id);
                     }
                     break;
                 case 'reset':
                     foreach ($rows_selected as $row_course_id) {
-                        $form_handler->hard_reset($row_course_id);
+                        action_handler::purge($row_course_id);
                     }
                     break;
                 default:
