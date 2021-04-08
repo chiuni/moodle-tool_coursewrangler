@@ -74,7 +74,7 @@ class report_table extends table_sql implements renderable
         $this->course_timeaccess_notset = $params['course_timeaccess_notset'] ?? false;
 
         // Preparing data for building urls in edit col.
-        $params['category_ids'] = implode(',', $params['category_ids']);
+        $params['category_ids'] = isset(($params['category_ids'])) ? implode(',', $params['category_ids']) : null;
         $this->url_params = $params;
         $this->return_link = $baseurl->out();
         $this->define_baseurl($baseurl);

@@ -28,7 +28,9 @@ $rows_selected = is_array($rows_selected) ? $rows_selected : array_filter( (arra
 
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
 $category_ids = is_array($category_ids) ? $category_ids : array_filter( (array) explode(',', $category_ids) );
-$category_ids = empty($category_ids) ? $report_form_data_json->category_ids : $category_ids;
+$category_ids = empty($category_ids) && isset($report_form_data_json->category_ids) 
+                    ? $report_form_data_json->category_ids 
+                    : $category_ids;
 
 // Dates optional params.
 $course_timecreated_after = optional_param('course_timecreated_after', null, PARAM_INT);
@@ -49,14 +51,38 @@ $course_timeaccess_before = optional_param('course_timeaccess_before', null, PAR
 $course_timeaccess_before = $course_timeaccess_before ?? $report_form_data_json->course_timeaccess_before ?? false;
 
 // Turning dates into timestamps.
-$course_timecreated_after = $course_timecreated_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timecreated_after) : $course_timecreated_after;
-$course_timecreated_before = $course_timecreated_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timecreated_before) : $course_timecreated_before;
-$course_startdate_after = $course_startdate_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_startdate_after) : $course_startdate_after;
-$course_startdate_before = $course_startdate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_startdate_before) : $course_startdate_before;
-$course_enddate_after = $course_enddate_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_after) : $course_enddate_after;
-$course_enddate_before = $course_enddate_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_enddate_before) : $course_enddate_before;
-$course_timeaccess_after = $course_timeaccess_after['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timeaccess_after) : $course_timeaccess_after;
-$course_timeaccess_before = $course_timeaccess_before['enabled'] == 1 ? moodletime_to_unixtimestamp($course_timeaccess_before) : $course_timeaccess_before;
+$course_timecreated_after = isset($course_timecreated_after['enabled']) 
+                            && $course_timecreated_after['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_timecreated_after) 
+                                : $course_timecreated_after;
+$course_timecreated_before = isset($course_timecreated_before['enabled']) 
+                            && $course_timecreated_before['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_timecreated_before) 
+                                : $course_timecreated_before;
+$course_startdate_after = isset($course_startdate_after['enabled']) 
+                            && $course_startdate_after['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_startdate_after) 
+                                : $course_startdate_after;
+$course_startdate_before = isset($course_startdate_before['enabled']) 
+                            && $course_startdate_before['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_startdate_before) 
+                                : $course_startdate_before;
+$course_enddate_after = isset($course_enddate_after['enabled']) 
+                            && $course_enddate_after['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_enddate_after) 
+                                : $course_enddate_after;
+$course_enddate_before = isset($course_enddate_before['enabled']) 
+                            && $course_enddate_before['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_enddate_before) 
+                                : $course_enddate_before;
+$course_timeaccess_after = isset($course_timeaccess_after['enabled']) 
+                            && $course_timeaccess_after['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_timeaccess_after) 
+                                : $course_timeaccess_after;
+$course_timeaccess_before = isset($course_timeaccess_before['enabled']) 
+                            && $course_timeaccess_before['enabled'] == 1 
+                                ? moodletime_to_unixtimestamp($course_timeaccess_before) 
+                                : $course_timeaccess_before;
 
 // Validating timestamps.
 $course_timecreated_after = $course_timecreated_after > 0 ? $course_timecreated_after : null;
@@ -187,7 +213,8 @@ if ($display_action_data == true) {
         }
     } else {
         cwt_debugger(null, 'Else');
-        // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
+        // This branch is executed if the form is submitted but the data 
+        // doesn't validate and the form should be redisplayed
         // or on the first display of the form.
     }
 }
