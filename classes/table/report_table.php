@@ -237,13 +237,6 @@ class report_table extends table_sql implements renderable
                 $where_sql .= " AND metrics.course_timeaccess < $this->course_timeaccess_before";
             }
         }
-        // To do: What the hell is this?
-        // Check score has been calculated.
-        $score_check = $DB->get_records_sql("SELECT * FROM $from_sql $join_score_sql WHERE 1=1", []);
-        if (count($score_check) < 1) {
-            // If score not found, change query.
-            $join_score_sql = '';
-        }
         // Check categories exists.
         if (count($this->category_ids) > 0) {
             $categories = [];
