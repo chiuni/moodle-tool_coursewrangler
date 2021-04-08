@@ -51,8 +51,8 @@ class action_handler
             $action = null;
             $action = new stdClass();
             $action->course_id = $course_id;
-            $coursemt = $DB->get_record('tool_coursewrangler_coursemt', ['course_id' => $course_id, 'report_id' => $this->report_id], '*', MUST_EXIST);
-            $action->coursemt_id = $coursemt->id;
+            $metrics = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $course_id], '*', MUST_EXIST);
+            $action->metrics_id = $metrics->id;
             $action->action = 'delete';
             $action->status = 'scheduled';
             $action->lastupdated = time();
@@ -70,7 +70,7 @@ class action_handler
             return false;
         }
         global $DB;
-        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id, 'report_id' => $this->report_id], '*');
+        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id], '*');
         if ($action == true) {
             $DB->delete_records('tool_coursewrangler_action', ['id' => $action->id]);
         }
