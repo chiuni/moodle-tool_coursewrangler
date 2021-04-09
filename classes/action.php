@@ -26,6 +26,8 @@
 // More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler;
 
+require_once($CFG->dirroot . '/course/lib.php');
+
 class action {
     function __construct(int $id = 0) {
         if ($id < 1) {
@@ -93,6 +95,8 @@ class action {
             return false;
         }
         global $DB;
-
+        $course = $DB->get_record('course', ['id' => $this->course_id]);
+        $course->visible = 0;
+        return update_course($course);
     }
 }

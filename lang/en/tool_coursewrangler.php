@@ -88,6 +88,8 @@ $string['settings_hiddenduration'] = 'Hidden Phase Task Length.';
 $string['settings_hiddenduration_desc'] = 'The time it takes for the "hidden" task to be executed.';
 $string['settings_waitingduration'] = 'Waiting Phase Task Length.';
 $string['settings_waitingduration_desc'] = 'The time it takes for the "waiting" task to be executed.';
+$string['settings_emailmode'] = 'Email Mode.';
+$string['settings_emailmode_desc'] = 'Email mode for notifying managers and teachers pior to deletion of courses.';
 
 // report_details page
 $string['report_details_pageheader'] = 'Report Details';

@@ -39,7 +39,7 @@ class action_handler
         }
     }
 
-    static function schedule(int $course_id, string $task = 'delete') {
+    static function update(int $course_id, string $task = 'delete', string $status = 'scheduled') {
         if ($course_id < 1) {
             return false;
         }
@@ -47,7 +47,7 @@ class action_handler
         $action = new stdClass();
         $action->course_id = $course_id;
         $action->action = $task;
-        $action->status = 'scheduled';
+        $action->status = $status;
         $action->lastupdated = time();
         global $DB;
         if ($exists != false) {
@@ -70,40 +70,42 @@ class action_handler
         return null;
     }
 
-    static public function getmaillist($scheduled) {
-        global $DB;
-        /**
-         * In the format:
-         * [ USERID => [COURSEID_1, COURSEID_2] ]
-         */
+    /**
+     * @param array $scheduled Array of ALL scheduled actions.
+     * @param array $relevantarchetypes Array of archetypes to select.
+     * @return array Array of user ids => Array of course ids
+     */
+    static public function getmaillist(array $scheduled, 
+            array $relevantarchetypes = ['manager', 'coursecreator', 'editingteacher', 'teacher']) {
         $responsibleuserids = [];
-        // This is bad, redo all.
         foreach ($scheduled as $action) {
-            echo "\n". $action->course_id;
-            $enrol = $DB->get_records_sql("SELECT * FROM {enrol} AS e WHERE e.courseid=:id AND e.status=0;", ['id' => $action->course_id]);
-            // Then foreach result, depending on type of enrol (e.enrol), store that information
-            // also remember to ignore students and maybe other archetypes
-            // Comma separated achetypes.
-            $archetypes = 'student';
-            $users = [];
-            foreach ($enrol as $enrol_instance) {
-                $users[] = $DB->get_records_sql(
-                    "SELECT ue.id AS ue_id, 
-                        ue.userid AS userid, 
-                        r.archetype AS role_type, 
-                        ue.status AS enrol_status,
-                        e.enrol AS enrol_type 
-                    FROM {user_enrolments} AS ue
-                    JOIN {enrol} AS e  ON ue.enrolid=e.id
-                    JOIN {role} AS r ON e.roleid=r.id
-                    WHERE ue.enrolid=:enrolid;",
-                    ['enrolid' => $enrol_instance->id]
-                );
+            // Getting user roles for course by course ID.
+            $coursecontext = \context_course::instance($action->course_id);
+            $userroles = get_users_roles($coursecontext, [], false);
+            
+            // Validate archetypes.
+            $allarchetypes = get_role_archetypes();
+            $validarchetypes = array_intersect($allarchetypes, $relevantarchetypes);
+            
+            // Getting all roles and selecting based on archetype.
+            $roles = get_all_roles($coursecontext);
+            foreach ($roles as $key => $role) {
+                if (!in_array($role->archetype, $validarchetypes)) {
+                    unset($roles[$key]);
+                }
             }
-            foreach($users as $user) {
-                print_r($users);
-                $responsibleuserids[$user->userid][] = $action->course_id;
+            $roles = array_keys($roles);
+            foreach ($userroles as $userid => $enrolmentarray) {
+                $roledata = reset($enrolmentarray);
+                if (in_array($roledata->roleid, $roles)) {
+                    $responsibleuserids[$userid][] = $action->course_id;
+                }
             }
         }
+        return $responsibleuserids;
+    }
+
+    static function email(array $mailinglist) {
+        return $mailinglist;
     }
 }

@@ -138,7 +138,9 @@ function find_last_enrolment(int $id)
     global $DB;
     return $DB->get_record_sql("SELECT id, courseid AS course_id, MAX(timecreated) AS course_lastenrolment FROM {enrol} WHERE courseid=:id;", ['id' => $id]);
 }
-
+/**
+ * @param int $id Course ID
+ */
 function find_course_students(int $id)
 {
     global $DB;
@@ -146,6 +148,7 @@ function find_course_students(int $id)
     // To find course students, first select all enrol instances from mdl_enrol table
     // status=0 means the enrolment method is enabled for this course
     $enrol = $DB->get_records_sql("SELECT * FROM {enrol} AS e WHERE e.courseid=:id AND e.status=0;", ['id' => $id]);
+    $coursecontext = \context_course::instance($id);
     // Then foreach result, depending on type of enrol (e.enrol), store that information
     // also remember to check for students only, we do not want any other archetypes for now
     $all_students = [];
@@ -176,6 +179,8 @@ function find_course_students(int $id)
     foreach ($all_students as $students) {
         $course_students->total_enrol_count += count($students) ?? 0;
         foreach ($students as $student) {
+            $roles = get_user_roles($coursecontext, $student->userid);
+            if ($roles) {}
             switch ($student->enrol_status) {
                 case 0:
                     $course_students->active_enrol_count += 1;

@@ -129,6 +129,13 @@ if ($hassiteconfig) {
         7 * DAYSECS, 
         DAYSECS
     ));
+
+    $tasks_page->add(new admin_setting_configcheckbox(
+        'tool_coursewrangler/emailmode',
+        get_string('settings_emailmode', 'tool_coursewrangler'),
+        get_string('settings_emailmode_desc', 'tool_coursewrangler'), 
+        0
+    ));
     
     $settings->add($tasks_page);
 

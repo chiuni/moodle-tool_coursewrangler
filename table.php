@@ -197,7 +197,7 @@ if ($display_action_data == true) {
                 case 'delete':
                     foreach ($rows_selected as $row_course_id) {
                         echo($row_course_id);
-                        action_handler::schedule($row_course_id);
+                        action_handler::update($row_course_id, 'delete', 'scheduled');
                     }
                     break;
                 case 'reset':
