@@ -80,15 +80,15 @@ $string['settings_scorelimiter'] = 'Score Limiter';
 $string['settings_scorelimiter_desc'] = 'The limiter used in calculations for percentages and score limiting (advanced).';
 $string['settings_minimumage'] = 'Minimum Course Age';
 $string['settings_minimumage_desc'] = 'The minimum age a course must be to be considered for deletion.';
-$string['settings_scheduledduration'] = 'Scheduled Phase Task Length.';
+$string['settings_scheduledduration'] = 'Scheduled Phase Task Length';
 $string['settings_scheduledduration_desc'] = 'The time it takes for the "scheduled" task to be executed.';
-$string['settings_emailedduration'] = 'Emailed Phase Task Length.';
+$string['settings_emailedduration'] = 'Emailed Phase Task Length';
 $string['settings_emailedduration_desc'] = 'The time it takes for the "emailed" task to be executed.';
-$string['settings_hiddenduration'] = 'Hidden Phase Task Length.';
+$string['settings_hiddenduration'] = 'Hidden Phase Task Length';
 $string['settings_hiddenduration_desc'] = 'The time it takes for the "hidden" task to be executed.';
-$string['settings_waitingduration'] = 'Waiting Phase Task Length.';
+$string['settings_waitingduration'] = 'Waiting Phase Task Length';
 $string['settings_waitingduration_desc'] = 'The time it takes for the "waiting" task to be executed.';
-$string['settings_emailmode'] = 'Email Mode.';
+$string['settings_emailmode'] = 'Email Mode';
 $string['settings_emailmode_desc'] = 'Email mode for notifying managers and teachers pior to deletion of courses.';
 
 // report_details page
