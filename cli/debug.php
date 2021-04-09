@@ -37,10 +37,9 @@ require_once(__DIR__ . '/../locallib.php');
 $context = context_system::instance();
 $starttime = time();
 
-echo 'tool_coursewrangler ::: Make JSON script' . PHP_EOL;
-$data_find = json_encode(find_relevant_course_data_lite());
-// $data_fetch = json_encode(fetch_report_data_by_id(1));
+echo 'Starting tool_coursewrangler debug script.' . PHP_EOL;
+
+// Debug here.
+
 $elapsed = time() - $starttime;
-// file_put_contents("./find_$time.json", $data_find);
-// file_put_contents("./fetch_$time.json", $data_fetch);
-echo "End of script. ($elapsed seconds)" . PHP_EOL;
+echo "Finished script in $elapsed seconds." . PHP_EOL;
