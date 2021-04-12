@@ -52,6 +52,7 @@ class score extends \core\task\scheduled_task {
         $data = $DB->get_records('tool_coursewrangler_metrics');
         $scorekeeper = new deletion_score($data);
         $courses = $scorekeeper->get_courses();
+        $insert = [];
         foreach ($courses as $metrics) {
             $current_score = $DB->get_record('tool_coursewrangler_score', ['metrics_id' => $metrics->id]) ?? false;
             $score_data = [
@@ -63,11 +64,15 @@ class score extends \core\task\scheduled_task {
             ];
             if ($current_score === false) {
                 // If record does not exist, create new one.
-                $DB->insert_record('tool_coursewrangler_score', $score_data, true, true) ?? false;
+                $insert[] = $score_data;
                 continue;
             }
             $score_data['id'] = $current_score->id;
+            // Update record does not support bulk queries.
             $DB->update_record('tool_coursewrangler_score', $score_data, true);
+        }
+        if (!empty($insert)) {
+            $DB->insert_records('tool_coursewrangler_score', $insert, true, true);
         }
         $scr_end_time = time();
         mtrace('>>> Calculating score took ' . ($scr_end_time - $scr_start_time) . ' seconds.');
