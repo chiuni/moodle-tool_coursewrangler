@@ -26,32 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 function xmldb_tool_coursewrangler_install() {
-    // This install script generates the initial metrics load.
-    $eol = "\n";
-    if (!CLI_SCRIPT) {
-        $eol = "<br>"; 
-    }
-    $format = "r";
-    $start_time = time();
-    $start_time_formatted = date($format, $start_time);
-    mtrace('======================================================', $eol);
-    mtrace('============ Installing Course Wrangler ==============', $eol);
-    mtrace('======================================================', $eol);
-    mtrace(">>> Start time: $start_time_formatted", $eol);
-    mtrace('>>> Gathering course data...', $eol);
-    $dbq_start_time = time();
-    $course_data = tool_coursewrangler\find_relevant_course_data_lite();
-    $dbq_end_time = time();
-    mtrace('>>> Select queries took ' . ($dbq_end_time - $dbq_start_time) . ' seconds.', $eol);
-    mtrace('>>> Inserting metrics data...', $eol);
-    global $DB;
-    $ins_start_time = time();
-    foreach ($course_data as $data) {
-        $data->metrics_updated = time();
-        $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
-    }
-    $ins_end_time = time();
-    mtrace('>>> Insert queries took ' . ($ins_end_time - $ins_start_time) . ' seconds.', $eol);
-    $end_time = time();
-    mtrace('>>> Finished install.php, took ' . ($end_time - $start_time) . ' seconds.', $eol);
+    
 }
