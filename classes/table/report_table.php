@@ -314,10 +314,6 @@ class report_table extends table_sql implements renderable
         $url = new moodle_url('/admin/tool/coursewrangler/report_details.php', $url_params);
         $link = html_writer::link($url, $values->course_fullname);
         return $link;
-
-        $url = new moodle_url('/admin/tool/coursewrangler/report_details.php?course_id=' . $values->course_id, []);
-        $link = html_writer::link($url, $values->course_fullname);
-        return $link;
     }
     /**
      * Creating the score when required.
@@ -330,15 +326,17 @@ class report_table extends table_sql implements renderable
      * Creating the action col.
      */
     function col_action($values) : string {
-        $display_value = $values->action ?? get_string('table_value_notavailable', 'tool_coursewrangler');
-        return ($display_value);
+        $display_value = "table_action_$values->action" ?? 'table_value_notavailable';
+        $display_value_string = get_string($display_value, 'tool_coursewrangler');
+        return ($display_value_string);
     }
     /**
      * Creating the action status col.
      */
     function col_status($values) : string {
-        $display_value = $values->status ?? get_string('table_value_notavailable', 'tool_coursewrangler');
-        return ($display_value);
+        $display_value = "table_status_$values->status" ?? 'table_value_notavailable';
+        $display_value_string = get_string($display_value, 'tool_coursewrangler');
+        return ($display_value_string);
     }
     /**
      * Creating the select col.
