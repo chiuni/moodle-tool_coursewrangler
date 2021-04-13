@@ -79,9 +79,8 @@ function find_relevant_course_data()
     );
 }
 
-function find_relevant_course_data_lite()
+function find_relevant_course_data_lite(array $options = [])
 {
-    // TODO: Consider ignoring courses that haven't yet started, do we really need to evaluate these??
     $course_query = find_activities_modified();
     $ula_query = find_course_last_access();
     $meta_query = find_meta_parents();
@@ -94,6 +93,23 @@ function find_relevant_course_data_lite()
         $course_students = find_course_students($result->course_id);
         foreach ($course_students as $key => $value) {
             $result->$key = $value;
+        }
+    }
+    // Options processing.
+    // We must always have $minimumage specified, if missing defaults to settings.
+    // This enables us to bypass the settings if needed for minimum age.
+    $minimumage = isset($options['minimumage']) ? $options['minimumage'] : get_config('tool_coursewrangler', 'minimumage');
+    foreach ($course_query as $id => $course) {
+        if ($course->course_startdate < 1) {
+            continue;
+        }
+        $course_age = time() - $course->course_startdate;
+        $new_course = false;
+        if ($minimumage !== null && $minimumage > 0) {
+            $new_course = $minimumage > $course_age;
+        }
+        if ($new_course) {
+            unset($course_query[$id]);
         }
     }
     return $course_query;
