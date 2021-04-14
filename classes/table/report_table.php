@@ -326,7 +326,7 @@ class report_table extends table_sql implements renderable
      * Creating the action col.
      */
     function col_action($values) : string {
-        $display_value = "table_action_$values->action" ?? 'table_value_notavailable';
+        $display_value = isset($values->action) ? "table_action_$values->action" : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
         return ($display_value_string);
     }
@@ -334,7 +334,7 @@ class report_table extends table_sql implements renderable
      * Creating the action status col.
      */
     function col_status($values) : string {
-        $display_value = "table_status_$values->status" ?? 'table_value_notavailable';
+        $display_value = isset($values->status) ? "table_status_$values->status" : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
         return ($display_value_string);
     }
