@@ -18,10 +18,12 @@ $context = context_system::instance();
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
-$PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/table.php'));
+$PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/user_table.php'));
 $PAGE->set_title(get_string('pageheader', 'tool_coursewrangler'));
 $PAGE->set_pagelayout('admin');
-$PAGE->navbar->add(get_string('user_table', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/user_table.php'));
+$PAGE->navbar->add(get_string('administrationsite'), new moodle_url('/admin/search.php'));
+$PAGE->navbar->add(get_string('pluginname', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/index.php'));
+$PAGE->navbar->add(get_string('table_usertable_name', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/user_table.php'));
 
 echo $OUTPUT->header();
 
