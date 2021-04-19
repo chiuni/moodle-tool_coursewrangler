@@ -297,7 +297,10 @@ class report_table extends table_sql implements renderable
      * Processing visible and parent cols.
      */
     function col_course_visible($values) : string {
-        return ($values->course_visible ? 'Yes' : 'No');
+        $course_visible = $values->course_visible ? 'yes' : 'no';
+        $display_value = isset($course_visible) ? "table_visible_$course_visible" : 'table_value_notavailable';
+        $display_value_string = get_string($display_value, 'tool_coursewrangler');
+        return ($display_value_string);
     }
     function col_course_isparent($values) : string {
         return ($values->course_isparent ? 'Yes' : 'No');
