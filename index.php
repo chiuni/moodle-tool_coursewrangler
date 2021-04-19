@@ -57,5 +57,9 @@ echo $OUTPUT->single_button(
     new moodle_url('/admin/tool/coursewrangler/table.php'),
     get_string('table_tablename', 'tool_coursewrangler')
 );
+echo $OUTPUT->single_button(
+    new moodle_url('/admin/tool/coursewrangler/user_table.php'),
+    get_string('table_usertable_name', 'tool_coursewrangler')
+);
 
 echo $OUTPUT->footer();
