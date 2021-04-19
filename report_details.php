@@ -73,8 +73,13 @@ if ($course == false) {
     // throw not found error?
 }
 
+$action_link = $CFG->wwwroot . '/admin/tool/coursewrangler/action.php';
+
 $course->links = [
-    'return_link' => $return_link
+    'return_link' => $return_link,
+    'action_delete_link' => new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'delete']),
+    'action_reset_link' => new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'reset']),
+    'action_protect_link' => new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'protect'])
 ];
 
 echo $OUTPUT->header();
