@@ -132,8 +132,8 @@ class user_report_table extends table_sql implements renderable
         // so we use true as the initial statement to avoid Moodle
         // errors and other undesired behaviour.
         $courseidslist = implode(',', $this->courseids);
-        $where_sql = "metrics.course_id IN($courseidslist)";
-        $from_sql = "{tool_coursewrangler_metrics} AS metrics";
+        $where_sql = "metrics.course_id IN($courseidslist) AND act.id";
+        $from_sql = "{tool_coursewrangler_metrics} AS metrics ";
         $join_score_sql = " LEFT JOIN {tool_coursewrangler_score} AS score ON metrics.id=score.metrics_id ";
 
         $join_action_data = '';
@@ -163,7 +163,10 @@ class user_report_table extends table_sql implements renderable
      */
     public function col_course_visible($values): string
     {
-        return ($values->course_visible ? 'Yes' : 'No');
+        $course_visible = $values->course_visible ? 'yes' : 'no';
+        $display_value = isset($course_visible) ? "table_visible_$course_visible" : 'table_value_notavailable';
+        $display_value_string = get_string($display_value, 'tool_coursewrangler');
+        return ($display_value_string);
     }
     /**
      * Turning course name into link for details area.
@@ -187,15 +190,17 @@ class user_report_table extends table_sql implements renderable
      */
     public function col_action($values): string
     {
-        $display_value = $values->action ?? get_string('table_value_notavailable', 'tool_coursewrangler');
-        return ($display_value);
+        $display_value = isset($values->action) ? "table_action_$values->action" : 'table_value_notavailable';
+        $display_value_string = get_string($display_value, 'tool_coursewrangler');
+        return ($display_value_string);
     }
     /**
      * Creating the action status col.
      */
     public function col_status($values): string
     {
-        $display_value = $values->status ?? get_string('table_value_notavailable', 'tool_coursewrangler');
-        return ($display_value);
+        $display_value = isset($values->status) ? "table_status_$values->status" : 'table_value_notavailable';
+        $display_value_string = get_string($display_value, 'tool_coursewrangler');
+        return ($display_value_string);
     }
 }

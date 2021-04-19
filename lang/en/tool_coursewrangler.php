@@ -60,6 +60,9 @@ $string['table_score_rounded'] = 'Rounded Score';
 $string['table_score_percentage'] = 'Percentage';
 $string['table_percentage_notavailable'] = 'Not Available';
 $string['table_value_notavailable'] = 'Not Available';
+$string['table_visible_yes'] = 'Yes';
+$string['table_visible_no'] = 'No';
+$string['table_status_scheduled'] = 'Scheduled';
 
 // buttons
 $string['button_generatereport'] = 'Generate Report';
@@ -100,8 +103,9 @@ $string['report_details_scoreinformation'] = 'Deletion Score';
 $string['report_details_scorecreated'] = 'Score created on';
 $string['report_details_action_delete'] = 'Schedule Deletion';
 $string['report_details_return'] = 'Return to Table';
-$string['report_details_action_reset'] = 'Undo Action';
+$string['report_details_action_reset'] = 'Reset Action';
 $string['report_details_action_logs'] = 'Action History Log';
+$string['report_details_action_protect'] = 'Protect Course';
 
 // form stuff
 $string['report_form_filter_results'] = 'Filter Results';
