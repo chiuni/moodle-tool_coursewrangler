@@ -179,7 +179,6 @@ $table = new table\report_table(
     $base_url,
     $options_array
 );
-$table->out(50, false);
 
 cwt_debugger($table->sql, 'Table');
 
@@ -218,6 +217,8 @@ if ($display_action_data == true) {
         // or on the first display of the form.
     }
 }
+$table->out(50, false);
+
 cwt_debugger($rows_selected, 'Rows selected');
 
 static $initialised = false;
