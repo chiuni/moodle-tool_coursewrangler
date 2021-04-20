@@ -59,6 +59,7 @@ $course->course_enddate = ($course->course_enddate == 0) ?  '-' : userdate($cour
 $course->course_timeaccess = ($course->course_timeaccess == 0) ?  '-' : userdate($course->course_timeaccess);
 $course->course_lastenrolment = ($course->course_lastenrolment == 0) ?  '-' : userdate($course->course_lastenrolment);
 $course->activity_lastmodified = ($course->activity_lastmodified == 0) ?  '-' : userdate($course->activity_lastmodified);
+$course->metrics_updated = ($course->metrics_updated == 0) ?  '-' : userdate($course->metrics_updated);
 // Processing visible and parent
 $course->course_visible = ($course->course_visible == 0) ? 'No' : 'Yes';
 $course->course_isparent = ($course->course_isparent == 0) ? 'No' : 'Yes';
@@ -72,15 +73,19 @@ if ($course->score->timemodified == 0) {
 if ($course == false) {
     // throw not found error?
 }
+$course->links = ['return_link' => $return_link];
+
+$action_data = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course->course_id]);
 
 $action_link = $CFG->wwwroot . '/admin/tool/coursewrangler/action.php';
-
-$course->links = [
-    'return_link' => $return_link,
-    'action_delete_link' => new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'delete']),
-    'action_reset_link' => new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'reset']),
-    'action_protect_link' => new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'protect'])
-];
+if ($action_data != false) {
+    $action_data->status = get_string('report_details_actionstatus_'.$action_data->status, 'tool_coursewrangler');
+    $course->actionstatus = $action_data->status . ' - ' . userdate($action_data->lastupdated);
+    $course->links['action_reset_link'] = new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'reset']);
+} else {
+    $course->links['action_delete_link'] = new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'delete']);
+    $course->links['action_protect_link'] = new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'protect']);
+}
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('report_details_coursedetailsfor', 'tool_coursewrangler'));

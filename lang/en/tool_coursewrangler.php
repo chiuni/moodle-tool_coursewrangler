@@ -97,7 +97,7 @@ $string['settings_emailmode_desc'] = 'Email mode for notifying managers and teac
 // report_details page
 $string['report_details_pageheader'] = 'Report Details';
 $string['report_details_coursedetailsfor'] = 'Course details for: ';
-$string['report_details_report_date'] = 'Report created on';
+$string['report_details_report_date'] = 'Last updated on';
 $string['report_details_enrolmentinformation'] = 'Enrolment Information';
 $string['report_details_scoreinformation'] = 'Deletion Score';
 $string['report_details_scorecreated'] = 'Score created on';
@@ -106,6 +106,8 @@ $string['report_details_return'] = 'Return to Table';
 $string['report_details_action_reset'] = 'Reset Action';
 $string['report_details_action_logs'] = 'Action History Log';
 $string['report_details_action_protect'] = 'Protect Course';
+$string['report_details_actionstatus'] = 'Action Status';
+$string['report_details_actionstatus_scheduled'] = 'Scheduled for deletion';
 
 // form stuff
 $string['report_form_filter_results'] = 'Filter Results';
