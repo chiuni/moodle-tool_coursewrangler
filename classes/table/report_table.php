@@ -102,26 +102,19 @@ class report_table extends table_sql implements renderable
             $selectlabel . $selectcheckbox,
             ['class' => 'selectall']
         );
-        $cols = [
-            'row_select' => get_string('table_row_select', 'tool_coursewrangler') . $selecthtml,
-            'course_id' => get_string('table_course_id', 'tool_coursewrangler'),
-            // 'course_module_id' => get_string('table_course_module_id', 'tool_coursewrangler'),
-            'course_shortname' => get_string('table_course_shortname', 'tool_coursewrangler'),
-            'course_fullname' => get_string('table_course_fullname', 'tool_coursewrangler'),
-            // 'course_idnumber' => get_string('table_course_idnumber', 'tool_coursewrangler'),
-            'course_timecreated' => get_string('table_course_timecreated', 'tool_coursewrangler'),
-            // 'course_timemodified' => get_string('table_course_timemodified', 'tool_coursewrangler'),
-            'course_startdate' => get_string('table_course_startdate', 'tool_coursewrangler'),
-            'course_enddate' => get_string('table_course_enddate', 'tool_coursewrangler'),
-            'course_visible' => get_string('table_course_visible', 'tool_coursewrangler'),
-            // 'course_isparent' => get_string('table_course_isparent', 'tool_coursewrangler'),
-            // 'course_modulescount' => get_string('table_course_modulescount', 'tool_coursewrangler'),
-            'course_timeaccess' => get_string('table_course_timeaccess', 'tool_coursewrangler'),
-            // 'course_lastenrolment' => get_string('table_course_lastenrolment', 'tool_coursewrangler'),
-            // 'activity_type' => get_string('table_activity_type', 'tool_coursewrangler'),
-            // 'activity_lastmodified' => get_string('table_activity_lastmodified', 'tool_coursewrangler'),
-            'percentage' => get_string('table_course_deletionscore', 'tool_coursewrangler')
-        ];
+        $cols = [];
+        if (isset($this->display_action_data) && $this->display_action_data) {
+            $cols['row_select'] = get_string('table_row_select', 'tool_coursewrangler') . $selecthtml;
+        }
+        $cols['course_id'] = get_string('table_course_id', 'tool_coursewrangler');
+        $cols['course_shortname'] = get_string('table_course_shortname', 'tool_coursewrangler');
+        $cols['course_fullname'] = get_string('table_course_fullname', 'tool_coursewrangler');
+        $cols['course_timecreated'] = get_string('table_course_timecreated', 'tool_coursewrangler');
+        $cols['course_startdate'] = get_string('table_course_startdate', 'tool_coursewrangler');
+        $cols['course_enddate'] = get_string('table_course_enddate', 'tool_coursewrangler');
+        $cols['course_visible'] = get_string('table_course_visible', 'tool_coursewrangler');
+        $cols['course_timeaccess'] = get_string('table_course_timeaccess', 'tool_coursewrangler');
+        $cols['percentage'] = get_string('table_course_deletionscore', 'tool_coursewrangler');
 
         // Prepare to display table with action data.
         if ($this->display_action_data) {
