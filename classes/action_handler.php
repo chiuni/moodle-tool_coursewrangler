@@ -75,8 +75,8 @@ class action_handler
      * @param array $relevantarchetypes Array of archetypes to select.
      * @return array Array of user ids => Array of course ids
      */
-    static public function getmaillist(array $scheduled, 
-            array $relevantarchetypes = ['manager', 'coursecreator', 'editingteacher', 'teacher']) {
+    static public function getmaillist(array $scheduled, array $relevantarchetypes = []) {
+        // Could this be done using capabilities?
         $responsibleuserids = [];
         foreach ($scheduled as $action) {
             // Getting user roles for course by course ID.
@@ -85,7 +85,10 @@ class action_handler
             
             // Validate archetypes.
             $allarchetypes = get_role_archetypes();
-            $validarchetypes = array_intersect($allarchetypes, $relevantarchetypes);
+            $validarchetypes = $allarchetypes;
+            if (!empty($relevantarchetypes)) {
+                $validarchetypes = array_intersect($allarchetypes, $relevantarchetypes);
+            }
             
             // Getting all roles and selecting based on archetype.
             $roles = get_all_roles($coursecontext);
