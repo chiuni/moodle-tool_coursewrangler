@@ -151,3 +151,4 @@ $string['action_form_resetaction'] = 'Reset Action';
 // tasks
 $string['task_wrangle'] = 'Wrangle Task';
 $string['task_score'] = 'Score Task';
+$string['task_filldata'] = 'Fill Data Task';
