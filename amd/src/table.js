@@ -30,12 +30,8 @@ define(["jquery"], function($) {
                         var indextoremove = currentvalues.indexOf(this.value);
                         currentvalues.splice(indextoremove, 1);
                     }
-                    // eslint-disable-next-line no-console
-                    console.log(currentvalues);
                     currentvalues = currentvalues.join(',');
                     hiddeninput.val(currentvalues);
-                    // eslint-disable-next-line no-console
-                    console.log(currentvalues);
                 });
             }
         }
