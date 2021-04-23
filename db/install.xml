@@ -34,6 +34,9 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="fk_component" TYPE="foreign" FIELDS="course_id" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="uq_tool_cw_metrics_course_id" UNIQUE="true" FIELDS="course_id" COMMENT="Course ID should be unique."/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="tool_coursewrangler_score" COMMENT="The scorekeeping table.">
       <FIELDS>
@@ -48,6 +51,9 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="fk_component" TYPE="foreign" FIELDS="metrics_id" REFTABLE="tool_coursewrangler_metrics" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="uq_tool_cw_score_metrics_id" UNIQUE="true" FIELDS="metrics_id" COMMENT="Metrics ID should be unique."/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="tool_coursewrangler_action" COMMENT="The action table.">
       <FIELDS>
@@ -61,6 +67,9 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="fk_component" TYPE="foreign" FIELDS="course_id" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="uq_tool_cw_action_course_id" UNIQUE="true" FIELDS="course_id" COMMENT="Course ID should be unique."/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="tool_coursewrangler_log" COMMENT="The action table.">
       <FIELDS>
