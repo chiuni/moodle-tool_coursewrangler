@@ -168,21 +168,24 @@ function find_course_students(int $id)
     // Then foreach result, depending on type of enrol (e.enrol), store that information
     // also remember to check for students only, we do not want any other archetypes for now
     $all_students = [];
-    foreach ($enrol as $enrol_instance) {
-        $students = $DB->get_records_sql(
-            "SELECT ue.id AS ue_id, 
-                ue.userid AS userid, 
-                r.archetype AS role_type, 
-                ue.status AS enrol_status,
-                e.enrol AS enrol_type 
-            FROM {user_enrolments} AS ue
-            JOIN {enrol} AS e  ON ue.enrolid=e.id
-            JOIN {role} AS r ON e.roleid=r.id
-            WHERE r.archetype='$archetype' AND ue.enrolid=:enrolid;",
-            ['enrolid' => $enrol_instance->id]
-        );
-        $all_students[] = $students;
-    }
+    $sql = "SELECT  concat(ra.id, '-', e.id) as id, 
+                    ue.userid AS userid, 
+                    r.shortname, 
+                    ra.component, 
+                    ue.timestart, 
+                    ue.timecreated, 
+                    ue.timemodified,
+                    r.archetype AS role_type,
+                    ue.status AS enrol_status,
+                    e.enrol AS enrol_type 
+            FROM {role_assignments} AS ra 
+        LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid 
+        LEFT JOIN {role} AS r ON ra.roleid = r.id 
+        LEFT JOIN {context} AS c ON c.id = ra.contextid 
+        LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id 
+        WHERE r.archetype=:archetype AND e.courseid = :course_id;";
+    $students = $DB->get_records_sql($sql,['course_id' => $id, 'archetype' => $archetype]);
+    $all_students[] = $students;
 
     $course_students = new stdClass;
     $course_students->total_enrol_count = 0;
