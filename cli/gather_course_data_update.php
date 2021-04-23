@@ -43,18 +43,23 @@ echo PHP_EOL .'tool_coursewrangler ::: Gather Course Data PHP Script' . PHP_EOL;
 echo '=====================================================' . PHP_EOL;
 echo '=============== Starting DB Queries =================' . PHP_EOL;
 echo '=====================================================' . PHP_EOL;
+\core_php_time_limit::raise();
 echo "Start time: $start_time_formatted" . PHP_EOL . PHP_EOL;
 $course_data = find_relevant_course_data_lite();
 $metrics_data = $DB->get_records('tool_coursewrangler_metrics');
 $db_end_time = time();
 echo 'Queries took a total of: ' . ($db_end_time - $start_time) . ' seconds' . PHP_EOL;
 echo 'Creating metrics data.' . PHP_EOL;
-print_r($course_data);
 foreach ($course_data as $data) {
+    $fetch_metric = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $data->course_id]);
     $data->metrics_updated = time();
-    $entry_id = $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
-    // echo $data->course_fullname . PHP_EOL;
-    // echo $entry_id . PHP_EOL;
+    if (!$fetch_metric) {
+        $entry_id = $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
+        continue;
+    }
+    $data->id = $fetch_metric->id;
+    $DB->update_record('tool_coursewrangler_metrics', $data);
+
 }
 $script_end_time = time();
 exit;

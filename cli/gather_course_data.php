@@ -43,6 +43,7 @@ echo PHP_EOL .'tool_coursewrangler ::: Gather Course Data PHP Script' . PHP_EOL;
 echo '=====================================================' . PHP_EOL;
 echo '=============== Starting DB Queries =================' . PHP_EOL;
 echo '=====================================================' . PHP_EOL;
+\core_php_time_limit::raise();
 echo "Start time: $start_time_formatted" . PHP_EOL . PHP_EOL;
 $course_data = find_relevant_course_data_lite();
 $db_end_time = time();
