@@ -25,6 +25,8 @@
  */
 // More info: https://docs.moodle.org/dev/Plugin_files#cli.2F
 
+// >>> THIS FILE IS ONLY FOR DEVELOPMENT, NOT PART OF PLUGIN <<<
+
 namespace tool_coursewrangler;
 
 use context_system;
