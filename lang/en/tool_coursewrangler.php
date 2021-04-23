@@ -64,6 +64,11 @@ $string['table_visible_yes'] = 'Yes';
 $string['table_visible_no'] = 'No';
 $string['table_status_scheduled'] = 'Scheduled';
 
+$string['table_course_action'] = 'Action';
+$string['table_course_status'] = 'Status';
+$string['table_action_protect'] = 'Protect';
+$string['table_status_protect'] = 'Protect';
+
 // buttons
 $string['button_generatereport'] = 'Generate Report';
 
@@ -111,6 +116,9 @@ $string['report_details_actionstatus_scheduled'] = 'Scheduled for deletion';
 
 // form stuff
 $string['report_form_filter_results'] = 'Filter Results';
+$string['report_form_pagesize'] = 'Entries per page';
+$string['report_form_matchstring_short'] = 'Search by short name (and ID number)';
+$string['report_form_matchstring_full'] = 'Search by full name';
 $string['report_form_filter_categories'] = 'Filter by category';
 $string['report_form_filter_categories_noselectionstring'] = 'Select a category';
 $string['report_form_filter_reports'] = 'Select a report';
@@ -131,6 +139,9 @@ $string['report_form_filter_course_startdate_notset'] = 'Start Date Not Set (or 
 $string['report_form_filter_course_enddate_notset'] = 'End Date Not Set (or equals 0)';
 $string['report_form_filter_course_timeaccess_notset'] = 'Last Access Not Set (or equals 0)';
 $string['report_form_filter_display_action_data'] = 'Display Action Data';
+
+
+$string['action_form_chooseaction'] = 'missing string!';
 
 // action_form
 $string['action_form_withselected'] = 'With selected...';

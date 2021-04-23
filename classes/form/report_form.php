@@ -47,6 +47,12 @@ class report_form extends moodleform
 
         // HEADER FILTER OPTIONS
 
+        $mform->addElement('text', 'matchstring_short', get_string('report_form_matchstring_short', 'tool_coursewrangler'));
+        $mform->addElement('text', 'matchstring_full', get_string('report_form_matchstring_full', 'tool_coursewrangler'));
+
+        $pagesize_options = [50=>50, 100=>100, 250=>250, 500=>500];
+        $mform->addElement('select', 'pagesize', get_string('report_form_pagesize', 'tool_coursewrangler'), $pagesize_options);
+
         // autocomplete search box for categories
         $categories = $DB->get_records('course_categories', ['parent' => 0], 'name ASC');
         $category_areanames = array();

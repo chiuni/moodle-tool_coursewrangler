@@ -107,6 +107,15 @@ $course_timeaccess_notset = $course_timeaccess_notset ?? $report_form_data_json-
 // Other settings parameters.
 $display_action_data = optional_param('display_action_data', null, PARAM_BOOL);
 $display_action_data = $display_action_data ?? $report_form_data_json->display_action_data ?? false;
+$pagesize = optional_param('pagesize', null, PARAM_INT);
+$pagesize = $pagesize ?? $report_form_data_json->pagesize ?? 0; // This resets it back to 50, two lines below.
+$pagesize = ($pagesize > 500) ? 500 : $pagesize;
+$pagesize = ($pagesize < 50) ? 50 : $pagesize;
+
+$matchstring_short = optional_param('matchstring_short', null, PARAM_ALPHANUMEXT);
+$matchstring_short = $matchstring_short ?? $report_form_data_json->matchstring_short ?? null;
+$matchstring_full = optional_param('matchstring_full', null, PARAM_ALPHANUMEXT);
+$matchstring_full = $matchstring_full ?? $report_form_data_json->matchstring_full ?? null;
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
@@ -134,6 +143,9 @@ $options_array['course_startdate_notset'] = $course_startdate_notset ?? false;
 $options_array['course_enddate_notset'] = $course_enddate_notset ?? false;
 $options_array['course_timeaccess_notset'] = $course_timeaccess_notset ?? false;
 $options_array['display_action_data'] = $display_action_data ?? false;
+$options_array['pagesize'] = $pagesize ?? 50;
+$options_array['matchstring_short'] = $matchstring_short ?? null;
+$options_array['matchstring_full'] = $matchstring_full ?? null;
 $options_array = array_filter($options_array);
 
 // Instantiate report_form .
@@ -165,32 +177,23 @@ if ($mform->is_cancelled()) {
     redirect($base_url_reset);
     exit;
 } elseif ($fromform = $mform->get_data()) {
-    cwt_debugger($fromform, 'From form');
     //In this case you process validated data. $mform->get_data() returns data posted in form.
 } else {
-    cwt_debugger(null, 'Else');
     // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
 }
-cwt_debugger($report_form_data_json, 'Report form data');
-cwt_debugger($url_params, 'url_params');
 
 $table = new table\report_table(
     $base_url,
     $options_array
 );
 
-cwt_debugger($table->sql, 'Table');
-
 if ($display_action_data == true) {
     $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
     $aform->display();
     if ($fromform = $aform->get_data()) {
-        cwt_debugger($fromform, 'From second form');
         //In this case you process validated data. $mform->get_data() returns data posted in form.
-        echo 'submitted?<br>';
         if (isset($rows_selected) && isset($action)) {
-            echo 'is set';
             $form_handler = new action_handler();
             switch ($action) {
                 case 'delete':
@@ -207,19 +210,18 @@ if ($display_action_data == true) {
                 default:
                     break;
             }
+            // Is this the best way of doing redirects in Moodle?
             redirect($base_url);
             exit;
         }
     } else {
-        cwt_debugger(null, 'Else');
         // This branch is executed if the form is submitted but the data 
         // doesn't validate and the form should be redisplayed
         // or on the first display of the form.
     }
 }
-$table->out(50, false);
 
-cwt_debugger($rows_selected, 'Rows selected');
+$table->out($pagesize, false);
 
 static $initialised = false;
 if (!$initialised) {

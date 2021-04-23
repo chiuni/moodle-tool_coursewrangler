@@ -72,6 +72,8 @@ class report_table extends table_sql implements renderable
         $this->course_startdate_notset = $params['course_startdate_notset'] ?? false;
         $this->course_enddate_notset = $params['course_enddate_notset'] ?? false;
         $this->course_timeaccess_notset = $params['course_timeaccess_notset'] ?? false;
+        $this->matchstring_short = $params['matchstring_short'] ?? null;
+        $this->matchstring_full = $params['matchstring_full'] ?? null;
 
         // Preparing data for building urls in edit col.
         $params['category_ids'] = isset(($params['category_ids'])) ? implode(',', $params['category_ids']) : null;
@@ -152,7 +154,7 @@ class report_table extends table_sql implements renderable
         return '';
     }
     /**
-     * Define table SQL.
+     * Define table SQL query.
      */
     protected function define_table_sql() {
         global $DB;
@@ -229,6 +231,14 @@ class report_table extends table_sql implements renderable
                 // Option where COURSE_TIMEACCESS is BEFORE specified date.
                 $where_sql .= " AND metrics.course_timeaccess < $this->course_timeaccess_before";
             }
+        }
+        if (isset($this->matchstring_short)){
+            $where_sql .= " AND ( metrics.course_shortname LIKE '%$this->matchstring_short%'";
+            $where_sql .= " OR metrics.course_idnumber LIKE '%$this->matchstring_short%' )";
+
+        }
+        if (isset($this->matchstring_full)){
+            $where_sql .= " AND metrics.course_fullname LIKE '%$this->matchstring_full%'";
         }
         // Check categories exists.
         if (count($this->category_ids) > 0) {
