@@ -79,9 +79,18 @@ function find_relevant_course_data()
     );
 }
 
+/**
+ * Returns an array with all the course data which can be fed to the metrics table.
+ * Consists of:
+ *      find_course_activity_data()->    To get activity data, like the last time
+ *                                          an activity was modified.
+ *      find_course_last_access()->     Finds the last access to a course, ignores
+ *                                          guests and site admins.
+ *      find_meta_parents()->           Finds meta parents and enrolments.
+ */
 function find_relevant_course_data_lite(array $options = [])
 {
-    $course_query = find_activities_modified();
+    $course_query = find_course_activity_data();
     $ula_query = find_course_last_access();
     $meta_query = find_meta_parents();
     $parent_course_ids = array_keys($meta_query);
@@ -114,59 +123,46 @@ function find_relevant_course_data_lite(array $options = [])
     }
     return $course_query;
 }
-/**
- * @deprecated
- */
-function fetch_report_data()
-{
-    global $DB;
-    $report_data = $DB->get_records('tool_coursewrangler_metrics');
-    return $report_data;
-    // Formatting data to match find_relevant_course_data_lite
-    foreach ($report_data as $course) {
-        $course->course_students = new stdClass;
-        $course->course_students->total_enrol_count = $course->total_enrol_count;
-        unset($course->total_enrol_count);
-        $course->course_students->active_enrol_count = $course->active_enrol_count;
-        unset($course->active_enrol_count);
-        $course->course_students->self_enrol_count = $course->self_enrol_count;
-        unset($course->self_enrol_count);
-        $course->course_students->manual_enrol_count = $course->manual_enrol_count;
-        unset($course->manual_enrol_count);
-        $course->course_students->meta_enrol_count = $course->meta_enrol_count;
-        unset($course->meta_enrol_count);
-        $course->course_students->other_enrol_count = $course->other_enrol_count;
-        unset($course->other_enrol_count);
-        $course->course_students->other_enrol_count = $course->suspended_enrol_count;
-        unset($course->suspended_enrol_count);
-    }
-    
-}
 
-function find_meta_parents()
-{
+/**
+ * Simple function that should find all meta enrolments and therefore help
+ *  identify meta parents.
+ */
+function find_meta_parents() {
     global $DB;
     return $DB->get_records_sql("SELECT id, customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
 }
 
-function find_last_enrolment(int $id)
-{
-    global $DB;
-    return $DB->get_record_sql("SELECT id, courseid AS course_id, MAX(timecreated) AS course_lastenrolment FROM {enrol} WHERE courseid=:id;", ['id' => $id]);
-}
-/**
- * @param int $id Course ID
+/** 
+ * Simple query to find the latest enrolment in a course by course id.
  */
-function find_course_students(int $id)
-{
+function find_last_enrolment(int $course_id) {
+    if ($course_id < 1) {
+        return null;
+    }
     global $DB;
+   return $DB->get_record_sql(
+        "SELECT id, courseid AS course_id, 
+                MAX(timecreated) AS course_lastenrolment 
+            FROM {enrol} WHERE courseid=:course_id;",
+        ['course_id' => $course_id]);
+}
+
+/**
+ * The idea is that for a given course, we can find all of the students.
+ * By finding students, we can figure out if the course is still in use or not,
+ *  since courses without a single student are likely to be no longer needed.
+ * 
+ * @param int $id The course ID.
+ * @return array $course_students List of all students for a course.
+ */
+function find_course_students(int $id) {
+    global $DB;
+    // By using the archetype we can firmly establish if they are students or not.
     $archetype = 'student';
-    // To find course students, first select all enrol instances from mdl_enrol table
-    // status=0 means the enrolment method is enabled for this course
-    $enrol = $DB->get_records_sql("SELECT * FROM {enrol} AS e WHERE e.courseid=:id AND e.status=0;", ['id' => $id]);
     $coursecontext = \context_course::instance($id);
     // Then foreach result, depending on type of enrol (e.enrol), store that information
-    // also remember to check for students only, we do not want any other archetypes for now
+    // also remember to check for students only, we do not want any other archetypes for now.
     $all_students = [];
     $sql = "SELECT  concat(ra.id, '-', e.id) as id, 
                     ue.userid AS userid, 
@@ -186,7 +182,9 @@ function find_course_students(int $id)
         WHERE r.archetype=:archetype AND e.courseid = :course_id;";
     $students = $DB->get_records_sql($sql,['course_id' => $id, 'archetype' => $archetype]);
     $all_students[] = $students;
-
+    // This might need review, but the idea is that we create a total enrolment
+    //  count, and other enrolment counts to help admins make decisions when
+    //  deleting courses.
     $course_students = new stdClass;
     $course_students->total_enrol_count = 0;
     $course_students->active_enrol_count = 0;
@@ -199,7 +197,10 @@ function find_course_students(int $id)
         $course_students->total_enrol_count += count($students) ?? 0;
         foreach ($students as $student) {
             $roles = get_user_roles($coursecontext, $student->userid);
-            if ($roles) {}
+            if ($roles) {
+                // I don't know what I was going to do here.
+            }
+            // This switch checks if enrolment status is active.
             switch ($student->enrol_status) {
                 case 0:
                     $course_students->active_enrol_count += 1;
@@ -228,16 +229,25 @@ function find_course_students(int $id)
     return $course_students;
 }
 
-function count_course_modules(int $id)
-{
-    global $DB;
-    if ($id < 1) {
+/**
+ * Simple function to count modules in a course by course id.
+ */
+function count_course_modules(int $course_id) {
+    if ($course_id < 1) {
         return null;
     }
-    return $DB->get_record_sql("SELECT COUNT(id) AS course_modulescount FROM {course_modules} WHERE course=:id;", ['id' => $id]);
+    global $DB;
+    return $DB->get_record_sql("SELECT COUNT(id) AS course_modulescount FROM {course_modules} WHERE course=:course_id;", ['course_id' => $course_id]);
 }
-function find_activities_modified(string $where = '')
-{
+
+/**
+ * Large query that fetches the core course data plus activity data regarding that course.
+ * 
+ * Might be worth ignoring the activity data here: how valuable is it?
+ * 
+ * I cannot remember why it would be beneficial to use $where, maybe for a single course?
+ */
+function find_course_activity_data(string $where = '') {
     global $DB;
     $modules = $DB->get_records_sql("SELECT id, name FROM {modules};");
     $union_segments = [];
@@ -270,9 +280,10 @@ function find_activities_modified(string $where = '')
         ['siteid' => SITEID]
     );
 }
-
-function find_course_last_access()
-{
+/**
+ * Finds course last access from user_last_access table.
+ */
+function find_course_last_access() {
     global $DB, $CFG;
     return $DB->get_records_sql(
         "SELECT ula.id,
@@ -295,42 +306,16 @@ function find_course_last_access()
     );
 }
 /**
- * @deprecated
+ * Useful function to transform moodletime to unixtimestamp.
+ * Could this be done differently?
  */
-function time_ago(int $timestamp)
-{
-    $string_map = [
-        'y' => 'year',
-        'm' => 'month',
-        'd' => 'day',
-        'h' => 'hour',
-        'i' => 'minute',
-    ];
-    $date = new \DateTime();
-    $date->setTimestamp($timestamp);
-    $interval = $date->diff(new \DateTime('now'));
-    $date_string = '';
-    foreach ($interval as $key => $ago) {
-        $plural = '';
-        if ($ago <= 0) {
-            continue;
-        } else if ($ago > 1) {
-            $plural = 's';
-        }
-        $date_string .= $ago . ' ' . $string_map[$key] . $plural . ' ago';
-        break;
-    }
-    return $date_string;
-}
-
-function moodletime_to_unixtimestamp(array $timearray)
-{
+function moodletime_to_unixtimestamp(array $timearray) {
     $timestring = $timearray['day'] . '-' . $timearray['month'] . '-' . $timearray['year'];
     return (strtotime($timestring) ?? 0);
 }
 
 /**
- * Temporary function
+ * Temporary function to help debug within html.
  */
 function cwt_debugger($data, string $leadingtext = 'Debug') {
     $debugmode = get_config('tool_coursewrangler', 'debugmode');
