@@ -27,6 +27,15 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [
+        'classname' => 'tool_coursewrangler\task\filldata',
+        'blocking' => 0,
+        'minute' => '00',
+        'hour' => '2-5', // Between 2 and 5 AM.
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '0', // Every sunday.
+    ],
+    [
         'classname' => 'tool_coursewrangler\task\wrangle',
         'blocking' => 0,
         'minute' => '00',
