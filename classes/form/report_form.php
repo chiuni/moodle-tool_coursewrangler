@@ -42,18 +42,20 @@ class report_form extends moodleform
     {
         global $DB;
 
-        $mform = $this->_form; // Don't forget the underscore!
+        $mform = $this->_form;
         $customdata = $this->_customdata;
 
         // HEADER FILTER OPTIONS
 
-        $mform->addElement('text', 'matchstring_short', get_string('report_form_matchstring_short', 'tool_coursewrangler'));
+        // Short string match for course idnumber and course short name.
+        $mform->addElement('text', 'matchstring_short', get_string('report_form_matchstring_short', 'tool_coursewrangler'));        
+        // Full string match for course full name.
         $mform->addElement('text', 'matchstring_full', get_string('report_form_matchstring_full', 'tool_coursewrangler'));
 
         $pagesize_options = [50=>50, 100=>100, 250=>250, 500=>500];
         $mform->addElement('select', 'pagesize', get_string('report_form_pagesize', 'tool_coursewrangler'), $pagesize_options);
 
-        // autocomplete search box for categories
+        // Autocomplete search box for categories.
         $categories = $DB->get_records('course_categories', ['parent' => 0], 'name ASC');
         $category_areanames = array();
         foreach ($categories as $id => $category) {
@@ -120,7 +122,7 @@ class report_form extends moodleform
         $this->add_action_buttons(true, get_string('report_form_filter_results', 'tool_coursewrangler'));
 
     }
-    //Custom validation should be added here
+    //Custom validation should be added here.
     function validation($data, $files)
     {
         return array();
