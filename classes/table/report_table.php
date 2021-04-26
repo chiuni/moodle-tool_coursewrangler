@@ -156,121 +156,216 @@ class report_table extends table_sql implements renderable
     /**
      * Define table SQL query.
      */
-    protected function define_table_sql() {
+    protected function build_query() {
         global $DB;
-        // Make sure that metrics.course_id is ALWAYS first item in fields section of the query.
-        $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_module_id, metrics.course_shortname, metrics.course_fullname, metrics.course_idnumber, metrics.course_timecreated, metrics.course_timemodified, metrics.course_startdate, metrics.course_enddate, metrics.course_visible, metrics.course_isparent, metrics.course_modulescount, metrics.course_timeaccess, metrics.course_lastenrolment, metrics.activity_type, metrics.activity_lastmodified, metrics.total_enrol_count, metrics.active_enrol_count, metrics.self_enrol_count, metrics.manual_enrol_count, metrics.meta_enrol_count, metrics.other_enrol_count, metrics.suspended_enrol_count, metrics.metrics_updated";
-        $what_score_sql = "score.id, score.metrics_id, score.timemodified, score.raw, score.rounded, score.percentage";
-        $what_sql = "$what_metrics_sql, $what_score_sql";
-        // Default where statement should at least have one statement,
-        // so we use true as the initial statement to avoid Moodle
-        // errors and other undesired behaviour.
-        $where_sql = "true";
-        $from_sql = "{tool_coursewrangler_metrics} AS metrics";
-        $join_score_sql = " LEFT JOIN {tool_coursewrangler_score} AS score ON metrics.id=score.metrics_id ";
+        $sqlwhat = [
+            'metrics.course_id', 
+            'metrics.id', 
+            'metrics.course_module_id', 
+            'metrics.course_shortname', 
+            'metrics.course_fullname', 
+            'metrics.course_idnumber', 
+            'metrics.course_timecreated', 
+            'metrics.course_timemodified', 
+            'metrics.course_startdate', 
+            'metrics.course_enddate', 
+            'metrics.course_visible', 
+            'metrics.course_isparent', 
+            'metrics.course_modulescount', 
+            'metrics.course_timeaccess', 
+            'metrics.course_lastenrolment', 
+            'metrics.activity_type', 
+            'metrics.activity_lastmodified', 
+            'metrics.total_enrol_count', 
+            'metrics.active_enrol_count', 
+            'metrics.self_enrol_count', 
+            'metrics.manual_enrol_count', 
+            'metrics.meta_enrol_count', 
+            'metrics.other_enrol_count', 
+            'metrics.suspended_enrol_count', 
+            'metrics.metrics_updated',
+            'score.id', 
+            'score.metrics_id', 
+            'score.timemodified', 
+            'score.raw', 
+            'score.rounded', 
+            'score.percentage'
+        ];
+        $sqlfrom = [
+            '{tool_coursewrangler_metrics} AS metrics',
+            'LEFT JOIN {tool_coursewrangler_score} AS score ON metrics.id=score.metrics_id'
+        ];
+        $params = [];
+        $conditions = [];
 
-        $join_action_data = '';
-
+        // If action data checkbox is ticked, display action data.
         if ($this->display_action_data) {
-            $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.course_id=act.course_id ";
+            $sqlfrom[] = 'LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.course_id=act.course_id';
             // Make sure not to double select course_id here, otherwise ambiguous error appears.
-            $what_sql .= ", act.id, act.action, act.status, act.lastupdated";
+            $sqlwhat[] = 'act.id';
+            $sqlwhat[] = 'act.action';
+            $sqlwhat[] = 'act.status';
+            $sqlwhat[] = 'act.lastupdated';
         }
 
-        $full_join_score_sql = $join_score_sql . $join_action_data;
-
-        // Date SQL options.
+        /**
+         * Date SQL options.
+         * 
+         * Course time created filters.
+         */
         if ($this->course_timecreated_notset) {
-            // IF NOTSET option for COURSE_TIMECREATED is set, filter all missing time created.
-            $where_sql .= " AND metrics.course_timecreated = 0";
+            // If 'notset' option for 'course_timecreated' is set, filter all missing time created.
+            $conditions[] = "metrics.course_timecreated = 0";
         } else {
             if (isset($this->course_timecreated_after)) {
-                // Option where COURSE_TIMECREATED is AFTER specified date.
-                $where_sql .= " AND metrics.course_timecreated > $this->course_timecreated_after";
+                // Option where 'course_timecreated' is AFTER specified date.
+                $conditions[] = "metrics.course_timecreated > :coursetimecreatedafter";
+                $params['coursetimecreatedafter'] = $this->course_timecreated_after;
             }
             if (isset($this->course_timecreated_before)) {
-                // Option where COURSE_TIMECREATED is BEFORE specified date.
-                $where_sql .= " AND metrics.course_timecreated < $this->course_timecreated_before";
+                // Option where 'course_timecreated' is BEFORE specified date.
+                $conditions[] = "metrics.course_timecreated < :coursetimecreatedbefore";
+                $params['coursetimecreatedbefore'] = $this->course_timecreated_before;
             }
         }
+        /**
+         * Course start date filters.
+         */
         if ($this->course_startdate_notset) {
-            // IF NOTSET option for COURSE_STARTDATE is set, filter all missing time created.
-            $where_sql .= " AND metrics.course_startdate = 0";
+            // If 'notset' option for 'course_startdate' is set, filter all missing time created.
+            $conditions[] = "metrics.course_startdate = 0";
         } else {
             if (isset($this->course_startdate_after)) {
-                // Option where COURSE_STARTDATE is AFTER specified date.
-                $where_sql .= " AND metrics.course_startdate > $this->course_startdate_after";
+                // Option where 'course_startdate' is AFTER specified date.
+                $conditions[] = "metrics.course_startdate > :coursestartdateafter";
+                $params['coursestartdateafter'] = $this->course_startdate_after;
             }
             if (isset($this->course_startdate_before)) {
-                // Option where COURSE_STARTDATE is BEFORE specified date.
-                $where_sql .= " AND metrics.course_startdate < $this->course_startdate_before";
+                // Option where 'course_startdate' is BEFORE specified date.
+                $conditions[] = "metrics.course_startdate < :coursestartdatebefore";
+                $params['coursestartdatebefore'] = $this->course_startdate_before;
             }
         }
+        /**
+         * Course end date filters.
+         */
         if ($this->course_enddate_notset) {
-            // IF NOTSET option for COURSE_ENDDATE is set, filter all missing time created.
-            $where_sql .= " AND metrics.course_enddate = 0";
+            // If 'notset' option for 'course_enddate' is set, filter all missing time created.
+            $conditions[] = "metrics.course_enddate = 0";
         } else {
             if (isset($this->course_enddate_after)) {
-                // Option where COURSE_ENDDATE is AFTER specified date.
-                $where_sql .= " AND metrics.course_enddate > $this->course_enddate_after";
+                // Option where 'course_enddate' is AFTER specified date.
+                $conditions[] = "metrics.course_enddate > :courseenddateafter";
+                $params['courseenddateafter'] = $this->course_enddate_after;
             }
             if (isset($this->course_enddate_before)) {
-                // Option where COURSE_ENDDATE is BEFORE specified date.
-                $where_sql .= " AND metrics.course_enddate < $this->course_enddate_before";
+                // Option where 'course_enddate' is BEFORE specified date.
+                $conditions[] = "metrics.course_enddate < :courseenddatebefore";
+                $params['courseenddatebefore'] = $this->course_enddate_before;
             }
         }
+        /**
+         * Course last time access filters.
+         */
         if ($this->course_timeaccess_notset) {
-            // IF NOTSET option for COURSE_TIMEACCESS is set, filter all missing time created.
-            $where_sql .= " AND metrics.course_timeaccess = 0";
+            // IF 'notset' option for 'course_timeaccess' is set, filter all missing time created.
+            $conditions[] = "metrics.course_timeaccess = 0";
         } else {
             if (isset($this->course_timeaccess_after)) {
-                // Option where COURSE_TIMEACCESS is AFTER specified date.
-                $where_sql .= " AND metrics.course_timeaccess > $this->course_timeaccess_after";
+                // Option where 'course_timeaccess' is AFTER specified date.
+                $conditions[] = "metrics.course_timeaccess > :coursetimeaccessafter";
+                $params['coursetimeaccessafter'] = $this->course_timeaccess_after;
             }
             if (isset($this->course_timeaccess_before)) {
-                // Option where COURSE_TIMEACCESS is BEFORE specified date.
-                $where_sql .= " AND metrics.course_timeaccess < $this->course_timeaccess_before";
+                // Option where 'course_timeaccess' is BEFORE specified date.
+                $conditions[] = "metrics.course_timeaccess < :coursetimeaccessbefore";
+                $params['coursetimeaccessbefore'] = $this->course_timeaccess_before;
             }
         }
+        /**
+         * String search for course short name and id number.
+         */
         if (isset($this->matchstring_short)){
-            $where_sql .= " AND ( metrics.course_shortname LIKE '%$this->matchstring_short%'";
-            $where_sql .= " OR metrics.course_idnumber LIKE '%$this->matchstring_short%' )";
+            $query = [];
+            $query[] = $DB->sql_like(
+                'metrics.course_shortname', 
+                ':matchstringshort', 
+                false
+            );
+            $query[] = $DB->sql_like(
+                'metrics.course_idnumber', 
+                ':matchstringshort', 
+                false
+            );
+            $conditions[] = '(' . join(' OR ', $query) . ')';
+            $params['matchstringshort'] = "%$this->matchstring_short%";
 
         }
+        /**
+         * String search for course full name.
+         */
         if (isset($this->matchstring_full)){
-            $where_sql .= " AND metrics.course_fullname LIKE '%$this->matchstring_full%'";
+            $conditions[] = $DB->sql_like(
+                'metrics.course_fullname', 
+                ':matchstringfull', 
+                false
+            );
+            $params['matchstringfull'] = "%$this->matchstring_full%";
         }
-        // Check categories exists.
+
+        /**
+         * Category filter.
+         */
         if (count($this->category_ids) > 0) {
             $categories = [];
-            foreach ($this->category_ids as $key => $category_id) {
+            foreach ($this->category_ids as $category_id) {
                 if ($category_id <= 0) {
                     continue;
                 }
-                // TODO use record_exists instead?
-                $categories[$category_id] = $DB->get_record_sql("SELECT * FROM {course_categories} WHERE id = :id;", ['id' => $category_id]);
+                $categories[$category_id] = $DB->record_exists(
+                    "{course_categories}", 
+                    ['id' => $category_id]
+                );
             }
             if (count($categories) > 0) {
                 $id_courses_array = [];
-                foreach ($categories as $id => $category) {
-                    if ($category != false) {
-                        // Category found, exists.
-                        $id_courses = $DB->get_records_sql("SELECT c.id FROM {course} AS c JOIN {course_categories} AS cc ON c.category=cc.id WHERE cc.id=:id;", ['id' => $id]);
-                        foreach ($id_courses as $course) {
-                            $id_courses_array[] = $course->id;
-                        }
+                foreach ($categories as $id => $exists) {
+                    if (!$exists) {
+                        continue;
+                    }
+                    $id_courses = $DB->get_records_sql(
+                        "SELECT c.id 
+                            FROM {course} AS c 
+                            JOIN {course_categories} AS cc 
+                                ON c.category=cc.id 
+                            WHERE cc.id=:catid;", 
+                        ['catid' => $id]
+                    );
+                    foreach ($id_courses as $course) {
+                        $id_courses_array[] = $course->id;
                     }
                 }
-                $ids_string = implode(',', $id_courses_array);
-                $and_categories_sql = "AND metrics.course_id IN ($ids_string)";
-                if (strlen($ids_string) < 1) {
-                    $and_categories_sql = '';
+                if (count($id_courses_array) > 0) {
+                    $params['catcourseids'] = implode(',', $id_courses_array);
+                    $conditions[] = "metrics.course_id IN (:catcourseids)";
                 }
-                $this->debug_sql = "$what_sql $from_sql $full_join_score_sql $where_sql $and_categories_sql";
-                $where_sql = "$where_sql $and_categories_sql";
             }
         }
-        $this->set_sql($what_sql, "$from_sql $full_join_score_sql", $where_sql);
+        // This is required to prevent SQL errors on empty conditions.
+        if (empty($conditions)) {
+            $conditions[] = '1=1';
+        }
+        return [$sqlwhat, $sqlfrom, $conditions, $params];
+    }
+    /**
+     * Define table SQL query.
+     */
+    protected function define_table_sql() {
+        list($sqlwhat, $sqlfrom, $conditions, $params) = $this->build_query();
+        $sqlwhat = join(', ', $sqlwhat);
+        $sqlfrom = join(' ', $sqlfrom);
+        $conditions = join(' AND ', $conditions);
+        $this->set_sql($sqlwhat, $sqlfrom, $conditions, $params);
     }
     /**
      * Processing dates for table.
