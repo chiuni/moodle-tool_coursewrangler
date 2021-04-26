@@ -32,6 +32,12 @@ $category_ids = empty($category_ids) && isset($report_form_data_json->category_i
                     ? $report_form_data_json->category_ids 
                     : $category_ids;
 
+$filter_action_data = optional_param('filter_action_data', null, PARAM_RAW);
+$filter_action_data = is_array($filter_action_data) ? $filter_action_data : array_filter( (array) explode(',', $filter_action_data) );
+$filter_action_data = empty($filter_action_data) && isset($report_form_data_json->filter_action_data) 
+                    ? $report_form_data_json->filter_action_data 
+                    : $filter_action_data;
+
 // Dates optional params.
 $course_timecreated_after = optional_param('course_timecreated_after', null, PARAM_INT);
 $course_timecreated_after = $course_timecreated_after ?? $report_form_data_json->course_timecreated_after ?? false;
@@ -112,9 +118,9 @@ $pagesize = $pagesize ?? $report_form_data_json->pagesize ?? 0; // This resets i
 $pagesize = ($pagesize > 500) ? 500 : $pagesize;
 $pagesize = ($pagesize < 50) ? 50 : $pagesize;
 
-$matchstring_short = optional_param('matchstring_short', null, PARAM_ALPHANUMEXT);
+$matchstring_short = optional_param('matchstring_short', null, PARAM_TEXT);
 $matchstring_short = $matchstring_short ?? $report_form_data_json->matchstring_short ?? null;
-$matchstring_full = optional_param('matchstring_full', null, PARAM_ALPHANUMEXT);
+$matchstring_full = optional_param('matchstring_full', null, PARAM_TEXT);
 $matchstring_full = $matchstring_full ?? $report_form_data_json->matchstring_full ?? null;
 
 $PAGE->set_context($context);
@@ -130,6 +136,7 @@ echo $OUTPUT->header();
 
 $options_array = [];
 $options_array['category_ids'] = $category_ids ?? [];
+$options_array['filter_action_data'] = $filter_action_data ?? [];
 $options_array['course_timecreated_after'] = $course_timecreated_after > 0 ? $course_timecreated_after : null;
 $options_array['course_timecreated_before'] = $course_timecreated_before > 0 ? $course_timecreated_before : null;
 $options_array['course_startdate_after'] = $course_startdate_after > 0 ? $course_startdate_after : null;
@@ -166,6 +173,7 @@ $base_url_str = '/admin/tool/coursewrangler/table.php';
 $url_params = $options_array;
 // Parameter category_ids must be string.
 $url_params['category_ids'] = is_array($category_ids) ? implode(',', $category_ids) : $category_ids;
+$url_params['filter_action_data'] = is_array($filter_action_data) ? implode(',', $filter_action_data) : $filter_action_data;
 $url_params = array_filter($url_params);
 $base_url = new moodle_url($base_url_str, $url_params);
 $base_url_reset = new moodle_url($base_url_str);

@@ -60,6 +60,7 @@ class report_table extends table_sql implements renderable
 
         // Optional params setting.
         $this->category_ids = $params['category_ids'] ?? [];
+        $this->filter_action_data = $params['filter_action_data'] ?? [];
         $this->course_timecreated_after = $params['course_timecreated_after'] ?? null;
         $this->course_timecreated_before = $params['course_timecreated_before'] ?? null;
         $this->course_startdate_after = $params['course_startdate_after'] ?? null;
@@ -77,6 +78,7 @@ class report_table extends table_sql implements renderable
 
         // Preparing data for building urls in edit col.
         $params['category_ids'] = isset(($params['category_ids'])) ? implode(',', $params['category_ids']) : null;
+        $params['filter_action_data'] = isset(($params['filter_action_data'])) ? implode(',', $params['filter_action_data']) : null;
         $this->url_params = $params;
         $this->return_link = $baseurl->out();
         $this->define_baseurl($baseurl);
@@ -198,15 +200,54 @@ class report_table extends table_sql implements renderable
         $params = [];
         $conditions = [];
 
-        // If action data checkbox is ticked, display action data.
-        if ($this->display_action_data) {
-            $sqlfrom[] = 'LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.course_id=act.course_id';
-            // Make sure not to double select course_id here, otherwise ambiguous error appears.
-            $sqlwhat[] = 'act.id';
-            $sqlwhat[] = 'act.action';
-            $sqlwhat[] = 'act.status';
-            $sqlwhat[] = 'act.lastupdated';
+        /**
+         * We add this join always, so that we can filter out protected courses.
+         */
+        $sqlfrom[] = 'LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.course_id=act.course_id';
+        // Make sure not to double select course_id here, otherwise ambiguous error appears.
+        $sqlwhat[] = 'act.id';
+        $sqlwhat[] = 'act.action';
+        $sqlwhat[] = 'act.status';
+        $sqlwhat[] = 'act.lastupdated';
+
+        /**
+         * Filter out protected courses by default!
+         * 
+         * If filter_action_data is empty, the table will
+         *  output all courses which aren't protected, else it will
+         *  filter through courses.
+         */
+        if (empty($this->filter_action_data)) {
+            $conditions[] = "(act.action != 'protect' OR act.action IS NULL)";
+        } else {
+            // Filter action data prefix.
+            $fad_prefix = 'fad';
+            $fad_conditions = [];
+            foreach ($this->filter_action_data as $value) {
+                if ($value == '_qf__force_multiselect_submission') {
+                    // To do: ask Mark if there is a better way to do this,
+                    //  why the hell does this even appear in my array? 
+                    // Bloody forms.
+                    continue;
+                }
+                // To get courses without action we must do it differently
+                //  by asking the database for action IS NULL.
+                if ($value == 'null') {
+                    $fad_conditions[] = "act.action IS NULL";
+                    continue;
+                }
+                $fad_conditions[] = "act.action = :$fad_prefix"."$value";
+                $params[$fad_prefix . $value] = $value;
+            }
+            if (!empty($fad_conditions)) {
+                $conditions[] = '(' . implode(' OR ', $fad_conditions) . ')';
+            }
         }
+
+
+        /**
+         * Filtering 
+         */
 
         /**
          * Date SQL options.
@@ -322,32 +363,31 @@ class report_table extends table_sql implements renderable
                 if ($category_id <= 0) {
                     continue;
                 }
-                $categories[$category_id] = $DB->record_exists(
-                    "{course_categories}", 
-                    ['id' => $category_id]
-                );
+                if ($DB->record_exists("course_categories", ['id' => $category_id])) {
+                    $categories[] = $category_id;
+                }
             }
             if (count($categories) > 0) {
-                $id_courses_array = [];
-                foreach ($categories as $id => $exists) {
-                    if (!$exists) {
-                        continue;
-                    }
-                    $id_courses = $DB->get_records_sql(
+                $courseids = [];
+                foreach ($categories as $id) {
+                    $categorycourses = $DB->get_records_sql(
                         "SELECT c.id 
-                            FROM {course} AS c 
-                            JOIN {course_categories} AS cc 
-                                ON c.category=cc.id 
-                            WHERE cc.id=:catid;", 
+                            FROM {course} AS c  
+                            WHERE c.category=:catid;", 
                         ['catid' => $id]
                     );
-                    foreach ($id_courses as $course) {
-                        $id_courses_array[] = $course->id;
+                    foreach ($categorycourses as $course) {
+                        $courseids[] = $course->id;
                     }
                 }
-                if (count($id_courses_array) > 0) {
-                    $params['catcourseids'] = implode(',', $id_courses_array);
-                    $conditions[] = "metrics.course_id IN (:catcourseids)";
+                if (count($courseids) > 0) {
+                    list($catsql, $catparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'coursecatids');
+                    $params += $catparams;
+                    $conditions[] = "metrics.course_id $catsql";
+                } else {
+                    // We make conditions 1=0 because it's the best way to display no results 
+                    //  without breaking the table.
+                    $conditions[] = '1=0';
                 }
             }
         }

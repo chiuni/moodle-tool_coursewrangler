@@ -139,6 +139,11 @@ $string['report_form_filter_course_startdate_notset'] = 'Start Date Not Set (or 
 $string['report_form_filter_course_enddate_notset'] = 'End Date Not Set (or equals 0)';
 $string['report_form_filter_course_timeaccess_notset'] = 'Last Access Not Set (or equals 0)';
 $string['report_form_filter_display_action_data'] = 'Display Action Data';
+$string['report_form_filter_action_data'] = 'Filter by action';
+$string['report_form_filter_action_data_noselectionstring'] = 'Select an action';
+$string['report_form_filter_display_action_null'] = 'Courses not set';
+$string['report_form_filter_display_action_delete'] = 'Courses to delete';
+$string['report_form_filter_display_action_protect'] = 'Protected courses';
 
 
 $string['action_form_chooseaction'] = 'missing string!';
