@@ -93,10 +93,19 @@ function find_relevant_course_data_lite(array $options = [])
     $course_query = find_course_activity_data();
     $ula_query = find_course_last_access();
     $meta_query = find_meta_parents();
-    $parent_course_ids = array_keys($meta_query);
+    $parent_courses = [];
+    $parent_children = [];
+    foreach ($meta_query as $value) {
+        $parent_children[$value->courseid][] = $value->parent_course_id;
+    }
+    $parent_courses = array_keys($parent_children);
     foreach ($course_query as $key => $result) {
         $result->course_timeaccess = $ula_query[$key]->timeaccess ?? 0;
-        $result->course_isparent = in_array($result->course_id, $parent_course_ids) ? 1 : 0; // could we count this?
+        $result->course_isparent = in_array($result->course_id, $parent_courses) ? 1 : 0;
+        $result->course_children = null;
+        if ($result->course_isparent) {
+            $result->course_children = implode(',', $parent_children[$result->course_id]);
+        }
         $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? 0;
         $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? 0;
         $course_students = find_course_students($result->course_id);
@@ -130,7 +139,7 @@ function find_relevant_course_data_lite(array $options = [])
  */
 function find_meta_parents() {
     global $DB;
-    return $DB->get_records_sql("SELECT id, customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
+    return $DB->get_records_sql("SELECT id, courseid, customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
 }
 
 /** 
