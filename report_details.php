@@ -62,15 +62,19 @@ $course->activity_lastmodified = ($course->activity_lastmodified == 0) ?  '-' : 
 $course->metrics_updated = ($course->metrics_updated == 0) ?  '-' : userdate($course->metrics_updated);
 // Processing visible and parent
 $course->course_visible = ($course->course_visible == 0) ? 'No' : 'Yes';
-$course->course_isparent = ($course->course_isparent == 0) ? 'No' : 'Yes';
-$course_children_ids = explode(',', $course->course_children);
-$course->course_children = [];
-foreach ($course_children_ids as $child_course_id) {
-    $course->course_children[] = [
+if ($course->course_isparent == 1) {
+    $course_children_ids = explode(',', $course->course_children);
+    $course->course_children = [];
+    foreach ($course_children_ids as $child_course_id) {
+        $course->course_children[] = [
         'course_id' => $child_course_id,
         'course_link' => new moodle_url('/course/view.php?id=' . $child_course_id, [])
     ];
+    }
+} else {
+    $course->course_children = false;
 }
+$course->course_isparent = ($course->course_isparent == 0) ? 'No' : 'Yes';
 $course->score = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_score} WHERE metrics_id=:metrics_id ', ['metrics_id' => $course->id]);
 if ($course->score->timemodified == 0) {
     $course->score = null;
