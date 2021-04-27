@@ -123,12 +123,16 @@ class report_form extends moodleform
         if (
             isset($customdata['course_timecreated_after']) ||
             isset($customdata['course_timecreated_before']) ||
+            isset($customdata['course_timecreated_notset']) ||
             isset($customdata['course_startdate_after']) ||
             isset($customdata['course_startdate_before']) ||
+            isset($customdata['course_startdate_notset']) ||
             isset($customdata['course_enddate_after']) ||
             isset($customdata['course_enddate_before']) ||
+            isset($customdata['course_enddate_notset']) ||
             isset($customdata['course_timeaccess_after']) ||
-            isset($customdata['course_timeaccess_before'])
+            isset($customdata['course_timeaccess_before']) ||
+            isset($customdata['course_timeaccess_notset'])
         ){
             $mform->setExpanded('header_date_options', true);
         }
@@ -146,6 +150,12 @@ class report_form extends moodleform
             get_string('report_form_filter_course_timecreated_before', 'tool_coursewrangler'), 
             ['optional' => true]
         );
+        // COURSE_TIMECREATED_NOTSET
+        $mform->addElement(
+            'checkbox', 
+            'course_timecreated_notset', 
+            get_string('report_form_filter_course_timecreated_notset', 'tool_coursewrangler')
+        );
 
         // COURSE_STARTDATE
         $mform->addElement(
@@ -159,6 +169,12 @@ class report_form extends moodleform
             'course_startdate_before', 
             get_string('report_form_filter_course_startdate_before', 'tool_coursewrangler'), 
             ['optional' => true]
+        );
+        // COURSE_STARTDATE_NOTSET
+        $mform->addElement(
+            'checkbox', 
+            'course_startdate_notset', 
+            get_string('report_form_filter_course_startdate_notset', 'tool_coursewrangler')
         );
 
         // COURSE_ENDDATE
@@ -174,6 +190,12 @@ class report_form extends moodleform
             get_string('report_form_filter_course_enddate_before', 'tool_coursewrangler'), 
             ['optional' => true]
         );
+        // COURSE_ENDDATE_NOTSET
+        $mform->addElement(
+            'checkbox', 
+            'course_enddate_notset', 
+            get_string('report_form_filter_course_enddate_notset', 'tool_coursewrangler')
+        );
 
         // COURSE_TIMEACCESS
         $mform->addElement(
@@ -188,43 +210,29 @@ class report_form extends moodleform
             get_string('report_form_filter_course_timeaccess_before', 'tool_coursewrangler'), 
             ['optional' => true]
         );
-
-        // HEADER FLAG OPTIONS
-        $mform->addElement(
-            'header', 
-            'header_flag_options', 
-            get_string('report_form_flag_options', 
-            'tool_coursewrangler')
-        );
-        $mform->setExpanded('header_flag_options', false);
-
-        // COURSE_TIMECREATED_NOTSET
-        $mform->addElement(
-            'checkbox', 
-            'course_timecreated_notset', 
-            get_string('report_form_filter_course_timecreated_notset', 'tool_coursewrangler')
-        );
-
-        // COURSE_STARTDATE_NOTSET
-        $mform->addElement(
-            'checkbox', 
-            'course_startdate_notset', 
-            get_string('report_form_filter_course_startdate_notset', 'tool_coursewrangler')
-        );
-
-        // COURSE_ENDDATE_NOTSET
-        $mform->addElement(
-            'checkbox', 
-            'course_enddate_notset', 
-            get_string('report_form_filter_course_enddate_notset', 'tool_coursewrangler')
-        );
-
         // COURSE_TIMEACCESS_NOTSET
         $mform->addElement(
             'checkbox', 
             'course_timeaccess_notset', 
             get_string('report_form_filter_course_timeaccess_notset', 'tool_coursewrangler')
         );
+
+        // // HEADER FLAG OPTIONS
+        // $mform->addElement(
+        //     'header', 
+        //     'header_flag_options', 
+        //     get_string('report_form_flag_options', 
+        //     'tool_coursewrangler')
+        // );
+        // $mform->setExpanded('header_flag_options', false);
+
+        
+
+        
+
+        
+
+        
 
         // filter button
         $this->add_action_buttons(true, get_string('report_form_filter_results', 'tool_coursewrangler'));
