@@ -54,7 +54,10 @@
                         <dt>{{#str}}table_course_children, tool_coursewrangler{{/str}}</dt> 
                         <dd>
                             {{#course_children}}
-                            <a href="{{{course_link}}}">{{course_id}}</a>
+                                <a href="{{{course_link}}}">{{course_id}}</a>
+                            {{/course_children}}
+                            {{^course_children}}
+                                {{#str}}table_course_children_none, tool_coursewrangler{{/str}}
                             {{/course_children}}
                         </dd>
                     </li>
