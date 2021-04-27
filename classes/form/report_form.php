@@ -217,22 +217,39 @@ class report_form extends moodleform
             get_string('report_form_filter_course_timeaccess_notset', 'tool_coursewrangler')
         );
 
-        // // HEADER FLAG OPTIONS
-        // $mform->addElement(
-        //     'header', 
-        //     'header_flag_options', 
-        //     get_string('report_form_flag_options', 
-        //     'tool_coursewrangler')
-        // );
-        // $mform->setExpanded('header_flag_options', false);
+        // HEADER FLAG OPTIONS
+        $mform->addElement(
+            'header', 
+            'header_flag_options', 
+            get_string('report_form_flag_options', 
+            'tool_coursewrangler')
+        );
+        $mform->setExpanded('header_flag_options', false);
 
-        
-
-        
-
-        
-
-        
+        // hideshow_meta_parents
+        $meta_parents_options = [
+            'default' => get_string('select_an_option', 'tool_coursewrangler'),
+            'hide' => get_string('hideshow_meta_parents_hideonly', 'tool_coursewrangler'),
+            'show' => get_string('hideshow_meta_parents_showonly', 'tool_coursewrangler')
+        ];
+        $mform->addElement(
+            'select', 
+            'hideshow_meta_parents', 
+            get_string('report_form_filter_hideshow_meta_parents', 'tool_coursewrangler'), 
+            $meta_parents_options
+        );
+        // hideshow_hidden_courses
+        $meta_parents_options = [
+            'default' => get_string('select_an_option', 'tool_coursewrangler'),
+            'hide' => get_string('hideshow_hidden_courses_hideonly', 'tool_coursewrangler'),
+            'show' => get_string('hideshow_hidden_courses_showonly', 'tool_coursewrangler')
+        ];
+        $mform->addElement(
+            'select', 
+            'hideshow_hidden_courses', 
+            get_string('report_form_filter_hideshow_hidden_courses', 'tool_coursewrangler'), 
+            $meta_parents_options
+        );
 
         // filter button
         $this->add_action_buttons(true, get_string('report_form_filter_results', 'tool_coursewrangler'));

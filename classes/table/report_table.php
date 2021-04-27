@@ -75,6 +75,8 @@ class report_table extends table_sql implements renderable
         $this->course_timeaccess_notset = $params['course_timeaccess_notset'] ?? false;
         $this->matchstring_short = $params['matchstring_short'] ?? null;
         $this->matchstring_full = $params['matchstring_full'] ?? null;
+        $this->hideshow_meta_parents = $params['hideshow_meta_parents'] ?? null;
+        $this->hideshow_hidden_courses = $params['hideshow_hidden_courses'] ?? null;
 
         // Preparing data for building urls in edit col.
         $params['category_ids'] = isset(($params['category_ids'])) ? implode(',', $params['category_ids']) : null;
@@ -391,6 +393,45 @@ class report_table extends table_sql implements renderable
                 }
             }
         }
+
+        /**
+         * Hide parent courses.
+         */
+        if (isset($this->hideshow_meta_parents)) {
+            switch($this->hideshow_meta_parents) {
+                // Show only parent courses.
+                case 'show':
+                    $conditions[] = "metrics.course_isparent = 1";
+                    break;
+                // Hide all parent courses.
+                case 'hide':
+                    $conditions[] = "metrics.course_isparent = 0";
+                    break;
+                // Do nothing.
+                default:
+                    break;
+            }
+        }
+
+        /**
+         * Hide visible courses.
+         */
+        if (isset($this->hideshow_hidden_courses)) {
+            switch($this->hideshow_hidden_courses) {
+                // Show only visible courses.
+                case 'show':
+                    $conditions[] = "metrics.course_visible = 1";
+                    break;
+                // Hide all visible courses.
+                case 'hide':
+                    $conditions[] = "metrics.course_visible = 0";
+                    break;
+                // Do nothing.
+                default:
+                    break;
+            }
+        }
+
         // This is required to prevent SQL errors on empty conditions.
         if (empty($conditions)) {
             $conditions[] = '1=1';

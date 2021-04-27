@@ -45,6 +45,7 @@ $string['table_activity_type'] = 'Activity type';
 $string['table_activity_lastmodified'] = 'Activities last modified';
 $string['table_course_timeaccess'] = 'Last access';
 $string['table_course_isparent'] = 'Parent';
+$string['table_course_children'] = 'Children';
 $string['table_course_modulescount'] = 'Total activities';
 $string['table_course_lastenrolment'] = 'Last enrolment';
 $string['table_course_deletionscore'] = 'Deletion Score';
@@ -144,6 +145,12 @@ $string['report_form_filter_action_data_noselectionstring'] = 'Select an action'
 $string['report_form_filter_display_action_null'] = 'Courses not set';
 $string['report_form_filter_display_action_delete'] = 'Courses to delete';
 $string['report_form_filter_display_action_protect'] = 'Protected courses';
+$string['report_form_filter_hideshow_meta_parents'] = 'Filter by parent status';
+$string['report_form_filter_hideshow_hidden_courses'] = 'Filter by course visibility status';
+$string['hideshow_meta_parents_hideonly'] = 'Hide parent courses';
+$string['hideshow_meta_parents_showonly'] = 'Show only parent courses';
+$string['hideshow_hidden_courses_hideonly'] = 'Hide visible courses';
+$string['hideshow_hidden_courses_showonly'] = 'Show only visible courses';
 
 
 $string['action_form_chooseaction'] = 'missing string!';
@@ -157,3 +164,6 @@ $string['action_form_resetaction'] = 'Reset Action';
 $string['task_wrangle'] = 'Wrangle Task';
 $string['task_score'] = 'Score Task';
 $string['task_filldata'] = 'Fill Data Task';
+
+// other
+$string['select_an_option'] = 'Select an option';
