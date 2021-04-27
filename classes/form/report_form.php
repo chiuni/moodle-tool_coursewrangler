@@ -226,6 +226,13 @@ class report_form extends moodleform
         );
         $mform->setExpanded('header_flag_options', false);
 
+        if (
+            isset($customdata['hideshow_meta_parents']) ||
+            isset($customdata['hideshow_hidden_courses'])
+        ){
+            $mform->setExpanded('header_flag_options', true);
+        }
+
         // hideshow_meta_parents
         $meta_parents_options = [
             'default' => get_string('select_an_option', 'tool_coursewrangler'),
