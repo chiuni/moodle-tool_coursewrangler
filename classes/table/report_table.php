@@ -332,16 +332,17 @@ class report_table extends table_sql implements renderable
             $query = [];
             $query[] = $DB->sql_like(
                 'metrics.course_shortname', 
-                ':matchstringshort', 
+                ':matchstring_shortname', 
                 false
             );
             $query[] = $DB->sql_like(
                 'metrics.course_idnumber', 
-                ':matchstringshort', 
+                ':matchstring_idnumber', 
                 false
             );
             $conditions[] = '(' . join(' OR ', $query) . ')';
-            $params['matchstringshort'] = "%$this->matchstring_short%";
+            $params['matchstring_shortname'] = "%$this->matchstring_short%";
+            $params['matchstring_idnumber'] = "%$this->matchstring_short%";
 
         }
         /**
