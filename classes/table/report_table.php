@@ -545,4 +545,34 @@ class report_table extends table_sql implements renderable
         );
         return $label . $checkbox;
     }
+    /**
+     * Preparing the report table gives us access to the total records
+     *  before outputting table on scree. This was taken from ->out()
+     *  function.
+     */
+    function prepare_report_table($pagesize, $useinitialsbar) {
+        global $DB;
+        if (!$this->columns) {
+            $onerow = $DB->get_record_sql("SELECT {$this->sql->fields} FROM {$this->sql->from} WHERE {$this->sql->where}",
+                $this->sql->params, IGNORE_MULTIPLE);
+            // If columns is not set then define columns as the keys of the rows returned
+            // from the db.
+            $this->define_columns(array_keys((array)$onerow));
+            $this->define_headers(array_keys((array)$onerow));
+        }
+        $this->setup();
+        $this->query_db($pagesize, $useinitialsbar);
+    }
+    /**
+     * After preparing table, now we can output on screen.
+     * Must check totalrows has been set.
+     */
+    function finish_report_table() {
+        if (!isset($this->totalrows) || $this->totalrows < 1) {
+            return false;
+        }
+        $this->build_table();
+        $this->close_recordset();
+        $this->finish_output();
+    }
 }

@@ -201,6 +201,14 @@ $table = new table\report_table(
     $base_url,
     $options_array
 );
+$table->prepare_report_table($pagesize, false);
+$totalrowstext = get_string('table_displayingtotalrows', 'tool_coursewrangler', $table->totalrows);
+$totalrowshtml = \html_writer::tag(
+    'p',
+    $totalrowstext,
+    ['class' => 'h5 mdl-right']
+);
+echo $totalrowshtml;
 if ($display_action_data == true) {
     $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
     $aform->display();
@@ -234,7 +242,7 @@ if ($display_action_data == true) {
     }
 }
 
-$table->out($pagesize, false);
+$table->finish_report_table();
 
 static $initialised = false;
 if (!$initialised) {
