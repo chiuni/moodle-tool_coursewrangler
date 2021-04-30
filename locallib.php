@@ -96,10 +96,10 @@ function find_relevant_course_data_lite(array $options = [])
     $course_children = [];
     $course_parents = [];
     foreach ($meta_query as $value) {
-        $course_children[$value->courseid][] = $value->parent_course_id;
+        $course_parents[$value->courseid][] = $value->parent_course_id;
     }
     foreach ($meta_query as $value) {
-        $course_parents[$value->parent_course_id][] = $value->courseid;
+        $course_children[$value->parent_course_id][] = $value->courseid;
     }
     foreach ($course_query as $key => $result) {
         $result->course_timeaccess = $ula_query[$key]->timeaccess ?? 0;
@@ -284,9 +284,9 @@ function find_course_activity_data(string $where = '') {
                 m.name AS activity_type, 
                 MAX(act.timemodified) AS activity_lastmodified
         FROM    {course} AS c 
-            JOIN {course_modules} AS cm ON cm.course=c.id 
-            JOIN {modules} AS m ON cm.module=m.id 
-            JOIN ( $union_statement ) AS act 
+            LEFT JOIN {course_modules} AS cm ON cm.course=c.id 
+            LEFT JOIN {modules} AS m ON cm.module=m.id 
+            LEFT JOIN ( $union_statement ) AS act 
         ON act.course=c.id 
         AND act.id=cm.instance
         WHERE c.id!=:siteid
