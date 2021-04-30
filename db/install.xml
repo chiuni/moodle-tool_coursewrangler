@@ -15,7 +15,7 @@
         <FIELD NAME="course_startdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="course_enddate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="course_visible" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
-        <FIELD NAME="course_isparent" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
+        <FIELD NAME="course_parents" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="course_children" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="course_modulescount" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="course_timeaccess" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>

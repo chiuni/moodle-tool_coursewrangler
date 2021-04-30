@@ -103,12 +103,13 @@ class deletion_score
         $rules['activity_last_modified'] = new rules\activity_last_modified($course->activity_lastmodified, $course->course_timecreated, $this->time_unit);
        
         /**
-         * #R5
+         * #R5 
+         * To do: This rule needs to be revised, along with a new children rule.
          * Course Is Parent Rule
          * The information we have:
          *      If the course is parent of other courses (meta enrolments count)
          */
-        $rules['course_isparent'] = new rules\course_isparent($course->course_isparent, $this->course_parent_weight);
+        // $rules['course_isparent'] = new rules\course_isparent($course->course_isparent, $this->course_parent_weight);
 
         /**
          * #R6

@@ -47,8 +47,15 @@
                         <dd>{{{course_visible}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_isparent, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_isparent}}}</dd>
+                        <dt>{{#str}}table_course_parents, tool_coursewrangler{{/str}}</dt> 
+                        <dd>
+                            {{#course_parents}}
+                                <a href="{{{course_link}}}">{{course_id}}</a>
+                            {{/course_parents}}
+                            {{^course_parents}}
+                                {{#str}}table_course_parents_none, tool_coursewrangler{{/str}}
+                            {{/course_parents}}
+                        </dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
                         <dt>{{#str}}table_course_children, tool_coursewrangler{{/str}}</dt> 

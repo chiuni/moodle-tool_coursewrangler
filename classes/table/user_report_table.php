@@ -74,21 +74,11 @@ class user_report_table extends table_sql implements renderable
     {
         $cols = [
             'course_id' => get_string('table_course_id', 'tool_coursewrangler'),
-            // 'course_module_id' => get_string('table_course_module_id', 'tool_coursewrangler'),
             'course_shortname' => get_string('table_course_shortname', 'tool_coursewrangler'),
             'course_fullname' => get_string('table_course_fullname', 'tool_coursewrangler'),
-            // 'course_idnumber' => get_string('table_course_idnumber', 'tool_coursewrangler'),
-            // 'course_timecreated' => get_string('table_course_timecreated', 'tool_coursewrangler'),
-            // 'course_timemodified' => get_string('table_course_timemodified', 'tool_coursewrangler'),
-            // 'course_startdate' => get_string('table_course_startdate', 'tool_coursewrangler'),
             'course_enddate' => get_string('table_course_enddate', 'tool_coursewrangler'),
             'course_visible' => get_string('table_course_visible', 'tool_coursewrangler'),
-            // 'course_isparent' => get_string('table_course_isparent', 'tool_coursewrangler'),
-            // 'course_modulescount' => get_string('table_course_modulescount', 'tool_coursewrangler'),
             'course_timeaccess' => get_string('table_course_timeaccess', 'tool_coursewrangler'),
-            // 'course_lastenrolment' => get_string('table_course_lastenrolment', 'tool_coursewrangler'),
-            // 'activity_type' => get_string('table_activity_type', 'tool_coursewrangler'),
-            // 'activity_lastmodified' => get_string('table_activity_lastmodified', 'tool_coursewrangler'),
             'action' => get_string('table_course_action', 'tool_coursewrangler'),
             'status' => get_string('table_course_status', 'tool_coursewrangler')
         ];
@@ -125,7 +115,15 @@ class user_report_table extends table_sql implements renderable
     protected function define_table_sql()
     {
         // Make sure that metrics.course_id is ALWAYS first item in fields section of the query.
-        $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_module_id, metrics.course_shortname, metrics.course_fullname, metrics.course_idnumber, metrics.course_timecreated, metrics.course_timemodified, metrics.course_startdate, metrics.course_enddate, metrics.course_visible, metrics.course_isparent, metrics.course_modulescount, metrics.course_timeaccess, metrics.course_lastenrolment, metrics.activity_type, metrics.activity_lastmodified, metrics.total_enrol_count, metrics.active_enrol_count, metrics.self_enrol_count, metrics.manual_enrol_count, metrics.meta_enrol_count, metrics.other_enrol_count, metrics.suspended_enrol_count, metrics.metrics_updated";
+        $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_module_id, 
+        metrics.course_shortname, metrics.course_fullname, metrics.course_idnumber, 
+        metrics.course_timecreated, metrics.course_timemodified, metrics.course_startdate, 
+        metrics.course_enddate, metrics.course_visible, metrics.course_parents, 
+        metrics.course_children, metrics.course_modulescount, metrics.course_timeaccess, 
+        metrics.course_lastenrolment, metrics.activity_type, metrics.activity_lastmodified, 
+        metrics.total_enrol_count, metrics.active_enrol_count, metrics.self_enrol_count, 
+        metrics.manual_enrol_count, metrics.meta_enrol_count, metrics.other_enrol_count, 
+        metrics.suspended_enrol_count, metrics.metrics_updated";
         $what_score_sql = "score.id, score.metrics_id, score.timemodified, score.raw, score.rounded, score.percentage";
         $what_sql = "$what_metrics_sql, $what_score_sql";
         // Default where statement should at least have one statement,

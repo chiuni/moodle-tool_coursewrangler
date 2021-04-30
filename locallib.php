@@ -93,18 +93,23 @@ function find_relevant_course_data_lite(array $options = [])
     $course_query = find_course_activity_data();
     $ula_query = find_course_last_access();
     $meta_query = find_meta_parents();
-    $parent_courses = [];
-    $parent_children = [];
+    $course_children = [];
+    $course_parents = [];
     foreach ($meta_query as $value) {
-        $parent_children[$value->courseid][] = $value->parent_course_id;
+        $course_children[$value->courseid][] = $value->parent_course_id;
     }
-    $parent_courses = array_keys($parent_children);
+    foreach ($meta_query as $value) {
+        $course_parents[$value->parent_course_id][] = $value->courseid;
+    }
     foreach ($course_query as $key => $result) {
         $result->course_timeaccess = $ula_query[$key]->timeaccess ?? 0;
-        $result->course_isparent = in_array($result->course_id, $parent_courses) ? 1 : 0;
+        $result->course_parents = null;
         $result->course_children = null;
-        if ($result->course_isparent) {
-            $result->course_children = implode(',', $parent_children[$result->course_id]);
+        if (array_key_exists($result->course_id, $course_children)) {
+            $result->course_children = implode(',', $course_children[$result->course_id]);
+        }
+        if (array_key_exists($result->course_id, $course_parents)) {
+            $result->course_parents = implode(',', $course_parents[$result->course_id]);
         }
         $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? 0;
         $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? 0;

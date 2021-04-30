@@ -48,7 +48,7 @@ $PAGE->set_pagelayout('admin');
 
 global $DB;
 $course = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_metrics} WHERE course_id=:course_id', ['course_id' => $course_id]);
-// creating course link
+// Creating course link.
 $course_url = new moodle_url('/course/view.php?id=' . $course->course_id, []);
 $course->course_title_link = \html_writer::link($course_url, $course->course_shortname . ': ' . $course->course_fullname);
 // Processing dates into human readable format
@@ -60,21 +60,33 @@ $course->course_timeaccess = ($course->course_timeaccess == 0) ?  '-' : userdate
 $course->course_lastenrolment = ($course->course_lastenrolment == 0) ?  '-' : userdate($course->course_lastenrolment);
 $course->activity_lastmodified = ($course->activity_lastmodified == 0) ?  '-' : userdate($course->activity_lastmodified);
 $course->metrics_updated = ($course->metrics_updated == 0) ?  '-' : userdate($course->metrics_updated);
-// Processing visible and parent
+// Processing visible and parent. To do: Convert to languange strings.
 $course->course_visible = ($course->course_visible == 0) ? 'No' : 'Yes';
-if ($course->course_isparent == 1) {
-    $course_children_ids = explode(',', $course->course_children);
+
+if ($course->course_parents != null) {
+    $course_parents = explode(',', $course->course_parents);
+    $course->course_parents = [];
+    foreach ($course_parents as $parent_course_id) {
+        $course->course_parents[] = [
+            'course_id' => $parent_course_id,
+            'course_link' => new moodle_url('/course/view.php?id=' . $parent_course_id, [])
+        ];
+    }
+} else {
+    $course->course_parents = false;
+}
+if ($course->course_children != null) {
+    $course_children = explode(',', $course->course_children);
     $course->course_children = [];
-    foreach ($course_children_ids as $child_course_id) {
+    foreach ($course_children as $child_course_id) {
         $course->course_children[] = [
-        'course_id' => $child_course_id,
-        'course_link' => new moodle_url('/course/view.php?id=' . $child_course_id, [])
-    ];
+            'course_id' => $child_course_id,
+            'course_link' => new moodle_url('/course/view.php?id=' . $child_course_id, [])
+        ];
     }
 } else {
     $course->course_children = false;
 }
-$course->course_isparent = ($course->course_isparent == 0) ? 'No' : 'Yes';
 $course->score = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_score} WHERE metrics_id=:metrics_id ', ['metrics_id' => $course->id]);
 if ($course->score->timemodified == 0) {
     $course->score = null;
@@ -83,7 +95,9 @@ if ($course->score->timemodified == 0) {
 }
 
 if ($course == false) {
-    // throw not found error?
+    // Throw not found error?
+    echo 'not found';
+    exit;
 }
 $course->links = ['return_link' => $return_link];
 
