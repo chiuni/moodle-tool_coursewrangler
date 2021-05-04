@@ -65,14 +65,16 @@ class deletion_score
     public function apply_rules(stdClass $course) : stdClass
     {
         $rules = [];
-
+        $settings = [
+            'time_unit' => $this->time_unit
+        ];
         /**
          * #R1
          * Course End Date Rule
          * The information we have:
          *      The assigned end date of the course, could be 0 if not set.
          */
-        $rules['course_enddate'] = new rules\course_enddate($course->course_enddate, $this->time_unit);
+        // $rules['course_enddate'] = new rules\course_enddate($course->course_enddate, $this->time_unit);
 
         /** 
          * #R2
@@ -81,8 +83,8 @@ class deletion_score
          *      The last access by anyone enroled to the course, could be 0 if not accessed.
          *      The time the course was created
          */
-        // TODO: Consider courses that havent yet started, should we ignore them?
-        $rules['course_lastaccess'] = new rules\course_lastaccess($course->course_timeaccess, $course->course_timecreated, $this->time_unit);
+        // To do: Consider courses that havent yet started, should we ignore them?
+        $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
 
         /**
          * #R3
@@ -91,7 +93,7 @@ class deletion_score
          *      The last time someone edited course settings (not including activies/resources on course page)
          *      The time the course was created
          */
-        $rules['course_settings_timemodified'] = new rules\course_settings_timemodified($course->course_timemodified, $course->course_timecreated, $this->time_unit);
+        // $rules['course_settings_timemodified'] = new rules\course_settings_timemodified($course->course_timemodified, $course->course_timecreated, $this->time_unit);
         
         /**
          * #R4
@@ -100,16 +102,15 @@ class deletion_score
          *      The last time an activity was changed
          *      The time the course was created
          */
-        $rules['activity_last_modified'] = new rules\activity_last_modified($course->activity_lastmodified, $course->course_timecreated, $this->time_unit);
+        // $rules['activity_last_modified'] = new rules\activity_last_modified($course->activity_lastmodified, $course->course_timecreated, $this->time_unit);
        
         /**
          * #R5 
-         * To do: This rule needs to be revised, along with a new children rule.
-         * Course Is Parent Rule
+         * Course Has Children Rule
          * The information we have:
-         *      If the course is parent of other courses (meta enrolments count)
+         *      
          */
-        // $rules['course_isparent'] = new rules\course_isparent($course->course_isparent, $this->course_parent_weight);
+        $rules['course_haschildren'] = new rules\course_haschildren($course);
 
         /**
          * #R6
@@ -117,14 +118,14 @@ class deletion_score
          * The information we have:
          *      The date the last enrolment was created // TODO: should we make this student only role (architype) enrolment?
          */
-        $lastenrolment = $course->course_lastenrolment ?? 0;
-        $rules['course_lastenrolment'] = new rules\course_lastenrolment($lastenrolment, $this->time_unit);
+        // $lastenrolment = $course->course_lastenrolment ?? 0;
+        // $rules['course_lastenrolment'] = new rules\course_lastenrolment($lastenrolment, $this->time_unit);
 
         /**
          * #R7
          * Course Low Enrolment Rule
          */
-        $rules['course_lowenrolment'] = new rules\course_lowenrolment($course->total_enrol_count, $this->low_enrolments_flag);
+        // $rules['course_lowenrolment'] = new rules\course_lowenrolment($course->total_enrol_count, $this->low_enrolments_flag);
 
         /** 
          * #R8
@@ -132,7 +133,7 @@ class deletion_score
          * The information we have:
          *      Whether the course is visible or not
          */
-        $rules['course_isvisible'] = new rules\course_isvisible($course->course_visible);
+        $rules['course_isvisible'] = new rules\course_isvisible($course);
         
         $course->rules = $rules;
         return $course;

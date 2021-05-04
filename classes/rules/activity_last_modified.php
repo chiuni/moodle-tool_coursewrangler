@@ -32,7 +32,7 @@ use tool_coursewrangler\traits\score_limit;
 class activity_last_modified implements rule_interface
 {
     use score_limit;
-    function __construct(int $activity_lastmodified, int $course_timecreated, int $time_unit)
+    function __construct(\stdClass $course)
     {
         $this->description  = 'Course Activity Last Modified != Course Time Created';
         $this->state        = false;

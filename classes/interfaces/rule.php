@@ -33,15 +33,7 @@ namespace tool_coursewrangler\interfaces;
  */
 interface rule
 {
-    /**
-     * @param array $components components used to evaluate condition
-     * @param array $settings settings used to evaluate condition
-     */
-    function evaluate_condition(array $components, array $settings = []): bool;
-
-    /**
-     * @param array $components components used to calculate score
-     * @param array $settings settings used to calculate score
-     */
-    function calculate_score(array $components, array $settings = []): float;
+    function __construct(\stdClass $course, array $settings = []);
+    function evaluate_condition(\stdClass $course): bool;
+    function calculate_score(\stdClass $course): float;
 }

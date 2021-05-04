@@ -32,29 +32,34 @@ use tool_coursewrangler\traits\score_limit;
 class course_lastaccess implements rule_interface
 {
     use score_limit;
-    function __construct(int $course_timeaccess, int $course_timecreated, int $time_unit)
+    function __construct(\stdClass $course, array $settings = [])
     {
         $this->description  = 'Course Time Access > Couter Time Created';
         $this->state        = false;
         $this->score        = 0;
+        $this->settings     = $settings;
 
-        $components = [
-            'course_timeaccess' => $course_timeaccess,
-            'course_timecreated' => $course_timecreated
-        ];
-        $settings = [
-            'time_unit' => $time_unit
-        ];
+        if (!isset($course->course_timeaccess) || 
+            !isset($course->course_timecreated)) {
+            return false;
+        }
         
-        $this->state = $this->evaluate_condition($components, $settings) ?? false;
-        $this->score = $this->calculate_score($components, $settings) ?? 0;
+        $this->evaluate_condition($course);
+        $this->calculate_score($course);
     }
-    function evaluate_condition(array $components, array $settings = []): bool
+    function evaluate_condition(\stdClass $course): bool
     {
-        return ($components['course_timeaccess'] > $components['course_timecreated']);
+        if ($course->course_timeaccess > $course->course_timecreated) {
+            $this->state = true;
+        }
+        return $this->state;
     }
-    function calculate_score(array $components, array $settings = []): float
+    function calculate_score(\stdClass $course): float
     {
-        return ((time() - $components['course_timeaccess']) / $settings['time_unit']);
+        // Given the time unit set in settings, score becomes how many time
+        //  units have passed since last access. Can only be positive. Time
+        //  units are configurable in settings.
+        $this->score = (time() - $course->course_timeaccess) / $this->settings['time_unit'];
+        return $this->score;
     }
 }

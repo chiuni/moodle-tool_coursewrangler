@@ -29,35 +29,37 @@ namespace tool_coursewrangler\rules;
 use tool_coursewrangler\interfaces\rule as rule_interface;
 use tool_coursewrangler\traits\score_limit;
 
-class course_isparent implements rule_interface
+class course_haschildren implements rule_interface
 {
     use score_limit;
-    /**
-     * @param int $course_isparent
-     * @param int $course_parent_weight
-     */
-    function __construct(int $course_isparent, int $course_parent_weight)
+    function __construct(\stdClass $course, array $settings = [])
     {
-        $this->description  = 'Course is Parent != 0';
+        $this->description  = 'Course Has Children';
         $this->state        = false;
         $this->score        = 0;
+        $this->settings     = $settings;
 
-        $components = [
-            'course_isparent' => $course_isparent
-        ];
-        $settings = [
-            'course_parent_weight' => $course_parent_weight
-        ];
+        if (!isset($course->course_children)) {
+            return false;
+        }
         
-        $this->state = $this->evaluate_condition($components, $settings) ?? false;
-        $this->score = $this->calculate_score($components, $settings) ?? 0;
+        $this->evaluate_condition($course);
+        $this->calculate_score($course);
     }
-    function evaluate_condition(array $components, array $settings = []): bool
+    function evaluate_condition(\stdClass $course): bool
     {
-        return ($components['course_isparent'] != 0);
+        $children = explode(',', $course->course_children);
+        if (count($children) > 0) {
+            $this->state = true;
+        }
+        return $this->state;
     }
-    function calculate_score(array $components, array $settings = []): float
+    function calculate_score(\stdClass $course): float
     {
-        return (0 - ($components['course_isparent'] * $settings['course_parent_weight']));
+        $children = explode(',', $course->course_children);
+        $count = count($children);
+        // For each children course, reduce score by 100 points.
+        $this->score = $count * -100;
+        return $this->score;
     }
 }

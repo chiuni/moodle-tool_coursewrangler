@@ -32,30 +32,36 @@ use tool_coursewrangler\traits\score_limit;
 class course_isvisible implements rule_interface
 {
     use score_limit;
-    /**
-     * @param int $param1
-     * @param int $param2
-     */
-    function __construct(int $course_visible)
+    function __construct(\stdClass $course, array $settings = [])
     {
         $this->description  = 'Course Is Visible';
         $this->state        = false;
         $this->score        = 0;
+        $this->settings     = $settings;
 
-        $components = [
-            'course_visible' => $course_visible
-        ];
-        $settings = [];
+        if (!isset($course->course_visible)) {
+            return false;
+        }
         
-        $this->state = $this->evaluate_condition($components, $settings) ?? false;
-        $this->score = $this->calculate_score($components, $settings) ?? 0;
+        $this->evaluate_condition($course);
+        $this->calculate_score($course);
     }
-    function evaluate_condition(array $components, array $settings = []): bool
+    function evaluate_condition(\stdClass $course): bool
     {
-        return ($components['course_visible']);
+        if ($course->course_visible == false) {
+            $this->state = true;
+        }
+
+        return $this->state;
     }
-    function calculate_score(array $components, array $settings = []): float
+    function calculate_score(\stdClass $course): float
     {
-        return ($components['course_visible'] ? -25 : 50);
+        // If is course visible, reduce deletion score by 25.
+        $this->score = -25;
+        if ($this->state) {
+            // Else, add 50 to deletion score.
+            $this->score = 50;
+        }
+        return $this->score;
     }
 }
