@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file is a class example.
+ * The interface for Rule classes.
  * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
@@ -34,6 +34,8 @@ namespace tool_coursewrangler\interfaces;
 interface rule
 {
     function __construct(\stdClass $course, array $settings = []);
-    function evaluate_condition(\stdClass $course): bool;
-    function calculate_score(\stdClass $course): float;
+    function evaluate_condition(): bool;
+    function calculate_score(): float;
+    function has_params(): bool;
+    function set_params();
 }

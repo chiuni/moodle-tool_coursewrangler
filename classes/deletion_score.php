@@ -84,7 +84,7 @@ class deletion_score
          *      The time the course was created
          */
         // To do: Consider courses that havent yet started, should we ignore them?
-        $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
+        // $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
 
         /**
          * #R3
@@ -110,7 +110,7 @@ class deletion_score
          * The information we have:
          *      
          */
-        $rules['course_haschildren'] = new rules\course_haschildren($course);
+        // $rules['course_haschildren'] = new rules\course_haschildren($course);
 
         /**
          * #R6

@@ -27,41 +27,38 @@
 namespace tool_coursewrangler\rules;
 
 use tool_coursewrangler\interfaces\rule as rule_interface;
-use tool_coursewrangler\traits\score_limit;
+use tool_coursewrangler\rule;
 
-class course_isvisible implements rule_interface
+class course_isvisible extends rule implements rule_interface
 {
-    use score_limit;
-    function __construct(\stdClass $course, array $settings = [])
+    function evaluate_condition(): bool
     {
-        $this->description  = 'Course Is Visible';
-        $this->state        = false;
-        $this->score        = 0;
-        $this->settings     = $settings;
-
-        if (!isset($course->course_visible)) {
-            return false;
-        }
-        
-        $this->evaluate_condition($course);
-        $this->calculate_score($course);
-    }
-    function evaluate_condition(\stdClass $course): bool
-    {
-        if ($course->course_visible == false) {
+        // This checks to make sure the values are valid.
+        if ($this->course->course_visible == 1 ||
+            $this->course->course_visible == 0) {
             $this->state = true;
         }
-
         return $this->state;
     }
-    function calculate_score(\stdClass $course): float
+    function calculate_score(): float
     {
+        // If state is not true, then cannot calculate score, return default.
+        if (!$this->state) {
+            return $this->score;
+        }
         // If is course visible, reduce deletion score by 25.
         $this->score = -25;
-        if ($this->state) {
+        if ($this->course->course_visible == 0) {
             // Else, add 50 to deletion score.
             $this->score = 50;
         }
         return $this->score;
+    }
+    
+    function set_params()
+    {
+        // The only param needed for this is course_visible.
+        $this->params = [];
+        $this->params[] = 'course_visible';
     }
 }
