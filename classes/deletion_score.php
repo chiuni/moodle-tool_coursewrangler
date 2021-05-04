@@ -69,16 +69,24 @@ class deletion_score
             'time_unit' => $this->time_unit
         ];
         /**
-         * Course Has Children Rule
+         * Course Last Access Rule.
          * The information we have:
-         *      The course's children
+         *      The last time someone enrolled access the course.
+         *      The time the course was created.
+         */
+        $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
+
+        /**
+         * Course Has Children Rule.
+         * The information we have:
+         *      The course's children.
          */
         $rules['course_haschildren'] = new rules\course_haschildren($course);
 
         /** 
-         * Course Is Visible Rule
+         * Course Is Visible Rule.
          * The information we have:
-         *      Whether the course is visible or not
+         *      Whether the course is visible or not.
          */
         $rules['course_isvisible'] = new rules\course_isvisible($course);
         
@@ -97,7 +105,7 @@ class deletion_score
         }
         $ratio_limit = count($course->rules) * $this->score_limiter;
         foreach ($course->rules as $rule) {
-            // setting score in different forms
+            // Setting score in different forms.
             $score->raw += $rule->get_limit_score($this->score_limiter) ?? 0;
         }
         $score->rounded = round($score->raw, 2) ?? 0;

@@ -29,12 +29,16 @@ namespace tool_coursewrangler\rules;
 use tool_coursewrangler\interfaces\rule as rule_interface;
 use tool_coursewrangler\rule;
 
-class course_haschildren extends rule implements rule_interface
+class course_lastaccess extends rule implements rule_interface
 {
     function evaluate_condition(): bool
     {
-        $children = explode(',', $this->course->course_children);
-        if (count($children) > 0) {
+        // We lack the data to be able to make an educated assumption, 
+        //  therefore we won't.
+        if ($this->course->course_timeaccess == 0) {
+            return $this->state;
+        }
+        if ($this->course->course_timeaccess > $this->course->course_timecreated) {
             $this->state = true;
         }
         return $this->state;
@@ -44,15 +48,16 @@ class course_haschildren extends rule implements rule_interface
         if (!$this->state) {
             return $this->score;
         }
-        $children = explode(',', $this->course->course_children);
-        $count = count($children);
-        // For each children course, reduce score by 100 points.
-        $this->score = $count * -100;
+        // Given the time unit set in settings, score becomes how many time
+        //  units have passed since last access. Can only be positive. Time
+        //  units are configurable in settings.
+        $this->score = (time() - $this->course->course_timeaccess) / $this->settings['time_unit'];
         return $this->score;
     }
     function set_params()
     {
         $this->params = [];
-        $this->params[] = 'course_children';
+        $this->params[] = 'course_timeaccess';
+        $this->params[] = 'course_timecreated';
     }
 }

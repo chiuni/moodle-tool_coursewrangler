@@ -37,6 +37,7 @@ abstract class rule {
     protected array $settings;
     protected array $params;
     protected bool $state;
+    protected bool $has_param;
     public float $score;
 
     function __construct(
@@ -54,7 +55,7 @@ abstract class rule {
         }
         $this->evaluate_condition();
         $this->calculate_score();
-        $this->course = new stdClass;
+        unset($this->course);
     }
 
     abstract function evaluate_condition();
