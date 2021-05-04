@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file is a class example.
+ * This is a rule implementation class.
  * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
@@ -27,39 +27,29 @@
 namespace tool_coursewrangler\rules;
 
 use tool_coursewrangler\interfaces\rule as rule_interface;
-use tool_coursewrangler\traits\score_limit;
+use tool_coursewrangler\rule;
 
-class course_haschildren implements rule_interface
+class course_haschildren extends rule implements rule_interface
 {
-    use score_limit;
-    function __construct(\stdClass $course, array $settings = [])
+    function evaluate_condition(): bool
     {
-        $this->description  = 'Course Has Children';
-        $this->state        = false;
-        $this->score        = 0;
-        $this->settings     = $settings;
-
-        if (!isset($course->course_children)) {
-            return false;
-        }
-        
-        $this->evaluate_condition($course);
-        $this->calculate_score($course);
-    }
-    function evaluate_condition(\stdClass $course): bool
-    {
-        $children = explode(',', $course->course_children);
+        $children = explode(',', $this->course->course_children);
         if (count($children) > 0) {
             $this->state = true;
         }
         return $this->state;
     }
-    function calculate_score(\stdClass $course): float
+    function calculate_score(): float
     {
-        $children = explode(',', $course->course_children);
+        $children = explode(',', $this->course->course_children);
         $count = count($children);
         // For each children course, reduce score by 100 points.
         $this->score = $count * -100;
         return $this->score;
+    }
+    function set_params()
+    {
+        $this->params = [];
+        $this->params[] = 'course_children';
     }
 }

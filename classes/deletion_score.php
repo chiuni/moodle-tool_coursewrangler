@@ -69,66 +69,13 @@ class deletion_score
             'time_unit' => $this->time_unit
         ];
         /**
-         * #R1
-         * Course End Date Rule
-         * The information we have:
-         *      The assigned end date of the course, could be 0 if not set.
-         */
-        // $rules['course_enddate'] = new rules\course_enddate($course->course_enddate, $this->time_unit);
-
-        /** 
-         * #R2
-         * Course Last Access Rule
-         * The information we have:
-         *      The last access by anyone enroled to the course, could be 0 if not accessed.
-         *      The time the course was created
-         */
-        // To do: Consider courses that havent yet started, should we ignore them?
-        // $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
-
-        /**
-         * #R3
-         * Course Settings Time Modified Rule
-         * The information we have:
-         *      The last time someone edited course settings (not including activies/resources on course page)
-         *      The time the course was created
-         */
-        // $rules['course_settings_timemodified'] = new rules\course_settings_timemodified($course->course_timemodified, $course->course_timecreated, $this->time_unit);
-        
-        /**
-         * #R4
-         * Activity Recently Modified Rule
-         * The information we have:
-         *      The last time an activity was changed
-         *      The time the course was created
-         */
-        // $rules['activity_last_modified'] = new rules\activity_last_modified($course->activity_lastmodified, $course->course_timecreated, $this->time_unit);
-       
-        /**
-         * #R5 
          * Course Has Children Rule
          * The information we have:
-         *      
+         *      The course's children
          */
-        // $rules['course_haschildren'] = new rules\course_haschildren($course);
-
-        /**
-         * #R6
-         * Course Last Enrolment Rule
-         * The information we have:
-         *      The date the last enrolment was created // TODO: should we make this student only role (architype) enrolment?
-         */
-        // $lastenrolment = $course->course_lastenrolment ?? 0;
-        // $rules['course_lastenrolment'] = new rules\course_lastenrolment($lastenrolment, $this->time_unit);
-
-        /**
-         * #R7
-         * Course Low Enrolment Rule
-         */
-        // $rules['course_lowenrolment'] = new rules\course_lowenrolment($course->total_enrol_count, $this->low_enrolments_flag);
+        $rules['course_haschildren'] = new rules\course_haschildren($course);
 
         /** 
-         * #R8
          * Course Is Visible Rule
          * The information we have:
          *      Whether the course is visible or not

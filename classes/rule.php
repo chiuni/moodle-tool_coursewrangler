@@ -36,9 +36,8 @@ abstract class rule {
     protected stdClass $course;
     protected array $settings;
     protected array $params;
-    public bool $state;
+    protected bool $state;
     public float $score;
-    public string $description;
 
     function __construct(
         stdClass $course,
