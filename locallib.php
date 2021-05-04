@@ -332,9 +332,7 @@ function moodletime_to_unixtimestamp(array $timearray) {
  * Temporary function to help debug within html.
  */
 function cwt_debugger($data, string $leadingtext = 'Debug') {
-    $debugmode = get_config('tool_coursewrangler', 'debugmode');
-    // To do: check if Moodle is in debug mode.
-    if (!$debugmode){
+    if (!debugging()){
         return false;
     }
     $id = 'coursewrangler_debug_' . random_int(100, 100000);

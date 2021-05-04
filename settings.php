@@ -139,14 +139,4 @@ if ($hassiteconfig) {
     
     $settings->add($tasks_page);
 
-    $dev_page = new admin_settingpage('tool_coursewrangler_dev', get_string('settingspage_dev', 'tool_coursewrangler'));
-
-    $dev_page->add(new admin_setting_configcheckbox(
-        'tool_coursewrangler/debugmode',
-        get_string('settings_debugmode', 'tool_coursewrangler'),
-        get_string('settings_debugmode_desc', 'tool_coursewrangler'), 
-        0
-    ));
-    
-    $settings->add($dev_page);
 }
