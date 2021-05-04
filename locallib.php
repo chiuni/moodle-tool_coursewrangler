@@ -296,6 +296,7 @@ function find_course_activity_data(string $where = '') {
 }
 /**
  * Finds course last access from user_last_access table.
+ * To do: I think this might not be getting good data, investigate.
  */
 function find_course_last_access() {
     global $DB, $CFG;
