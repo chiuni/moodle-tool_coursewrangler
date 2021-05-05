@@ -31,9 +31,7 @@ use moodleform;
 
 defined('MOODLE_INTERNAL') || die();
 
-//moodleform is defined in formslib.php
 require_once("$CFG->libdir/formslib.php");
-
 
 class report_form extends moodleform
 {
@@ -227,8 +225,8 @@ class report_form extends moodleform
         $mform->setExpanded('header_flag_options', false);
 
         if (
-            isset($customdata['hideshow_meta_parents']) ||
-            isset($customdata['hideshow_hidden_courses'])
+            (isset($customdata['hideshow_meta_parents']) && $customdata['hideshow_meta_parents'] != 'default') ||
+            (isset($customdata['hideshow_hidden_courses']) && $customdata['hideshow_hidden_courses'] != 'default')
         ){
             $mform->setExpanded('header_flag_options', true);
         }

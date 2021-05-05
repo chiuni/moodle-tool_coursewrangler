@@ -397,15 +397,15 @@ class report_table extends table_sql implements renderable
          * Hide parent courses.
          * To do: Revise this as DB has changed.
          */
-        if (false && isset($this->hideshow_meta_parents)) {
+        if (isset($this->hideshow_meta_parents)) {
             switch($this->hideshow_meta_parents) {
                 // Show only parent courses.
                 case 'show':
-                    $conditions[] = "metrics.course_parents = 1";
+                    $conditions[] = "metrics.course_children IS NOT NULL";
                     break;
                 // Hide all parent courses.
                 case 'hide':
-                    $conditions[] = "metrics.course_parents = 0";
+                    $conditions[] = "metrics.course_children IS NULL";
                     break;
                 // Do nothing.
                 default:
@@ -481,10 +481,6 @@ class report_table extends table_sql implements renderable
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
         return ($display_value_string);
     }
-    // To do: Get rid of this? Do we need this?
-    // function col_course_parents($values) : string {
-    //     return ($values->course_parents ? 'Yes' : 'No');
-    // }
     /**
      * Turning course name into link for details area.
      * TODO: Improve this into a link that goes to a details page within coursewrangler?
