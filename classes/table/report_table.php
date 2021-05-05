@@ -119,6 +119,7 @@ class report_table extends table_sql implements renderable
         $cols['course_startdate'] = get_string('table_course_startdate', 'tool_coursewrangler');
         $cols['course_enddate'] = get_string('table_course_enddate', 'tool_coursewrangler');
         $cols['course_visible'] = get_string('table_course_visible', 'tool_coursewrangler');
+        $cols['total_enrol_count'] = get_string('table_total_enrol_count', 'tool_coursewrangler');
         $cols['course_timeaccess'] = get_string('table_course_timeaccess', 'tool_coursewrangler');
         $cols['percentage'] = get_string('table_course_deletionscore', 'tool_coursewrangler');
 
@@ -227,9 +228,6 @@ class report_table extends table_sql implements renderable
             $fad_conditions = [];
             foreach ($this->filter_action_data as $value) {
                 if ($value == '_qf__force_multiselect_submission') {
-                    // To do: ask Mark if there is a better way to do this,
-                    //  why the hell does this even appear in my array? 
-                    // Bloody forms.
                     continue;
                 }
                 // To get courses without action we must do it differently
@@ -504,7 +502,7 @@ class report_table extends table_sql implements renderable
      * Creating the score when required.
      */
     function col_percentage($values) : string {
-        $display_value = $values->percentage ? $values->percentage . '%' : get_string('table_percentage_notavailable', 'tool_coursewrangler');
+        $display_value = ($values->percentage != null) ? $values->percentage . '%' : get_string('table_percentage_notavailable', 'tool_coursewrangler');
         return ($display_value);
     }
     /**
