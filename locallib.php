@@ -102,7 +102,7 @@ function find_relevant_course_data_lite(array $options = [])
         $course_children[$value->parent_course_id][] = $value->courseid;
     }
     foreach ($course_query as $key => $result) {
-        $result->course_timeaccess = $ula_query[$key]->timeaccess ?? 0;
+        $result->course_timeaccess = $ula_query[$result->course_id]->timeaccess ?? 0;
         $result->course_parents = null;
         $result->course_children = null;
         if (array_key_exists($result->course_id, $course_children)) {
@@ -296,24 +296,16 @@ function find_course_activity_data(string $where = '') {
 }
 /**
  * Finds course last access from user_last_access table.
- * To do: I think this might not be getting good data, investigate.
  */
 function find_course_last_access() {
     global $DB, $CFG;
     return $DB->get_records_sql(
-        "SELECT ula.id,
-                ula.courseid, 
-                ula.userid, 
-                ula.timeaccess
-        FROM    {user_lastaccess} AS ula
-            INNER JOIN (SELECT  courseid, 
-                                MAX(timeaccess) AS timeid
-                        FROM    {user_lastaccess}
-                        WHERE   userid!=:guestid 
-                        AND     userid NOT IN (:siteadminids)
-                        GROUP BY courseid) AS groupedula 
-        ON ula.courseid = groupedula.courseid 
-        AND ula.timeaccess = groupedula.timeid ORDER BY ula.courseid ASC;",
+        "SELECT  courseid, 
+            MAX(timeaccess) AS timeaccess
+            FROM    {user_lastaccess}
+            WHERE   userid!=:guestid 
+            AND     userid NOT IN (:siteadminids)
+            GROUP BY courseid;",
         [
             'guestid' => 1,
             'siteadminids' => $CFG->siteadmins
