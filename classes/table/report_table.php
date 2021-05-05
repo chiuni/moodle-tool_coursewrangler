@@ -75,6 +75,7 @@ class report_table extends table_sql implements renderable
         $this->course_timeaccess_notset = $params['course_timeaccess_notset'] ?? false;
         $this->matchstring_short = $params['matchstring_short'] ?? null;
         $this->matchstring_full = $params['matchstring_full'] ?? null;
+        $this->hideshow_meta_children = $params['hideshow_meta_children'] ?? null;
         $this->hideshow_meta_parents = $params['hideshow_meta_parents'] ?? null;
         $this->hideshow_hidden_courses = $params['hideshow_hidden_courses'] ?? null;
 
@@ -395,7 +396,6 @@ class report_table extends table_sql implements renderable
 
         /**
          * Hide parent courses.
-         * To do: Revise this as DB has changed.
          */
         if (isset($this->hideshow_meta_parents)) {
             switch($this->hideshow_meta_parents) {
@@ -406,6 +406,25 @@ class report_table extends table_sql implements renderable
                 // Hide all parent courses.
                 case 'hide':
                     $conditions[] = "metrics.course_children IS NULL";
+                    break;
+                // Do nothing.
+                default:
+                    break;
+            }
+        }
+
+        /**
+         * Hide child courses.
+         */
+        if (isset($this->hideshow_meta_children)) {
+            switch($this->hideshow_meta_children) {
+                // Show only child courses.
+                case 'show':
+                    $conditions[] = "metrics.course_parents IS NOT NULL";
+                    break;
+                // Hide all child courses.
+                case 'hide':
+                    $conditions[] = "metrics.course_parents IS NULL";
                     break;
                 // Do nothing.
                 default:

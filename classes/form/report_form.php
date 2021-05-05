@@ -231,6 +231,18 @@ class report_form extends moodleform
             $mform->setExpanded('header_flag_options', true);
         }
 
+        // hideshow_meta_children
+        $meta_children_options = [
+            'default' => get_string('select_an_option', 'tool_coursewrangler'),
+            'hide' => get_string('hideshow_meta_children_hideonly', 'tool_coursewrangler'),
+            'show' => get_string('hideshow_meta_children_showonly', 'tool_coursewrangler')
+        ];
+        $mform->addElement(
+            'select', 
+            'hideshow_meta_children', 
+            get_string('report_form_filter_hideshow_meta_children', 'tool_coursewrangler'), 
+            $meta_children_options
+        );
         // hideshow_meta_parents
         $meta_parents_options = [
             'default' => get_string('select_an_option', 'tool_coursewrangler'),

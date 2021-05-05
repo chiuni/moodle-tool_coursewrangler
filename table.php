@@ -113,6 +113,8 @@ $course_timeaccess_notset = $course_timeaccess_notset ?? $report_form_data_json-
 // Other settings parameters.
 $display_action_data = optional_param('display_action_data', null, PARAM_BOOL);
 $display_action_data = $display_action_data ?? $report_form_data_json->display_action_data ?? false;
+$hideshow_meta_children = optional_param('hideshow_meta_children', null, PARAM_TEXT);
+$hideshow_meta_children = $hideshow_meta_children ?? $report_form_data_json->hideshow_meta_children ?? null;
 $hideshow_meta_parents = optional_param('hideshow_meta_parents', null, PARAM_TEXT);
 $hideshow_meta_parents = $hideshow_meta_parents ?? $report_form_data_json->hideshow_meta_parents ?? null;
 $hideshow_hidden_courses = optional_param('hideshow_hidden_courses', null, PARAM_TEXT);
@@ -154,6 +156,7 @@ $options_array['course_startdate_notset'] = $course_startdate_notset ?? false;
 $options_array['course_enddate_notset'] = $course_enddate_notset ?? false;
 $options_array['course_timeaccess_notset'] = $course_timeaccess_notset ?? false;
 $options_array['display_action_data'] = $display_action_data ?? false;
+$options_array['hideshow_meta_children'] = $hideshow_meta_children ?? null;
 $options_array['hideshow_meta_parents'] = $hideshow_meta_parents ?? null;
 $options_array['hideshow_hidden_courses'] = $hideshow_hidden_courses ?? null;
 $options_array['pagesize'] = $pagesize ?? 50;
