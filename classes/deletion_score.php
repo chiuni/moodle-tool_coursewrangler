@@ -34,7 +34,6 @@ class deletion_score
     protected int $low_enrolments_flag = 10;
     protected int $time_unit = 86400;
     protected int $score_limiter_positive = 400;
-    protected int $score_limiter_negative = -400;
     protected int $ratio_limit;
     protected stdClass $scores;
     protected array $courses;
@@ -46,7 +45,6 @@ class deletion_score
         $this->low_enrolments_flag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10; // this triggers a low score for courses with less enrolments than n enrolments
         $this->time_unit = (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400; // this makes each time unit = 1 score point
         $this->score_limiter = (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400; // this is the value used for limiting each score to a upper/lower limit
-        // $this->score_limiter_negative = (int) ($this->score_limiter_positive * -1);
         if (empty($courses)) {
             return;
         }
@@ -68,36 +66,12 @@ class deletion_score
         $settings = [
             'time_unit' => $this->time_unit
         ];
-        /**
-         * Course Last Access Rule.
-         * The information we have:
-         *      The last time someone enrolled access the course.
-         *      The time the course was created.
-         */
         $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
-
-        /**
-         * Course Has Children Rule.
-         * The information we have:
-         *      The course's children.
-         */
         $rules['course_haschildren'] = new rules\course_haschildren($course);
-
-        /** 
-         * Course Is Visible Rule.
-         * The information we have:
-         *      Whether the course is visible or not.
-         */
         $rules['course_isvisible'] = new rules\course_isvisible($course);
-
-        /** 
-         * Course No Enrolments.
-         * The information we have:
-         *      Total of course enrolments.
-         */
         $rules['course_noenrol'] = new rules\course_noenrol($course);
-
         $rules['course_isover'] = new rules\course_isover($course, $settings);
+        $rules['course_neverused'] = new rules\course_neverused($course);
         
         $course->rules = $rules;
         return $course;
