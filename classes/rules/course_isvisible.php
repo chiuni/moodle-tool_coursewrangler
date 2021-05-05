@@ -33,6 +33,11 @@ class course_isvisible extends rule implements rule_interface
 {
     function evaluate_condition(): bool
     {
+        // If this course has children, we do not evaluate
+        //  its visibility.
+        if ($this->course->course_children != null) {
+            return $this->state;
+        }
         // This checks to make sure the values are valid.
         if ($this->course->course_visible == 1 ||
             $this->course->course_visible == 0) {
@@ -47,10 +52,10 @@ class course_isvisible extends rule implements rule_interface
             return $this->score;
         }
         // If is course visible, reduce deletion score by 25.
-        $this->score = -25;
+        $this->score = -50;
         if ($this->course->course_visible == 0) {
             // Else, add 50 to deletion score.
-            $this->score = 50;
+            $this->score = 100;
         }
         return $this->score;
     }
@@ -60,5 +65,7 @@ class course_isvisible extends rule implements rule_interface
         // The only param needed for this is course_visible.
         $this->params = [];
         $this->params[] = 'course_visible';
+        // Course children can be null, so we don't use it here.
+        // $this->params[] = 'course_children';
     }
 }
