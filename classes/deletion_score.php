@@ -89,6 +89,15 @@ class deletion_score
          *      Whether the course is visible or not.
          */
         $rules['course_isvisible'] = new rules\course_isvisible($course);
+
+        /** 
+         * Course No Enrolments.
+         * The information we have:
+         *      Total of course enrolments.
+         */
+        $rules['course_noenrol'] = new rules\course_noenrol($course);
+
+        $rules['course_isover'] = new rules\course_isover($course, $settings);
         
         $course->rules = $rules;
         return $course;
