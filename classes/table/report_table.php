@@ -121,6 +121,7 @@ class report_table extends table_sql implements renderable
         $cols['course_enddate'] = get_string('table_course_enddate', 'tool_coursewrangler');
         $cols['course_visible'] = get_string('table_course_visible', 'tool_coursewrangler');
         $cols['total_enrol_count'] = get_string('table_total_enrol_count', 'tool_coursewrangler');
+        $cols['course_modulescount'] = get_string('table_course_modulescount', 'tool_coursewrangler');
         $cols['course_timeaccess'] = get_string('table_course_timeaccess', 'tool_coursewrangler');
         $cols['percentage'] = get_string('table_course_deletionscore', 'tool_coursewrangler');
 

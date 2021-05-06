@@ -45,7 +45,7 @@
         <FIELD NAME="metrics_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="raw" TYPE="float" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
-        <FIELD NAME="rounded" TYPE="float" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
+        <FIELD NAME="rounded" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="percentage" TYPE="float" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
       </FIELDS>
       <KEYS>
