@@ -16,6 +16,18 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/locallib.php');
 $context = context_system::instance();
 
+require_login(null, false);
+
+$userid = optional_param('userid', null, PARAM_INT);
+
+if (isset($userid) && $userid != null && is_siteadmin($USER)) {
+    $userid = $userid;
+} else {
+    $userid = $USER->id;
+}
+
+$user = \core_user::get_user($userid);
+
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
 $PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/user_table.php'));
@@ -25,11 +37,8 @@ $PAGE->navbar->add(get_string('administrationsite'), new moodle_url('/admin/sear
 $PAGE->navbar->add(get_string('pluginname', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/index.php'));
 $PAGE->navbar->add(get_string('table_usertable_name', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/user_table.php'));
 
-echo $OUTPUT->header();
-
-$enrolments = enrol_get_all_users_courses($USER->id);
+$enrolments = enrol_get_all_users_courses($userid);
 $enrolids = array_keys($enrolments);
-cwt_debugger($enrolids);
 // Creating url params.
 $base_url_str = '/admin/tool/coursewrangler/user_table.php';
 // Parameter category_ids must be string.
@@ -39,6 +48,17 @@ $table = new table\user_report_table(
     $base_url,
     ['courseids' => $enrolids]
 );
+
+echo $OUTPUT->header();
+cwt_debugger($enrolids);
+
+$usernamehtml = \html_writer::tag(
+    'p',
+    $user->firstname,
+    ['class' => 'h5 mdl-right']
+);
+echo $usernamehtml;
+
 $table->out(50, false);
 
 echo $OUTPUT->footer();

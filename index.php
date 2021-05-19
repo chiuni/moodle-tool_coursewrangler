@@ -34,7 +34,9 @@ require_once(__DIR__ . '/locallib.php');
 require_once($CFG->libdir . '/tablelib.php');
 $context = context_system::instance();
 
-require_capability('moodle/site:configview', $context);    
+require_login(null, false);
+
+require_capability('moodle/site:configview', $context);
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));

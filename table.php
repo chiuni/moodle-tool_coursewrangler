@@ -17,6 +17,13 @@ require_once($CFG->libdir . '/tablelib.php');
 require_once(__DIR__ . '/locallib.php');
 $context = context_system::instance();
 
+require_login(null, false);
+
+if (!is_siteadmin($USER)) {
+    redirect('', 'Only site admins can access this page.');
+    exit;
+}
+
 // Report_form_data_json is reponsible for allowing cross-form
 // parameter sharing, to remember what the user options were.
 $report_form_data_json = optional_param('report_form_data_json', null, PARAM_RAW);

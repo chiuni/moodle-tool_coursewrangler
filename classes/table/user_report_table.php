@@ -74,11 +74,10 @@ class user_report_table extends table_sql implements renderable
     {
         $cols = [
             'course_id' => get_string('table_course_id', 'tool_coursewrangler'),
+            'course_idnumber' => get_string('table_course_idnumber', 'tool_coursewrangler'),
             'course_shortname' => get_string('table_course_shortname', 'tool_coursewrangler'),
             'course_fullname' => get_string('table_course_fullname', 'tool_coursewrangler'),
-            'course_enddate' => get_string('table_course_enddate', 'tool_coursewrangler'),
-            'course_visible' => get_string('table_course_visible', 'tool_coursewrangler'),
-            'course_timeaccess' => get_string('table_course_timeaccess', 'tool_coursewrangler'),
+            'course_timecreated' => get_string('table_course_timecreated', 'tool_coursewrangler'),
             'action' => get_string('table_course_action', 'tool_coursewrangler'),
             'status' => get_string('table_course_status', 'tool_coursewrangler')
         ];
@@ -115,15 +114,8 @@ class user_report_table extends table_sql implements renderable
     protected function define_table_sql()
     {
         // Make sure that metrics.course_id is ALWAYS first item in fields section of the query.
-        $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_module_id, 
-        metrics.course_shortname, metrics.course_fullname, metrics.course_idnumber, 
-        metrics.course_timecreated, metrics.course_timemodified, metrics.course_startdate, 
-        metrics.course_enddate, metrics.course_visible, metrics.course_parents, 
-        metrics.course_children, metrics.course_modulescount, metrics.course_timeaccess, 
-        metrics.course_lastenrolment, metrics.activity_type, metrics.activity_lastmodified, 
-        metrics.total_enrol_count, metrics.active_enrol_count, metrics.self_enrol_count, 
-        metrics.manual_enrol_count, metrics.meta_enrol_count, metrics.other_enrol_count, 
-        metrics.suspended_enrol_count, metrics.metrics_updated";
+        $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_shortname,
+        metrics.course_fullname, metrics.course_idnumber, metrics.course_timecreated";
         $what_score_sql = "score.id, score.metrics_id, score.timemodified, score.raw, score.rounded, score.percentage";
         $what_sql = "$what_metrics_sql, $what_score_sql";
         // Default where statement should at least have one statement,
@@ -144,27 +136,9 @@ class user_report_table extends table_sql implements renderable
 
         $this->set_sql($what_sql, "$from_sql $full_join_score_sql", $where_sql);
     }
-    /**
-     * Processing dates for table.
-     */
 
-    public function col_course_enddate($values): string
-    {
-        return ($values->course_enddate == 0) ? '-' : userdate($values->course_enddate);
-    }
-    public function col_course_timeaccess($values): string
-    {
-        return ($values->course_timeaccess == 0) ? '-' : userdate($values->course_timeaccess);
-    }
-    /**
-     * Processing visible col.
-     */
-    public function col_course_visible($values): string
-    {
-        $course_visible = $values->course_visible ? 'yes' : 'no';
-        $display_value = isset($course_visible) ? "table_visible_$course_visible" : 'table_value_notavailable';
-        $display_value_string = get_string($display_value, 'tool_coursewrangler');
-        return ($display_value_string);
+    function col_course_timecreated($values) : string {
+        return ($values->course_timecreated == 0) ? '-' : userdate($values->course_timecreated);
     }
     /**
      * Turning course name into link for details area.
@@ -174,14 +148,6 @@ class user_report_table extends table_sql implements renderable
         $url = new moodle_url('/course/view.php?id=' . $values->course_id);
         $link = html_writer::link($url, $values->course_fullname);
         return $link;
-    }
-    /**
-     * Creating the score when required.
-     */
-    public function col_percentage($values): string
-    {
-        $display_value = $values->percentage ? $values->percentage . '%' : get_string('table_percentage_notavailable', 'tool_coursewrangler');
-        return ($display_value);
     }
     /**
      * Creating the action col.
@@ -195,9 +161,10 @@ class user_report_table extends table_sql implements renderable
     /**
      * Creating the action status col.
      */
-    public function col_status($values): string
-    {
-        $display_value = isset($values->status) ? "table_status_$values->status" : 'table_value_notavailable';
+    function col_status($values) : string {
+        $display_value = (isset($values->status) && $values->status != '')
+                            ? "table_status_$values->status"
+                            : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
         return ($display_value_string);
     }
