@@ -75,7 +75,7 @@ class action_handler
      * @param array $relevantarchetypes Array of archetypes to select.
      * @return array Array of user ids => Array of course ids
      */
-    static public function getmaillist(array $scheduled, array $relevantarchetypes = []) {
+    static public function old_getmaillist(array $scheduled, array $relevantarchetypes = []) {
         // Could this be done using capabilities?
         $responsibleuserids = [];
         foreach ($scheduled as $action) {
@@ -107,8 +107,62 @@ class action_handler
         }
         return $responsibleuserids;
     }
+    
+    /**
+     * @param array $scheduled Array of ALL scheduled actions.
+     * @param array $relevantarchetypes Array of archetypes to select.
+     * @return array Array of user ids => Array of course ids
+     */
+    static public function getmaillist(array $scheduled) {
+        // Could this be done using capabilities?
+        $owners = [];
+        foreach ($scheduled as $action) {
+            // TODO Issue is only finds one owner when there might be more.
+            $findowners = find_owners($action->course_id);
+            if (empty($findowners)) {
+                continue;
+            }
+            foreach($findowners as $owner) {
+                // This preserves all enrolments whilst keeping the course_id
+                //  as an array key so we can easily use that in the templates.
+                $owners[$owner->userid][$action->course_id][] = $owner;
+            }
+        }
+        return $owners;
+    }
 
-    static function email(array $mailinglist) {
-        return $mailinglist;
+    static function send_schedulednotification(object $user, array $courseids) {
+        global $OUTPUT;
+        $messagebody = $OUTPUT->render_from_template('tool_coursewrangler/scheduled_notification', ['courseids' => $courseids]);
+        $message = new \core\message\message();
+        $message->courseid = SITEID;
+        $message->component = 'tool_coursewrangler';
+        $message->name = 'schedulednotification';
+        $message->userfrom = \core_user::get_noreply_user();
+        $message->userto = $user;
+        $message->subject = 'SUBJECT';
+        $message->fullmessage = $messagebody;
+        $message->fullmessageformat = FORMAT_MARKDOWN;
+        $message->fullmessagehtml = html_to_text($message->fullmessage);
+        $message->smallmessage = $messagebody;
+        $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
+        $message->contexturl = (new \moodle_url('/admin/tool/coursewrangler/user_table.php'))->out(false); // A relevant URL for the notification
+        $message->contexturlname = 'Deletion course list'; // Link title explaining where users get to for the contexturl
+        $content = [
+            '*' => 
+            ['header' => ' HEADER ', 'footer' => ' FOOTER ']
+        ]; // Extra content for specific processor
+        $message->set_additional_content('email', $content);
+        
+        $messageid = message_send($message);
+        return $messageid;
+    }
+
+    static function notify_owners(array $mailinglist) {
+        foreach ($mailinglist as $userid => $owner) {
+            $user = \core_user::get_user($userid);
+            $courseids = array_keys($owner);
+            action_handler::send_schedulednotification($user, $courseids);
+        }
     }
 }

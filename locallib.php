@@ -321,6 +321,73 @@ function moodletime_to_unixtimestamp(array $timearray) {
     return (strtotime($timestring) ?? 0);
 }
 
+function get_course_metric(int $courseid) {
+    if ($courseid <= 0) {
+        return;
+    }
+    global $DB;
+    return $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $courseid], '*', MUST_EXIST);
+}
+
+function get_enrolments(int $course_id, string $archetype) {
+    if ($course_id < 1) {
+        return false;
+    }
+    global $DB;
+    $sql = "SELECT concat(ra.id, '-', e.id) as id, 
+            ue.userid, 
+            r.shortname, 
+            r.archetype,
+            ra.component,
+            e.enrol,
+            ue.timestart,
+            ue.timecreated,
+            ue.timemodified
+        FROM {role_assignments} AS ra 
+       LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid 
+       LEFT JOIN {role} AS r ON ra.roleid = r.id 
+       LEFT JOIN {context} AS c ON c.id = ra.contextid 
+       LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id 
+       WHERE e.courseid = :course_id
+       AND r.archetype = :archetype;";
+    return $DB->get_records_sql($sql, ['course_id' => $course_id, 'archetype' => $archetype]);
+}
+
+function find_owners(int $course_id, string $archetype = 'editingteacher') {
+    $archetypes = get_role_archetypes();
+    if (!in_array($archetype, $archetypes)) {
+        // Archetype does not exist.
+        return false;
+    }
+    $enrolments = get_enrolments($course_id, $archetype);
+    if (!$enrolments) {
+        return false;
+    }
+    // Trying something.
+    return $enrolments;
+    /**
+     * We now create an object that has different roles
+     *  of editing teacher based on that course.
+     */
+    $owners = new stdClass;
+    foreach ($enrolments as $e) {
+        $type = $e->shortname;
+        $owners->$type[$e->userid] = $e;
+    }
+    return $owners;
+}
+
+function insert_cw_logentry(string $description, string $actor = null, int $metricsid = null)
+{
+    $log = new stdClass();
+    $log->timestamp = time();
+    $log->description = $description;
+    $log->actor = $actor ?? 'system';
+    $log->actor = $metricsid ?? null;
+    global $DB;
+    return $DB->insert('tool_coursewrangler_log', $log);
+}
+
 /**
  * Temporary function to help debug within html.
  */
