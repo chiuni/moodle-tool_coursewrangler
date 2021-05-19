@@ -40,11 +40,17 @@ class deletion_score
 
     function __construct(array $courses = [])
     {
-        // initialising settings
+        // Initialising settings.
         $this->course_parent_weight = (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10; // this makes parent courses more or less important
         $this->low_enrolments_flag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10; // this triggers a low score for courses with less enrolments than n enrolments
         $this->time_unit = (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400; // this makes each time unit = 1 score point
         $this->score_limiter = (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400; // this is the value used for limiting each score to a upper/lower limit
+        // Preventing zeros, they cause division by zero errors.
+        $this->course_parent_weight = $this->course_parent_weight > 0 ? $this->course_parent_weight : 10;
+        $this->low_enrolments_flag = $this->low_enrolments_flag > 0 ? $this->low_enrolments_flag : 10;
+        $this->time_unit = $this->time_unit > 0 ? $this->time_unit : 86400;
+        $this->score_limiter = $this->score_limiter > 0 ? $this->score_limiter : 400;
+        
         if (empty($courses)) {
             return;
         }
