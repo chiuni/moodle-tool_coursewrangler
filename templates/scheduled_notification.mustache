@@ -1,4 +1,16 @@
-<p>(This is a test template).</p>
-<p>The following courses are going to be deleted:</p>
-<br>
-{{#courseids}}{{.}} <br> {{/courseids}}
+<h1>{{#str}}message_scheduleddeletion_h1, tool_coursewrangler{{/str}}</h1>
+<p>{{#str}}message_scheduleddeletion_p1, tool_coursewrangler{{/str}}</p>
+<p>{{#str}}message_scheduleddeletion_p2, tool_coursewrangler{{/str}}</p>
+<h4>{{#str}}message_scheduleddeletion_h2, tool_coursewrangler{{/str}}</h4>
+<ul>
+    {{#courses}}
+    <li>
+        <a href="{{{course_url}}}">{{course_idnumber}}: {{course_fullname}}</a>
+    </li>
+    {{/courses}}
+</ul>
+<a href="{{user_table_url}}">{{#str}}message_scheduleddeletion_accesslistofallcourses, tool_coursewrangler{{/str}}</a>
+<p>{{#str}}message_scheduleddeletion_p3, tool_coursewrangler{{/str}}</p>
+
+<p>{{#str}}message_scheduleddeletion_p4, tool_coursewrangler{{/str}}</p>
+<p>{{#str}}message_scheduleddeletion_p5, tool_coursewrangler{{/str}}</p>

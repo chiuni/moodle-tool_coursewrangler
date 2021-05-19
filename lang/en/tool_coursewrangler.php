@@ -180,5 +180,17 @@ $string['task_wrangle'] = 'Wrangle Task';
 $string['task_score'] = 'Score Task';
 $string['task_filldata'] = 'Fill Data Task';
 
+// Messages.
+$string['message_deletesubject'] = 'Course Deletion Notice';
+$string['message_contexturlname'] = 'Deletion course list';
+$string['message_scheduleddeletion_h1'] = 'Course Deletion Notice';
+$string['message_scheduleddeletion_h2'] = 'List of courses:';
+$string['message_scheduleddeletion_p1'] = 'Some courses that you are enroled in have been identified as old and are marked for deletion.';
+$string['message_scheduleddeletion_p2'] = 'Please make sure any important resources in these courses have been backed up, if not then make sure to do so as soon as possible.';
+$string['message_scheduleddeletion_p3'] = 'If you believe this is a mistake, please contact <a href="#">someone@chi.ac.uk</a> but please note that due to our retention policies, old courses have to be deleted after they are no longer in use.';
+$string['message_scheduleddeletion_p4'] = 'Thank you,';
+$string['message_scheduleddeletion_p5'] = 'Admin Team at <a href="https://moodle.chi.ac.uk/">moodle.chi.ac.uk';
+$string['message_scheduleddeletion_accesslistofallcourses'] = 'Access list of all courses on the deletion list.';
+
 // Other.
 $string['select_an_option'] = 'Select an option';

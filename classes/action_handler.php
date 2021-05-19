@@ -139,27 +139,37 @@ class action_handler
 
     static function send_schedulednotification(object $user, array $courseids) {
         global $OUTPUT;
-        $messagebody = $OUTPUT->render_from_template('tool_coursewrangler/scheduled_notification', ['courseids' => $courseids]);
+        $courses = [];
+        // Prepare course information for template.
+        foreach ($courseids as $cid) {
+            $course = get_course_metric($cid);
+            $course->course_url = new \moodle_url('/course/view.php', ['id' => $course->course_id]);
+            $courses[] = $course;
+        }
+        $messagebody = $OUTPUT->render_from_template(
+            'tool_coursewrangler/scheduled_notification', 
+            [
+                'courses' => $courses,
+                'user_table_url' => new \moodle_url('/admin/tool/coursewrangler/user_table.php')
+            ]
+        );
         $message = new \core\message\message();
         $message->courseid = SITEID;
         $message->component = 'tool_coursewrangler';
         $message->name = 'schedulednotification';
         $message->userfrom = \core_user::get_noreply_user();
         $message->userto = $user;
-        $message->subject = 'SUBJECT';
+        $message->subject = get_string('message_deletesubject', 'tool_coursewrangler');
         $message->fullmessage = $messagebody;
         $message->fullmessageformat = FORMAT_MARKDOWN;
-        $message->fullmessagehtml = html_to_text($message->fullmessage);
-        $message->smallmessage = $messagebody;
-        $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-        $message->contexturl = (new \moodle_url('/admin/tool/coursewrangler/user_table.php'))->out(false); // A relevant URL for the notification
-        $message->contexturlname = 'Deletion course list'; // Link title explaining where users get to for the contexturl
-        $content = [
-            '*' => 
-            ['header' => ' HEADER ', 'footer' => ' FOOTER ']
-        ]; // Extra content for specific processor
-        $message->set_additional_content('email', $content);
-        
+        $message->fullmessagehtml = $message->fullmessage;
+        $message->smallmessage = html_to_text($messagebody);
+        // Because this is a notification generated from Moodle, not a user-to-user message:
+        $message->notification = 1;
+        // A relevant URL for the notification.
+        $message->contexturl = (new \moodle_url('/admin/tool/coursewrangler/user_table.php'))->out(false);
+        // Link title explaining where users get to for the contexturl.
+        $message->contexturlname = get_string('message_contexturlname', 'tool_coursewrangler');
         $messageid = message_send($message);
         return $messageid;
     }
