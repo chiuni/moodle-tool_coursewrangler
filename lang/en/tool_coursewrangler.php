@@ -94,14 +94,20 @@ $string['settings_minimumage'] = 'Minimum Course Age';
 $string['settings_minimumage_desc'] = 'The minimum age a course must be to be considered for deletion.';
 $string['settings_scheduledduration'] = 'Scheduled Phase Task Length';
 $string['settings_scheduledduration_desc'] = 'The time it takes for the "scheduled" task to be executed.';
-$string['settings_emailedduration'] = 'Emailed Phase Task Length';
-$string['settings_emailedduration_desc'] = 'The time it takes for the "emailed" task to be executed.';
+$string['settings_notifyduration'] = 'Notification Phase Task Length';
+$string['settings_notifyduration_desc'] = 'The time it takes for the "notified" task to be executed.';
 $string['settings_hiddenduration'] = 'Hidden Phase Task Length';
 $string['settings_hiddenduration_desc'] = 'The time it takes for the "hidden" task to be executed.';
 $string['settings_waitingduration'] = 'Waiting Phase Task Length';
 $string['settings_waitingduration_desc'] = 'The time it takes for the "waiting" task to be executed.';
-$string['settings_emailmode'] = 'Email Mode';
-$string['settings_emailmode_desc'] = 'Email mode for notifying managers and teachers pior to deletion of courses.';
+$string['settings_notifymode'] = 'Email Mode';
+$string['settings_notifymode_desc'] = 'Email mode for notifying managers and teachers pior to deletion of courses.';
+$string['settings_childprotection'] = 'Child course protection.';
+$string['settings_childprotection_desc'] = 'Protect child course by preventing parent deletion (meta enrolments).';
+$string['settings_enddateprotection'] = 'End date protection.';
+$string['settings_enddateprotection_desc'] = 'Protect courses that end date is set in the future from being deleted.';
+$string['settings_donotnotifyhidden'] = 'Do not notify hidden courses.';
+$string['settings_donotnotifyhidden_desc'] = 'Owners of courses that are not visible will not be notified.';
 
 // report_details page
 $string['report_details_pageheader'] = 'Report Details';

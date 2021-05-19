@@ -107,9 +107,9 @@ if ($hassiteconfig) {
     ));
 
     $tasks_page->add(new admin_setting_configduration(
-        'tool_coursewrangler/emailedduration',
-        get_string('settings_emailedduration', 'tool_coursewrangler'),
-        get_string('settings_emailedduration_desc', 'tool_coursewrangler'),
+        'tool_coursewrangler/notifyduration',
+        get_string('settings_notifyduration', 'tool_coursewrangler'),
+        get_string('settings_notifyduration_desc', 'tool_coursewrangler'),
         7 * DAYSECS, 
         DAYSECS
     ));
@@ -131,9 +131,30 @@ if ($hassiteconfig) {
     ));
 
     $tasks_page->add(new admin_setting_configcheckbox(
-        'tool_coursewrangler/emailmode',
-        get_string('settings_emailmode', 'tool_coursewrangler'),
-        get_string('settings_emailmode_desc', 'tool_coursewrangler'), 
+        'tool_coursewrangler/notifymode',
+        get_string('settings_notifymode', 'tool_coursewrangler'),
+        get_string('settings_notifymode_desc', 'tool_coursewrangler'), 
+        0
+    ));
+
+    $tasks_page->add(new admin_setting_configcheckbox(
+        'tool_coursewrangler/childprotection',
+        get_string('settings_childprotection', 'tool_coursewrangler'),
+        get_string('settings_childprotection_desc', 'tool_coursewrangler'), 
+        0
+    ));
+
+    $tasks_page->add(new admin_setting_configcheckbox(
+        'tool_coursewrangler/enddateprotection',
+        get_string('settings_enddateprotection', 'tool_coursewrangler'),
+        get_string('settings_enddateprotection_desc', 'tool_coursewrangler'), 
+        0
+    ));
+
+    $tasks_page->add(new admin_setting_configcheckbox(
+        'tool_coursewrangler/donotnotifyhidden',
+        get_string('settings_donotnotifyhidden', 'tool_coursewrangler'),
+        get_string('settings_donotnotifyhidden_desc', 'tool_coursewrangler'), 
         0
     ));
     
