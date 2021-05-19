@@ -230,6 +230,12 @@ class report_table extends table_sql implements renderable
             $fad_conditions = [];
             foreach ($this->filter_action_data as $value) {
                 if ($value == '_qf__force_multiselect_submission') {
+                    // We do this here as well, so that when users select action data,
+                    //  but haven't yet selected filters, we by default hide protected
+                    //  courses. This way if the user wants to see protected courses
+                    //  at the same time as other courses, they have to select all 
+                    //  the appropriate filters.
+                    $conditions[] = "(act.action != 'protect' OR act.action IS NULL)";
                     continue;
                 }
                 // To get courses without action we must do it differently
@@ -533,7 +539,9 @@ class report_table extends table_sql implements renderable
      * Creating the action status col.
      */
     function col_status($values) : string {
-        $display_value = isset($values->status) ? "table_status_$values->status" : 'table_value_notavailable';
+        $display_value = (isset($values->status) && $values->status != '')
+                            ? "table_status_$values->status"
+                            : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
         return ($display_value_string);
     }
