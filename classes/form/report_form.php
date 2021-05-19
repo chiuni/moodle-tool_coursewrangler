@@ -45,6 +45,27 @@ class report_form extends moodleform
 
         // HEADER FILTER OPTIONS
 
+        global $DB;
+        $bycourseids_areanames = [];
+        $allmetrics = $DB->get_records('tool_coursewrangler_metrics');
+        foreach ($allmetrics as $course) {
+            $bycourseids_areanames[$course->course_id] = $course->course_idnumber ?? $course->course_shortname ?? $course->course_fullname ?? $course->course_id;
+        }
+        $bycourseids_options = [
+            'multiple' => true,
+            'showsuggestions' => false,
+            'tags' => true,
+            'noselectionstring' => get_string('report_form_filter_by_courseids_noselectionstring', 'tool_coursewrangler'),
+        ];
+
+        $mform->addElement(
+            'autocomplete',
+            'filter_by_courseids',
+            get_string('report_form_filter_by_courseids', 'tool_coursewrangler'),
+            $bycourseids_areanames,
+            $bycourseids_options
+        );
+
         // Short string match for course idnumber and course short name.
         $mform->addElement(
             'text', 
@@ -109,28 +130,6 @@ class report_form extends moodleform
         );
 
         $mform->hideIf('filter_action_data', 'display_action_data');
-
-        global $DB;
-        $bycourseids_areanames = [];
-        $allmetrics = $DB->get_records('tool_coursewrangler_metrics');
-        foreach ($allmetrics as $course) {
-            $bycourseids_areanames[$course->course_id] = $course->course_idnumber ?? $course->course_shortname ?? $course->course_fullname ?? $course->course_id;
-        }
-        $bycourseids_options = [
-            'multiple' => true,
-            'showsuggestions' => false,
-            'tags' => true,
-            'noselectionstring' => get_string('report_form_filter_by_courseids_noselectionstring', 'tool_coursewrangler'),
-        ];
-
-        $mform->addElement(
-            'autocomplete',
-            'filter_by_courseids',
-            get_string('report_form_filter_by_courseids', 'tool_coursewrangler'),
-            $bycourseids_areanames,
-            $bycourseids_options
-        );
-
 
         // HEADER DATE OPTIONS
         $mform->addElement(
