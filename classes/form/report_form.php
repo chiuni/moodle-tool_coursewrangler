@@ -45,7 +45,6 @@ class report_form extends moodleform
 
         // HEADER FILTER OPTIONS
 
-        global $DB;
         $bycourseids_areanames = [];
         $allmetrics = $DB->get_records('tool_coursewrangler_metrics');
         foreach ($allmetrics as $course) {
