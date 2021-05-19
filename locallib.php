@@ -401,7 +401,7 @@ function cwt_debugger($data, string $leadingtext = 'Debug') {
     if ($data === null) {
         echo "Data is null.";
     } else {
-        print_r($data);
+        print_object($data);
     }
     echo '</pre></div>';
     return true;
