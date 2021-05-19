@@ -90,13 +90,13 @@ class action {
         $DB->update_record('tool_coursewrangler_action', $this);
     }
 
-    function hide_course() {
-        if (!isset($this->course_id) || !is_integer((int) $this->course_id) || $this->course_id < 1) {
-            return false;
-        }
+    static function hide_course(int $courseid) {
         global $DB;
-        $course = $DB->get_record('course', ['id' => $this->course_id]);
+        $course = $DB->get_record('course', ['id' => $courseid]);
+        $metric = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $courseid]);
         $course->visible = 0;
+        $metric->course_visible = 0;
+        $DB->update_record('tool_coursewrangler_metrics', $metric);
         return update_course($course);
     }
 }
