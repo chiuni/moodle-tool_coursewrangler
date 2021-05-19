@@ -73,10 +73,10 @@ $string['table_course_status'] = 'Status';
 $string['table_action_protect'] = 'Protect';
 $string['table_status_protect'] = 'Protect';
 
-// buttons
+// Buttons.
 $string['button_generatereport'] = 'Generate Report';
 
-// settings
+// Settings.
 $string['settingspage_main'] = 'Main Settings';
 $string['settingspage_dev'] = 'Developer Settings';
 $string['settingspage_tasks'] = 'Scheduled Task Settings';
@@ -109,7 +109,7 @@ $string['settings_enddateprotection_desc'] = 'Protect courses that end date is s
 $string['settings_donotnotifyhidden'] = 'Do not notify hidden courses.';
 $string['settings_donotnotifyhidden_desc'] = 'Owners of courses that are not visible will not be notified.';
 
-// report_details page
+// Report_details page.
 $string['report_details_pageheader'] = 'Report Details';
 $string['report_details_coursedetailsfor'] = 'Course details for: ';
 $string['report_details_report_date'] = 'Last updated on';
@@ -124,7 +124,7 @@ $string['report_details_action_protect'] = 'Protect Course';
 $string['report_details_actionstatus'] = 'Action Status';
 $string['report_details_actionstatus_scheduled'] = 'Scheduled for deletion';
 
-// form stuff
+// Form stuff.
 $string['report_form_filter_results'] = 'Filter Results';
 $string['report_form_pagesize'] = 'Entries per page';
 $string['report_form_matchstring_short'] = 'Search by short name (and ID number)';
@@ -149,6 +149,8 @@ $string['report_form_filter_course_startdate_notset'] = 'Start Date Not Set (or 
 $string['report_form_filter_course_enddate_notset'] = 'End Date Not Set (or equals 0)';
 $string['report_form_filter_course_timeaccess_notset'] = 'Last Access Not Set (or equals 0)';
 $string['report_form_filter_display_action_data'] = 'Display Action Data';
+$string['report_form_filter_by_courseids'] = 'Filter by course ids';
+$string['report_form_filter_by_courseids_noselectionstring'] = 'No courses filtered';
 $string['report_form_filter_action_data'] = 'Filter by action';
 $string['report_form_filter_action_data_noselectionstring'] = 'Select an action';
 $string['report_form_filter_display_action_null'] = 'Courses not set';
@@ -167,16 +169,16 @@ $string['hideshow_hidden_courses_showonly'] = 'Show only visible courses';
 
 $string['action_form_chooseaction'] = 'missing string!';
 
-// action_form
+// Action_form.
 $string['action_form_withselected'] = 'With selected...';
 $string['action_form_scheduledelete'] = 'Schedule Deletion';
 $string['action_form_protectcourse'] = 'Protect Course';
 $string['action_form_resetaction'] = 'Reset Action';
 
-// tasks
+// Tasks.
 $string['task_wrangle'] = 'Wrangle Task';
 $string['task_score'] = 'Score Task';
 $string['task_filldata'] = 'Fill Data Task';
 
-// other
+// Other.
 $string['select_an_option'] = 'Select an option';

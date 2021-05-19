@@ -38,6 +38,12 @@ $filter_action_data = empty($filter_action_data) && isset($report_form_data_json
                     ? $report_form_data_json->filter_action_data 
                     : $filter_action_data;
 
+$filter_by_courseids = optional_param('filter_by_courseids', null, PARAM_RAW);
+$filter_by_courseids = is_array($filter_by_courseids) ? $filter_by_courseids : array_filter( (array) explode(',', $filter_by_courseids) );
+$filter_by_courseids = empty($filter_by_courseids) && isset($report_form_data_json->filter_by_courseids) 
+                    ? $report_form_data_json->filter_by_courseids 
+                    : $filter_by_courseids;
+
 // Dates optional params.
 $course_timecreated_after = optional_param('course_timecreated_after', null, PARAM_INT);
 $course_timecreated_after = $course_timecreated_after ?? $report_form_data_json->course_timecreated_after ?? false;
@@ -141,6 +147,7 @@ $PAGE->navbar->add(get_string('table_tablename', 'tool_coursewrangler'), new moo
 $options_array = [];
 $options_array['category_ids'] = $category_ids ?? [];
 $options_array['filter_action_data'] = $filter_action_data ?? [];
+$options_array['filter_by_courseids'] = $filter_by_courseids ?? [];
 $options_array['course_timecreated_after'] = $course_timecreated_after > 0 ? $course_timecreated_after : null;
 $options_array['course_timecreated_before'] = $course_timecreated_before > 0 ? $course_timecreated_before : null;
 $options_array['course_startdate_after'] = $course_startdate_after > 0 ? $course_startdate_after : null;
@@ -178,6 +185,7 @@ $url_params = $options_array;
 // Parameter category_ids must be string.
 $url_params['category_ids'] = is_array($category_ids) ? implode(',', $category_ids) : $category_ids;
 $url_params['filter_action_data'] = is_array($filter_action_data) ? implode(',', $filter_action_data) : $filter_action_data;
+$url_params['filter_by_courseids'] = is_array($filter_by_courseids) ? implode(',', $filter_by_courseids) : $filter_by_courseids;
 $url_params = array_filter($url_params);
 $base_url = new moodle_url($base_url_str, $url_params);
 $base_url_reset = new moodle_url($base_url_str);

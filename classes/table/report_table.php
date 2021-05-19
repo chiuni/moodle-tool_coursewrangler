@@ -61,6 +61,7 @@ class report_table extends table_sql implements renderable
         // Optional params setting.
         $this->category_ids = $params['category_ids'] ?? [];
         $this->filter_action_data = $params['filter_action_data'] ?? [];
+        $this->filter_by_courseids = $params['filter_by_courseids'] ?? [];
         $this->course_timecreated_after = $params['course_timecreated_after'] ?? null;
         $this->course_timecreated_before = $params['course_timecreated_before'] ?? null;
         $this->course_startdate_after = $params['course_startdate_after'] ?? null;
@@ -82,6 +83,7 @@ class report_table extends table_sql implements renderable
         // Preparing data for building urls in edit col.
         $params['category_ids'] = isset(($params['category_ids'])) ? implode(',', $params['category_ids']) : null;
         $params['filter_action_data'] = isset(($params['filter_action_data'])) ? implode(',', $params['filter_action_data']) : null;
+        $params['filter_by_courseids'] = isset(($params['filter_by_courseids'])) ? implode(',', $params['filter_by_courseids']) : null;
         $this->url_params = $params;
         $this->return_link = $baseurl->out();
         $this->define_baseurl($baseurl);
@@ -252,7 +254,25 @@ class report_table extends table_sql implements renderable
             }
         }
 
-
+        /**
+         * This is the course id(s) filter.
+         * 
+         * Allows the user to filter which courses to see based on course ids.
+         */
+        if (!empty($this->filter_by_courseids)) {
+            foreach ($this->filter_by_courseids as $value) {
+                if ($value == '_qf__force_multiselect_submission') {
+                    // We can skip this one, as this is same as not set.
+                    continue;
+                }
+                $fbcs_params[] = $value;
+            }
+            if (!empty($fbcs_params)) {
+                list($fbcs_sql, $fbcs_params) = $DB->get_in_or_equal($fbcs_params, SQL_PARAMS_NAMED, 'fbcs');
+                $params += $fbcs_params;
+                $conditions[] = "metrics.course_id $fbcs_sql";
+            }
+        }
         /**
          * Filtering 
          */
