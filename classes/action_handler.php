@@ -39,9 +39,15 @@ class action_handler
         }
     }
 
-    static function update(int $course_id, string $task = 'delete', string $status = 'scheduled') {
+    static function update(int $course_id, string $task, string $status = '') {
         if ($course_id < 1) {
             return false;
+        }
+        if ($task == 'reset') {
+            return action_handler::purge($course_id);
+        }
+        if ($task == 'delete' && $status == '') {
+            $status = 'scheduled';
         }
         $exists = action::find_action($course_id);
         $action = new stdClass();

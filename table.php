@@ -138,8 +138,6 @@ $PAGE->navbar->add(get_string('administrationsite'), new moodle_url('/admin/sear
 $PAGE->navbar->add(get_string('pluginname', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/index.php'));
 $PAGE->navbar->add(get_string('table_tablename', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/table.php'));
 
-echo $OUTPUT->header();
-
 $options_array = [];
 $options_array['category_ids'] = $category_ids ?? [];
 $options_array['filter_action_data'] = $filter_action_data ?? [];
@@ -173,9 +171,6 @@ $mform = new form\report_form(
 // Set default data (if any) do not remove!
 // This is for setting additional data so the form doesn't lose it.
 $mform->set_data($options_array);
-
-//Displays the form.
-$mform->display();
 
 // Creating url params.
 $base_url_str = '/admin/tool/coursewrangler/table.php';
@@ -211,31 +206,21 @@ $totalrowshtml = \html_writer::tag(
     $totalrowstext,
     ['class' => 'h5 mdl-right']
 );
-echo $totalrowshtml;
+
 if ($display_action_data == true) {
     $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
-    $aform->display();
     if ($fromform = $aform->get_data()) {
         //In this case you process validated data. $mform->get_data() returns data posted in form.
         if (isset($rows_selected) && isset($action)) {
             $form_handler = new action_handler();
-            switch ($action) {
-                case 'delete':
-                    foreach ($rows_selected as $row_course_id) {
-                        echo($row_course_id);
-                        action_handler::update($row_course_id, 'delete', 'scheduled');
-                    }
-                    break;
-                case 'reset':
-                    foreach ($rows_selected as $row_course_id) {
-                        action_handler::purge($row_course_id);
-                    }
-                    break;
-                default:
-                    break;
+            foreach ($rows_selected as $row_course_id) {
+                action_handler::update($row_course_id, $action);
             }
-            // Is this the best way of doing redirects in Moodle?
-            redirect($base_url);
+            // TODO: Is this the best way of doing redirects in Moodle?
+            redirect($base_url, 
+            get_string('table_actionredirectmessage', 'tool_coursewrangler'),
+            0
+            );
             exit;
         }
     } else {
@@ -243,6 +228,18 @@ if ($display_action_data == true) {
         // doesn't validate and the form should be redisplayed
         // or on the first display of the form.
     }
+}
+// OUTPUT begins here.
+// We do this so that redirects can happen prior.
+echo $OUTPUT->header();
+
+//Displays the big form.
+$mform->display();
+echo $totalrowshtml;
+
+if ($display_action_data == true) {
+    // We only display this one if required.
+    $aform->display();
 }
 
 $table->finish_report_table();

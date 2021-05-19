@@ -48,7 +48,7 @@ class action_form extends moodleform
 
         $options = array();
         $options['delete'] = get_string('action_form_scheduledelete', 'tool_coursewrangler');
-        $options['protect'] = get_string('action_form_protectaction', 'tool_coursewrangler');
+        $options['protect'] = get_string('action_form_protectcourse', 'tool_coursewrangler');
         $options['reset'] = get_string('action_form_resetaction', 'tool_coursewrangler');
         
         $objs = array();

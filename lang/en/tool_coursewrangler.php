@@ -170,6 +170,7 @@ $string['action_form_chooseaction'] = 'missing string!';
 // action_form
 $string['action_form_withselected'] = 'With selected...';
 $string['action_form_scheduledelete'] = 'Schedule Deletion';
+$string['action_form_protectcourse'] = 'Protect Course';
 $string['action_form_resetaction'] = 'Reset Action';
 
 // tasks
