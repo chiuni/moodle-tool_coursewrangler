@@ -29,8 +29,10 @@ namespace tool_coursewrangler\task;
 use tool_coursewrangler\action;
 use tool_coursewrangler\action_handler;
 
-defined('MOODLE_INTERNAL') || die();
+use function tool_coursewrangler\get_course_metric as get_course_metric;
 
+defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/admin/tool/coursewrangler/locallib.php');
 class wrangle extends \core\task\scheduled_task {
 
     /**
@@ -47,35 +49,97 @@ class wrangle extends \core\task\scheduled_task {
      */
     public function execute() {
         global $DB;
-        mtrace("Starting tool_coursewrangler Wrangle task");
+        mtrace("Starting " . $this->get_name());
+        // Working out the amount of time that should 
+        //  pass before running each phase.
         $scheduledduration = time() - get_config('tool_coursewrangler', 'scheduledduration');
-        $emailedduration = time() - get_config('tool_coursewrangler', 'emailedduration');
+        $notifyduration = time() - get_config('tool_coursewrangler', 'notifyduration');
         $hiddenduration = time() - get_config('tool_coursewrangler', 'hiddenduration');
         $waitingduration = time() - get_config('tool_coursewrangler', 'waitingduration');
 
-        $scheduled_actions = $DB->get_records_sql('SELECT * FROM {tool_coursewrangler_action} WHERE action="delete" AND status="scheduled" AND lastupdated < :lastupdated ;', ['lastupdated' => $scheduledduration]);
-        $emailed_actions = $DB->get_records_sql('SELECT * FROM {tool_coursewrangler_action} WHERE action="delete" AND status="emailed" AND lastupdated < :lastupdated ;', ['lastupdated' => $emailedduration]);
-        $hidden_actions = $DB->get_records_sql('SELECT * FROM {tool_coursewrangler_action} WHERE action="delete" AND status="hidden" AND lastupdated < :lastupdated ;', ['lastupdated' => $hiddenduration]);
-        $waiting_actions = $DB->get_records_sql('SELECT * FROM {tool_coursewrangler_action} WHERE action="delete" AND status="waiting" AND lastupdated < :lastupdated ;', ['lastupdated' => $waitingduration]);
+        // This will select scheduled actions that have 
+        //  been added after a certain period of time.
+        $scheduled_actions = $DB->get_records_sql(
+            'SELECT * FROM {tool_coursewrangler_action} 
+                WHERE action="delete" AND status="scheduled" 
+                AND lastupdated < :lastupdated ;', 
+            ['lastupdated' => $scheduledduration]
+        );
+        $notified_actions = $DB->get_records_sql(
+            'SELECT * FROM {tool_coursewrangler_action} 
+                WHERE action="delete" AND status="notified" 
+                AND lastupdated < :lastupdated ;', 
+            ['lastupdated' => $notifyduration]
+        );
+        $hidden_actions = $DB->get_records_sql(
+            'SELECT * FROM {tool_coursewrangler_action} 
+                WHERE action="delete" AND status="hidden" 
+                AND lastupdated < :lastupdated ;', 
+            ['lastupdated' => $hiddenduration]
+        );
+        $waiting_actions = $DB->get_records_sql(
+            'SELECT * FROM {tool_coursewrangler_action} 
+                WHERE action="delete" AND status="waiting" 
+                AND lastupdated < :lastupdated ;', 
+            ['lastupdated' => $waitingduration]
+        );
         
         mtrace("Starting 'Schedule' Task.");
+        /**
+         * The first step of Wrangle is to workout who do we notify.
+         * 
+         * Some of the extra steps should be:
+         *  - If setting to protect child courses is enabled, 
+         *     skip parent course deletion?
+         *  - If end date is set, and not yet over, protect it? (setting).
+         *  - If course is not visible, do not notify? (setting).
+         */
+        $childprotection = get_config('tool_coursewrangler', 'childprotection') ?? false;
+        $enddateprotection = get_config('tool_coursewrangler', 'enddateprotection') ?? false;
+        $donotnotifyhidden = get_config('tool_coursewrangler', 'donotnotifyhidden') ?? false;
         $scheduled_mailinglist = [];
-        $emailmode = get_config('tool_coursewrangler', 'emailmode') ?? false;
-        if ($emailmode) {
-            mtrace("Assembling mailing list.");
-            $scheduled_mailinglist = action_handler::getmaillist($scheduled_actions);
-            mtrace("Emailing course managers and teachers for new scheduled tasks.");
-            action_handler::email($scheduled_mailinglist);
-        }
+        $notifymode = get_config('tool_coursewrangler', 'notifymode') ?? false;
+        $scheduled_actions_notify = [];
+        // Processing the scheduled tasks.
         foreach ($scheduled_actions as $scheduled) {
             mtrace("Processing scheduled action for course id $scheduled->course_id:");
-            action_handler::update($scheduled->course_id, 'delete', 'emailed');
+            // Here we must do all the extra checks.
+            $metrics = get_course_metric($scheduled->course_id);
+
+            $isparent = false;
+            $isrunning = false;
+            $ishidden = false;
+
+            $isparent = $metrics->course_children != null;
+            $isrunning = $metrics->course_enddate > time();
+            $ishidden = $metrics->course_visible == 0;
+
+            if ($childprotection && $isparent) {
+                mtrace("Course $metrics->course_id is protected because is parent, skipped.");
+                continue;                
+            }
+            if ($enddateprotection && $isrunning) {
+                mtrace("Course $metrics->course_id is protected because is not over, skipped.");
+                continue;
+            }
+            if (!$donotnotifyhidden && !$ishidden) {
+                $scheduled_actions_notify[$scheduled->course_id] = $scheduled;
+            }
+            action_handler::update($scheduled->course_id, 'delete', 'notified');
         }
-        foreach ($emailed_actions as $emailed) {
-            mtrace("Processing emailed action for course id $emailed->course_id:");
-            $action = new action($emailed->id);
+        if ($notifymode) {
+            // Preparing mailing list.
+            mtrace("Assembling mailing list.");
+            $scheduled_mailinglist = action_handler::getmaillist($scheduled_actions_notify);
+            mtrace("Emailing course managers and teachers for new scheduled tasks.");
+            action_handler::notify_owners($scheduled_mailinglist);
+        }
+        // Processing the notified tasks.
+        foreach ($notified_actions as $notified) {
+            mtrace("Processing notified action for course id $notified->course_id:");
+            $action = new action($notified->id);
             $action->hide_course();
-            action_handler::update($emailed->course_id, 'delete', 'hidden');
+            action_handler::update($notified->course_id, 'delete', 'hidden');
         }
         foreach ($hidden_actions as $hidden) {
             mtrace("Processing hidden action for course id $hidden->course_id:");
