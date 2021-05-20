@@ -106,13 +106,9 @@ class wrangle extends \core\task\scheduled_task {
             // Here we must do all the extra checks.
             $metrics = get_course_metric($scheduled->course_id);
 
-            $isparent = false;
-            $isrunning = false;
-            $ishidden = false;
-
-            $isparent = $metrics->course_children != null;
-            $isrunning = $metrics->course_enddate > time();
-            $ishidden = $metrics->course_visible == 0;
+            $isparent = $metrics->course_children != null ?? false;
+            $isrunning = $metrics->course_enddate > time() ?? false;
+            $ishidden = $metrics->course_visible == 0 ?? false;
 
             if ($childprotection && $isparent) {
                 mtrace("Course $metrics->course_id is protected because is parent, skipped.");
@@ -122,7 +118,9 @@ class wrangle extends \core\task\scheduled_task {
                 mtrace("Course $metrics->course_id is protected because is not over, skipped.");
                 continue;
             }
-            if (!$donotnotifyhidden && !$ishidden) {
+            if ($donotnotifyhidden && $ishidden) {
+                mtrace("Not sending course notification because is already hidden.");
+            } else {
                 $scheduled_actions_notify[$scheduled->course_id] = $scheduled;
             }
             action_handler::update($scheduled->course_id, 'delete', 'notified');
@@ -133,12 +131,13 @@ class wrangle extends \core\task\scheduled_task {
             $scheduled_mailinglist = action_handler::getmaillist($scheduled_actions_notify);
             mtrace("Emailing course managers and teachers for new scheduled tasks.");
             action_handler::notify_owners($scheduled_mailinglist);
+            mtrace("Done notifying owners.");
         }
         // Processing the notified tasks.
         foreach ($notified_actions as $notified) {
             mtrace("Processing notified action for course id $notified->course_id:");
             $action = new action($notified->id);
-            $action->hide_course();
+            $action->hide_course($notified->course_id);
             action_handler::update($notified->course_id, 'delete', 'hidden');
         }
         foreach ($hidden_actions as $hidden) {
