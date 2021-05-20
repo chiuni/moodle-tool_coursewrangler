@@ -70,6 +70,7 @@ $string['table_status_notified'] = 'Owner Notified';
 $string['table_status_hidden'] = 'Course Hidden';
 $string['table_status_waiting'] = 'Waiting Time';
 $string['table_displayingtotalrows'] = 'Query found {$a} courses in metrics data.';
+$string['table_action_lastupdated'] = 'This course will be deleted after';
 
 $string['table_course_action'] = 'Action';
 $string['table_course_status'] = 'Status';

@@ -79,7 +79,8 @@ class user_report_table extends table_sql implements renderable
             'course_fullname' => get_string('table_course_fullname', 'tool_coursewrangler'),
             'course_timecreated' => get_string('table_course_timecreated', 'tool_coursewrangler'),
             'action' => get_string('table_course_action', 'tool_coursewrangler'),
-            'status' => get_string('table_course_status', 'tool_coursewrangler')
+            'status' => get_string('table_course_status', 'tool_coursewrangler'),
+            'lastupdated' => get_string('table_action_lastupdated', 'tool_coursewrangler')
         ];
 
         $this->define_columns(array_keys($cols));
@@ -138,8 +139,8 @@ class user_report_table extends table_sql implements renderable
         // Now we only want to see the ones that have been marked for deletion
         //  and the user has at least been notified, scheduled ones might not
         //  be confirmed for deletion yet.
-        $params['scheduled'] = 'scheduled';
-        $conditions[] = "act.status != :scheduled";
+        $params['status'] = 'notified';
+        $conditions[] = "act.status = :status";
         $params['delete'] = 'delete';
         $conditions[] = "act.action = :delete";
         // We do not want to confuse users by showing them hidden courses.
@@ -188,6 +189,17 @@ class user_report_table extends table_sql implements renderable
                             ? "table_status_$values->status"
                             : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
+        return ($display_value_string);
+    }
+
+    /**
+     * Creating the action status col.
+     */
+    function col_lastupdated($values) : string {
+        $lastupdated = $values->lastupdated;
+        $scheduledperiod = get_config('tool_coursewrangler', 'scheduledduration');
+        $toberun = $scheduledperiod + $lastupdated;
+        $display_value_string = userdate($toberun);
         return ($display_value_string);
     }
 }
