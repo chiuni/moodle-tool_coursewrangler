@@ -66,6 +66,9 @@ $string['table_value_notavailable'] = 'N/A';
 $string['table_visible_yes'] = 'Yes';
 $string['table_visible_no'] = 'No';
 $string['table_status_scheduled'] = 'Scheduled';
+$string['table_status_notified'] = 'Owner Notified';
+$string['table_status_hidden'] = 'Course Hidden';
+$string['table_status_waiting'] = 'Waiting Time';
 $string['table_displayingtotalrows'] = 'Query found {$a} courses in metrics data.';
 
 $string['table_course_action'] = 'Action';
