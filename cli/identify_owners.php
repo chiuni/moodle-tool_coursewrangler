@@ -31,6 +31,7 @@ namespace tool_coursewrangler;
 
 use context_system;
 use stdClass;
+use tool_coursewrangler\action_handler;
 
 define('CLI_SCRIPT', true);
 
@@ -46,12 +47,29 @@ $starttime = time();
 echo 'identify_owners.php.......' . PHP_EOL;
 
 global $DB;
-$input = 69951;
-while ($input > 0) {
-    print_r(find_owner($input));
-    $handle = fopen("php://stdin", "r");
-    $input = fgets($handle);
-    fclose($handle);
+$courses = get_courses();;
+
+// foreach ($courses as $c) {
+//     print_object(find_owner($c->id));
+//     break;
+// }
+
+// print_object(find_owners(70248));
+
+$scheduledduration = time() - get_config('tool_coursewrangler', 'scheduledduration');
+$scheduled_actions = $DB->get_records_sql(
+            'SELECT * FROM {tool_coursewrangler_action} 
+                WHERE action="delete" AND status="scheduled" 
+                AND lastupdated < :lastupdated ;', 
+            ['lastupdated' => $scheduledduration]
+        );
+$maillist = action_handler::getmaillist($scheduled_actions);
+print_object($maillist);
+
+foreach ($maillist as $userid => $owner) {
+    $user = \core_user::get_user($userid);
+    $courseids = array_keys($owner);
+    action_handler::send_schedulednotification($user, $courseids);
 }
 
 //########################################################
@@ -60,39 +78,3 @@ $elapsed = time() - $starttime;
 echo "Finished script in $elapsed seconds." . PHP_EOL;
 
 //--------------------------------------------------------
-function get_enrolments(int $course_id) {
-    if ($course_id < 1) {
-        return false;
-    }
-    global $DB;
-    $sql = "SELECT concat(ra.id, '-', e.id) as id, ue.userid, r.shortname, ra.component, e.enrol, ue.timestart, ue.timecreated, ue.timemodified
-        FROM {role_assignments} AS ra 
-       LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid 
-       LEFT JOIN {role} AS r ON ra.roleid = r.id 
-       LEFT JOIN {context} AS c ON c.id = ra.contextid 
-       LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id 
-       WHERE e.courseid = :course_id;";
-    return $DB->get_records_sql($sql, ['course_id' => $course_id]);
-}
-
-function find_owner(int $course_id) {
-    $enrolments = get_enrolments($course_id);
-    if (!$enrolments) {
-        return false;
-    }
-    $owners = new stdClass;
-    foreach ($enrolments as $e) {
-        // Checking sits enrolments.
-        // if ($e->enrol == 'sits') {
-            $type = $e->shortname . 's';
-            $owners->$type[$e->userid] = $e;
-        // }
-    }
-    if (!empty($owners->coordinators)) {
-        return $owners->coordinators;
-    }
-    if (!empty($owners->lecturers)) {
-        return $owners->lecturers;
-    }
-    return false;
-}
