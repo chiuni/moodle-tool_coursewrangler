@@ -111,8 +111,49 @@ class user_report_table extends table_sql implements renderable
     /**
      * Define table SQL.
      */
-    protected function define_table_sql()
-    {
+    protected function build_query() {
+        global $DB;
+        $sqlwhat = [
+            'metrics.course_id', 
+            'metrics.id', 
+            'metrics.course_shortname', 
+            'metrics.course_fullname', 
+            'metrics.course_idnumber', 
+            'metrics.course_timecreated', 
+            'act.id',
+            'act.action',
+            'act.status',
+            'act.lastupdated'
+        ];
+        $sqlfrom = [
+            '{tool_coursewrangler_metrics} AS metrics',
+            'LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.course_id=act.course_id'
+        ];
+        $params = [];
+        $conditions = [];
+        // We must filter the user's course ids from their enrolments.
+        list($cids_sql, $cids_params) = $DB->get_in_or_equal($this->courseids, SQL_PARAMS_NAMED, 'cids');
+        $params += $cids_params;
+        $conditions[] = "metrics.course_id $cids_sql";
+        // Now we only want to see the ones that have been marked for deletion
+        //  and the user has at least been notified, scheduled ones might not
+        //  be confirmed for deletion yet.
+        $params['scheduled'] = 'scheduled';
+        $conditions[] = "act.status != :scheduled";
+        $params['delete'] = 'delete';
+        $conditions[] = "act.action = :delete";
+        return [$sqlwhat, $sqlfrom, $conditions, $params];
+    }
+    /**
+     * Define table SQL.
+     */
+    protected function define_table_sql() {
+        list($sqlwhat, $sqlfrom, $conditions, $params) = $this->build_query();
+        $sqlwhat = join(', ', $sqlwhat);
+        $sqlfrom = join(' ', $sqlfrom);
+        $conditions = join(' AND ', $conditions);
+        $this->set_sql($sqlwhat, $sqlfrom, $conditions, $params);
+        return ;
         // Make sure that metrics.course_id is ALWAYS first item in fields section of the query.
         $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_shortname,
         metrics.course_fullname, metrics.course_idnumber, metrics.course_timecreated";
