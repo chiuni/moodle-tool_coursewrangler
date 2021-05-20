@@ -142,6 +142,10 @@ class user_report_table extends table_sql implements renderable
         $conditions[] = "act.status != :scheduled";
         $params['delete'] = 'delete';
         $conditions[] = "act.action = :delete";
+        // We do not want to confuse users by showing them hidden courses.
+        // Could we do something to check this against real data, instead of metrics?
+        $params['visible'] = '1';
+        $conditions[] = "metrics.course_visible = :visible";
         return [$sqlwhat, $sqlfrom, $conditions, $params];
     }
     /**
