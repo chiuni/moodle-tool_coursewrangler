@@ -153,29 +153,6 @@ class user_report_table extends table_sql implements renderable
         $sqlfrom = join(' ', $sqlfrom);
         $conditions = join(' AND ', $conditions);
         $this->set_sql($sqlwhat, $sqlfrom, $conditions, $params);
-        return ;
-        // Make sure that metrics.course_id is ALWAYS first item in fields section of the query.
-        $what_metrics_sql = "metrics.course_id, metrics.id, metrics.course_shortname,
-        metrics.course_fullname, metrics.course_idnumber, metrics.course_timecreated";
-        $what_score_sql = "score.id, score.metrics_id, score.timemodified, score.raw, score.rounded, score.percentage";
-        $what_sql = "$what_metrics_sql, $what_score_sql";
-        // Default where statement should at least have one statement,
-        // so we use true as the initial statement to avoid Moodle
-        // errors and other undesired behaviour.
-        $courseidslist = implode(',', $this->courseids);
-        $where_sql = "metrics.course_id IN($courseidslist) AND act.id";
-        $from_sql = "{tool_coursewrangler_metrics} AS metrics ";
-        $join_score_sql = " LEFT JOIN {tool_coursewrangler_score} AS score ON metrics.id=score.metrics_id ";
-
-        $join_action_data = '';
-
-        $join_action_data = " LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.course_id=act.course_id ";
-        // Make sure not to double select course_id here, otherwise ambiguous error appears.
-        $what_sql .= ", act.id, act.action, act.status, act.lastupdated";
-
-        $full_join_score_sql = $join_score_sql . $join_action_data;
-
-        $this->set_sql($what_sql, "$from_sql $full_join_score_sql", $where_sql);
     }
 
     function col_course_timecreated($values) : string {
