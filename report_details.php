@@ -87,7 +87,10 @@ if ($course->coursechildren != null) {
 } else {
     $course->coursechildren = false;
 }
-$course->score = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_score} WHERE metrics_id=:metrics_id ', ['metrics_id' => $course->id]);
+$course->score = $DB->get_record_sql(
+    'SELECT * FROM {tool_coursewrangler_score} WHERE metrics_id=:metrics_id ',
+    ['metrics_id' => $course->id]
+);
 if ($course->score->timemodified == 0) {
     $course->score = null;
 } else {

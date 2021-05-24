@@ -110,38 +110,38 @@ class user_report_table extends table_sql implements renderable
     protected function build_query() {
         global $DB;
         $sqlwhat = [
-            'metrics.courseid',
-            'metrics.id',
-            'metrics.courseshortname',
-            'metrics.coursefullname',
-            'metrics.courseidnumber',
-            'metrics.coursetimecreated',
-            'act.id',
-            'act.action',
-            'act.status',
-            'act.lastupdated'
+            '{tool_coursewrangler_metrics}.courseid',
+            '{tool_coursewrangler_metrics}.id',
+            '{tool_coursewrangler_metrics}.courseshortname',
+            '{tool_coursewrangler_metrics}.coursefullname',
+            '{tool_coursewrangler_metrics}.courseidnumber',
+            '{tool_coursewrangler_metrics}.coursetimecreated',
+            '{tool_coursewrangler_action}.id',
+            '{tool_coursewrangler_action}.action',
+            '{tool_coursewrangler_action}.status',
+            '{tool_coursewrangler_action}.lastupdated'
         ];
         $sqlfrom = [
-            '{tool_coursewrangler_metrics} AS metrics',
-            'LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.courseid=act.courseid'
+            '{tool_coursewrangler_metrics}',
+            'LEFT JOIN {tool_coursewrangler_action} ON {tool_coursewrangler_metrics}.courseid={tool_coursewrangler_action}.courseid'
         ];
         $params = [];
         $conditions = [];
         // We must filter the user's course ids from their enrolments.
         list($cidssql, $cidsparams) = $DB->get_in_or_equal($this->courseids, SQL_PARAMS_NAMED, 'cids');
         $params += $cidsparams;
-        $conditions[] = "metrics.courseid $cidssql";
+        $conditions[] = "{tool_coursewrangler_metrics}.courseid $cidssql";
         // Now we only want to see the ones that have been marked for deletion
         // and the user has at least been notified, scheduled ones might not
         // be confirmed for deletion yet.
         $params['status'] = 'notified';
-        $conditions[] = "act.status = :status";
+        $conditions[] = "{tool_coursewrangler_action}.status = :status";
         $params['delete'] = 'delete';
-        $conditions[] = "act.action = :delete";
+        $conditions[] = "{tool_coursewrangler_action}.action = :delete";
         // We do not want to confuse users by showing them hidden courses.
         // Could we do something to check this against real data, instead of metrics?
         $params['visible'] = '1';
-        $conditions[] = "metrics.coursevisible = :visible";
+        $conditions[] = "{tool_coursewrangler_metrics}.coursevisible = :visible";
         return [$sqlwhat, $sqlfrom, $conditions, $params];
     }
     /**

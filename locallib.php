@@ -172,25 +172,25 @@ function find_coursestudents(int $id) {
     // By using the archetype we can firmly establish if they are students or not.
     $archetype = 'student';
     $coursecontext = \context_course::instance($id);
-    // Then foreach result, depending on type of enrol (e.enrol), store that information
+    // Then foreach result, depending on type of enrol ({enrol}.enrol), store that information
     // also remember to check for students only, we do not want any other archetypes for now.
     $allstudents = [];
-    $sql = "SELECT  concat(ra.id, '-', e.id) as id,
-                    ue.userid AS userid,
-                    r.shortname,
-                    ra.component,
-                    ue.timestart,
-                    ue.timecreated,
-                    ue.timemodified,
-                    r.archetype AS role_type,
-                    ue.status AS enrol_status,
-                    e.enrol AS enrol_type
-            FROM {role_assignments} AS ra
-        LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid
-        LEFT JOIN {role} AS r ON ra.roleid = r.id
-        LEFT JOIN {context} AS c ON c.id = ra.contextid
-        LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id
-        WHERE r.archetype=:archetype AND e.courseid = :courseid;";
+    $sql = "SELECT  concat({role_assignments}.id, '-', {enrol}.id) as id,
+                    {user_enrolments}.userid AS userid,
+                    {role}.shortname,
+                    {role_assignments}.component,
+                    {user_enrolments}.timestart,
+                    {user_enrolments}.timecreated,
+                    {user_enrolments}.timemodified,
+                    {role}.archetype AS role_type,
+                    {user_enrolments}.status AS enrol_status,
+                    {enrol}.enrol AS enrol_type
+            FROM {role_assignments}
+        LEFT JOIN {user_enrolments} ON {role_assignments}.userid = {user_enrolments}.userid
+        LEFT JOIN {role} ON {role_assignments}.roleid = {role}.id
+        LEFT JOIN {context} ON {context}.id = {role_assignments}.contextid
+        LEFT JOIN {enrol} ON {enrol}.courseid = {context}.instanceid AND {user_enrolments}.enrolid = {enrol}.id
+        WHERE {role}.archetype=:archetype AND {enrol}.courseid = :courseid;";
     $students = $DB->get_records_sql($sql, ['courseid' => $id, 'archetype' => $archetype]);
     $allstudents[] = $students;
     // This might need review, but the idea is that we create a total enrolment
@@ -207,10 +207,6 @@ function find_coursestudents(int $id) {
     foreach ($allstudents as $students) {
         $coursestudents->totalenrolcount += count($students) ?? 0;
         foreach ($students as $student) {
-            $roles = get_user_roles($coursecontext, $student->userid);
-            if ($roles) {
-                // I don't know what I was going to do here.
-            }
             // This switch checks if enrolment status is active.
             switch ($student->enrol_status) {
                 case 0:
@@ -246,7 +242,10 @@ function count_course_modules(int $courseid) {
         return null;
     }
     global $DB;
-    return $DB->get_record_sql("SELECT COUNT(id) AS coursemodulescount FROM {course_modules} WHERE course=:courseid;", ['courseid' => $courseid]);
+    return $DB->get_record_sql(
+        "SELECT COUNT(id) AS coursemodulescount FROM {course_modules} WHERE course=:courseid;",
+        ['courseid' => $courseid]
+    );
 }
 /**
  * Large query that fetches the core course data plus activity data regarding that course.
@@ -258,7 +257,8 @@ function find_course_activity_data(string $where = '') {
     $modules = $DB->get_records_sql("SELECT id, name FROM {modules};");
     $unionsegments = [];
     foreach ($modules as $module) {
-        $unionsegments[] =    " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act $where";
+        $mname = '{' . $module->name . '}';
+        $unionsegments[] = " SELECT $mname.id, $mname.course, $mname.name, $mname.timemodified FROM $mname $where";
     }
     $unionstatement = implode(" UNION ", $unionsegments);
     return $DB->get_records_sql(
@@ -325,22 +325,22 @@ function get_enrolments(int $courseid, string $archetype) {
         return false;
     }
     global $DB;
-    $sql = "SELECT concat(ra.id, '-', e.id) as id,
-            ue.userid,
-            r.shortname,
-            r.archetype,
-            ra.component,
-            e.enrol,
-            ue.timestart,
-            ue.timecreated,
-            ue.timemodified
-        FROM {role_assignments} AS ra
-       LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid
-       LEFT JOIN {role} AS r ON ra.roleid = r.id
-       LEFT JOIN {context} AS c ON c.id = ra.contextid
-       LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id
-       WHERE e.courseid = :courseid
-       AND r.archetype = :archetype;";
+    $sql = "SELECT concat({role_assignments}.id, '-', {enrol}.id) as id,
+            {user_enrolments}.userid,
+            {role}.shortname,
+            {role}.archetype,
+            {role_assignments}.component,
+            {enrol}.enrol,
+            {user_enrolments}.timestart,
+            {user_enrolments}.timecreated,
+            {user_enrolments}.timemodified
+        FROM {role_assignments}
+       LEFT JOIN {user_enrolments} ON {role_assignments}.userid = {user_enrolments}.userid
+       LEFT JOIN {role} ON {role_assignments}.roleid = {role}.id
+       LEFT JOIN {context} ON {context}.id = {role_assignments}.contextid
+       LEFT JOIN {enrol} ON {enrol}.courseid = {context}.instanceid AND {user_enrolments}.enrolid = {enrol}.id
+       WHERE {enrol}.courseid = :courseid
+       AND {role}.archetype = :archetype;";
     return $DB->get_records_sql($sql, ['courseid' => $courseid, 'archetype' => $archetype]);
 }
 

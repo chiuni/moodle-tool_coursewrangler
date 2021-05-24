@@ -167,59 +167,59 @@ class report_table extends table_sql implements renderable
     protected function build_query() {
         global $DB;
         $sqlwhat = [
-            'metrics.courseid',
-            'metrics.id',
-            'metrics.coursemoduleid',
-            'metrics.courseshortname',
-            'metrics.coursefullname',
-            'metrics.courseidnumber',
-            'metrics.coursetimecreated',
-            'metrics.coursetimemodified',
-            'metrics.coursestartdate',
-            'metrics.courseenddate',
-            'metrics.coursevisible',
-            'metrics.courseparents',
-            'metrics.coursemodulescount',
-            'metrics.coursetimeaccess',
-            'metrics.courselastenrolment',
-            'metrics.activitytype',
-            'metrics.activitylastmodified',
-            'metrics.totalenrolcount',
-            'metrics.activeenrolcount',
-            'metrics.selfenrolcount',
-            'metrics.manualenrolcount',
-            'metrics.metaenrolcount',
-            'metrics.otherenrolcount',
-            'metrics.suspendedenrolcount',
-            'metrics.metricsupdated',
-            'score.id',
-            'score.metrics_id',
-            'score.timemodified',
-            'score.raw',
-            'score.rounded',
-            'score.percentage'
+            '{tool_coursewrangler_metrics}.courseid',
+            '{tool_coursewrangler_metrics}.id',
+            '{tool_coursewrangler_metrics}.coursemoduleid',
+            '{tool_coursewrangler_metrics}.courseshortname',
+            '{tool_coursewrangler_metrics}.coursefullname',
+            '{tool_coursewrangler_metrics}.courseidnumber',
+            '{tool_coursewrangler_metrics}.coursetimecreated',
+            '{tool_coursewrangler_metrics}.coursetimemodified',
+            '{tool_coursewrangler_metrics}.coursestartdate',
+            '{tool_coursewrangler_metrics}.courseenddate',
+            '{tool_coursewrangler_metrics}.coursevisible',
+            '{tool_coursewrangler_metrics}.courseparents',
+            '{tool_coursewrangler_metrics}.coursemodulescount',
+            '{tool_coursewrangler_metrics}.coursetimeaccess',
+            '{tool_coursewrangler_metrics}.courselastenrolment',
+            '{tool_coursewrangler_metrics}.activitytype',
+            '{tool_coursewrangler_metrics}.activitylastmodified',
+            '{tool_coursewrangler_metrics}.totalenrolcount',
+            '{tool_coursewrangler_metrics}.activeenrolcount',
+            '{tool_coursewrangler_metrics}.selfenrolcount',
+            '{tool_coursewrangler_metrics}.manualenrolcount',
+            '{tool_coursewrangler_metrics}.metaenrolcount',
+            '{tool_coursewrangler_metrics}.otherenrolcount',
+            '{tool_coursewrangler_metrics}.suspendedenrolcount',
+            '{tool_coursewrangler_metrics}.metricsupdated',
+            '{tool_coursewrangler_score}.id',
+            '{tool_coursewrangler_score}.metrics_id',
+            '{tool_coursewrangler_score}.timemodified',
+            '{tool_coursewrangler_score}.raw',
+            '{tool_coursewrangler_score}.rounded',
+            '{tool_coursewrangler_score}.percentage'
         ];
         $sqlfrom = [
-            '{tool_coursewrangler_metrics} AS metrics',
-            'LEFT JOIN {tool_coursewrangler_score} AS score ON metrics.id=score.metrics_id'
+            '{tool_coursewrangler_metrics}',
+            'LEFT JOIN {tool_coursewrangler_score} ON {tool_coursewrangler_metrics}.id={tool_coursewrangler_score}.metrics_id'
         ];
         $params = [];
         $conditions = [];
 
         // We add this join always, so that we can filter out protected courses.
-        $sqlfrom[] = 'LEFT JOIN {tool_coursewrangler_action} AS act ON metrics.courseid=act.courseid';
+        $sqlfrom[] = 'LEFT JOIN {tool_coursewrangler_action} ON {tool_coursewrangler_metrics}.courseid={tool_coursewrangler_action}.courseid';
         // Make sure not to double select courseid here, otherwise ambiguous error appears.
-        $sqlwhat[] = 'act.id';
-        $sqlwhat[] = 'act.action';
-        $sqlwhat[] = 'act.status';
-        $sqlwhat[] = 'act.lastupdated';
+        $sqlwhat[] = '{tool_coursewrangler_action}.id';
+        $sqlwhat[] = '{tool_coursewrangler_action}.action';
+        $sqlwhat[] = '{tool_coursewrangler_action}.status';
+        $sqlwhat[] = '{tool_coursewrangler_action}.lastupdated';
 
         // Filter out protected courses by default!
         // If filteractiondata is empty, the table will
         // output all courses which aren't protected, else it will
         // filter through courses.
         if (empty($this->filteractiondata)) {
-            $conditions[] = "(act.action != 'protect' OR act.action IS NULL)";
+            $conditions[] = "({tool_coursewrangler_action}.action != 'protect' OR {tool_coursewrangler_action}.action IS NULL)";
         } else {
             // Filter action data prefix.
             $fadprefix = 'fad';
@@ -231,16 +231,16 @@ class report_table extends table_sql implements renderable
                     // courses. This way if the user wants to see protected courses
                     // at the same time as other courses, they have to select all
                     // the appropriate filters.
-                    $conditions[] = "(act.action != 'protect' OR act.action IS NULL)";
+                    $conditions[] = "({tool_coursewrangler_action}.action != 'protect' OR {tool_coursewrangler_action}.action IS NULL)";
                     continue;
                 }
                 // To get courses without action we must do it differently
                 // by asking the database for action IS NULL.
                 if ($value == 'null') {
-                    $fadconditions[] = "act.action IS NULL";
+                    $fadconditions[] = "{tool_coursewrangler_action}.action IS NULL";
                     continue;
                 }
-                $fadconditions[] = "act.action = :$fadprefix"."$value";
+                $fadconditions[] = "{tool_coursewrangler_action}.action = :$fadprefix"."$value";
                 $params[$fadprefix . $value] = $value;
             }
             if (!empty($fadconditions)) {
@@ -260,7 +260,7 @@ class report_table extends table_sql implements renderable
             if (!empty($fbcsparams)) {
                 list($fbcssql, $fbcsparams) = $DB->get_in_or_equal($fbcsparams, SQL_PARAMS_NAMED, 'fbcs');
                 $params += $fbcsparams;
-                $conditions[] = "metrics.courseid $fbcssql";
+                $conditions[] = "{tool_coursewrangler_metrics}.courseid $fbcssql";
             }
         }
         // Filtering.
@@ -268,64 +268,64 @@ class report_table extends table_sql implements renderable
         // Course time created filters.
         if ($this->coursetimecreatednotset) {
             // If 'notset' option for 'coursetimecreated' is set, filter all missing time created.
-            $conditions[] = "metrics.coursetimecreated = 0";
+            $conditions[] = "{tool_coursewrangler_metrics}.coursetimecreated = 0";
         } else {
             if (isset($this->coursetimecreatedafter)) {
                 // Option where 'coursetimecreated' is AFTER specified date.
-                $conditions[] = "metrics.coursetimecreated > :coursetimecreatedafter";
+                $conditions[] = "{tool_coursewrangler_metrics}.coursetimecreated > :coursetimecreatedafter";
                 $params['coursetimecreatedafter'] = $this->coursetimecreatedafter;
             }
             if (isset($this->coursetimecreatedbefore)) {
                 // Option where 'coursetimecreated' is BEFORE specified date.
-                $conditions[] = "metrics.coursetimecreated < :coursetimecreatedbefore";
+                $conditions[] = "{tool_coursewrangler_metrics}.coursetimecreated < :coursetimecreatedbefore";
                 $params['coursetimecreatedbefore'] = $this->coursetimecreatedbefore;
             }
         }
         // Course start date filters.
         if ($this->coursestartdatenotset) {
             // If 'notset' option for 'coursestartdate' is set, filter all missing time created.
-            $conditions[] = "metrics.coursestartdate = 0";
+            $conditions[] = "{tool_coursewrangler_metrics}.coursestartdate = 0";
         } else {
             if (isset($this->coursestartdateafter)) {
                 // Option where 'coursestartdate' is AFTER specified date.
-                $conditions[] = "metrics.coursestartdate > :coursestartdateafter";
+                $conditions[] = "{tool_coursewrangler_metrics}.coursestartdate > :coursestartdateafter";
                 $params['coursestartdateafter'] = $this->coursestartdateafter;
             }
             if (isset($this->coursestartdatebefore)) {
                 // Option where 'coursestartdate' is BEFORE specified date.
-                $conditions[] = "metrics.coursestartdate < :coursestartdatebefore";
+                $conditions[] = "{tool_coursewrangler_metrics}.coursestartdate < :coursestartdatebefore";
                 $params['coursestartdatebefore'] = $this->coursestartdatebefore;
             }
         }
         // Course end date filters.
         if ($this->courseenddatenotset) {
             // If 'notset' option for 'courseenddate' is set, filter all missing time created.
-            $conditions[] = "metrics.courseenddate = 0";
+            $conditions[] = "{tool_coursewrangler_metrics}.courseenddate = 0";
         } else {
             if (isset($this->courseenddateafter)) {
                 // Option where 'courseenddate' is AFTER specified date.
-                $conditions[] = "metrics.courseenddate > :courseenddateafter";
+                $conditions[] = "{tool_coursewrangler_metrics}.courseenddate > :courseenddateafter";
                 $params['courseenddateafter'] = $this->courseenddateafter;
             }
             if (isset($this->courseenddatebefore)) {
                 // Option where 'courseenddate' is BEFORE specified date.
-                $conditions[] = "metrics.courseenddate < :courseenddatebefore";
+                $conditions[] = "{tool_coursewrangler_metrics}.courseenddate < :courseenddatebefore";
                 $params['courseenddatebefore'] = $this->courseenddatebefore;
             }
         }
         // Course last time access filters.
         if ($this->coursetimeaccessnotset) {
             // IF 'notset' option for 'coursetimeaccess' is set, filter all missing time created.
-            $conditions[] = "metrics.coursetimeaccess = 0";
+            $conditions[] = "{tool_coursewrangler_metrics}.coursetimeaccess = 0";
         } else {
             if (isset($this->coursetimeaccessafter)) {
                 // Option where 'coursetimeaccess' is AFTER specified date.
-                $conditions[] = "metrics.coursetimeaccess > :coursetimeaccessafter";
+                $conditions[] = "{tool_coursewrangler_metrics}.coursetimeaccess > :coursetimeaccessafter";
                 $params['coursetimeaccessafter'] = $this->coursetimeaccessafter;
             }
             if (isset($this->coursetimeaccessbefore)) {
                 // Option where 'coursetimeaccess' is BEFORE specified date.
-                $conditions[] = "metrics.coursetimeaccess < :coursetimeaccessbefore";
+                $conditions[] = "{tool_coursewrangler_metrics}.coursetimeaccess < :coursetimeaccessbefore";
                 $params['coursetimeaccessbefore'] = $this->coursetimeaccessbefore;
             }
         }
@@ -333,12 +333,12 @@ class report_table extends table_sql implements renderable
         if (isset($this->matchstringshort)) {
             $query = [];
             $query[] = $DB->sql_like(
-                'metrics.courseshortname',
+                '{tool_coursewrangler_metrics}.courseshortname',
                 ':matchstringshortname',
                 false
             );
             $query[] = $DB->sql_like(
-                'metrics.courseidnumber',
+                '{tool_coursewrangler_metrics}.courseidnumber',
                 ':matchstring_idnumber',
                 false
             );
@@ -350,7 +350,7 @@ class report_table extends table_sql implements renderable
         // String search for course full name.
         if (isset($this->matchstringfull)) {
             $conditions[] = $DB->sql_like(
-                'metrics.coursefullname',
+                '{tool_coursewrangler_metrics}.coursefullname',
                 ':matchstringfull',
                 false
             );
@@ -371,9 +371,8 @@ class report_table extends table_sql implements renderable
                 $courseids = [];
                 foreach ($categories as $id) {
                     $categorycourses = $DB->get_records_sql(
-                        "SELECT c.id
-                            FROM {course} AS c
-                            WHERE c.category=:catid;",
+                        "SELECT c.id FROM {course}
+                            WHERE {course}.category=:catid;",
                         ['catid' => $id]
                     );
                     foreach ($categorycourses as $course) {
@@ -383,7 +382,7 @@ class report_table extends table_sql implements renderable
                 if (count($courseids) > 0) {
                     list($catsql, $catparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'coursecatids');
                     $params += $catparams;
-                    $conditions[] = "metrics.courseid $catsql";
+                    $conditions[] = "{tool_coursewrangler_metrics}.courseid $catsql";
                 } else {
                     // We make conditions 1=0 because it's the best way to display no results
                     // without breaking the table.
@@ -396,11 +395,11 @@ class report_table extends table_sql implements renderable
             switch($this->hideshowmetaparents) {
                 // Show only parent courses.
                 case 'show':
-                    $conditions[] = "metrics.coursechildren IS NOT NULL";
+                    $conditions[] = "{tool_coursewrangler_metrics}.coursechildren IS NOT NULL";
                     break;
                 // Hide all parent courses.
                 case 'hide':
-                    $conditions[] = "metrics.coursechildren IS NULL";
+                    $conditions[] = "{tool_coursewrangler_metrics}.coursechildren IS NULL";
                     break;
                 // Do nothing.
                 default:
@@ -412,11 +411,11 @@ class report_table extends table_sql implements renderable
             switch($this->hideshowmetachildren) {
                 // Show only child courses.
                 case 'show':
-                    $conditions[] = "metrics.courseparents IS NOT NULL";
+                    $conditions[] = "{tool_coursewrangler_metrics}.courseparents IS NOT NULL";
                     break;
                 // Hide all child courses.
                 case 'hide':
-                    $conditions[] = "metrics.courseparents IS NULL";
+                    $conditions[] = "{tool_coursewrangler_metrics}.courseparents IS NULL";
                     break;
                 // Do nothing.
                 default:
@@ -428,11 +427,11 @@ class report_table extends table_sql implements renderable
             switch($this->hideshowhiddencourses) {
                 // Show only visible courses.
                 case 'show':
-                    $conditions[] = "metrics.coursevisible = 1";
+                    $conditions[] = "{tool_coursewrangler_metrics}.coursevisible = 1";
                     break;
                 // Hide all visible courses.
                 case 'hide':
-                    $conditions[] = "metrics.coursevisible = 0";
+                    $conditions[] = "{tool_coursewrangler_metrics}.coursevisible = 0";
                     break;
                 // Do nothing.
                 default:
