@@ -16,14 +16,13 @@
 
 /**
  * This file is a class example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler;
 
 use stdClass;
@@ -39,19 +38,19 @@ class action_handler
         }
     }
 
-    public static function update(int $course_id, string $task, string $status = '') {
-        if ($course_id < 1) {
+    public static function update(int $courseid, string $task, string $status = '') {
+        if ($courseid < 1) {
             return false;
         }
         if ($task == 'reset') {
-            return action_handler::purge($course_id);
+            return self::purge($courseid);
         }
         if ($task == 'delete' && $status == '') {
             $status = 'scheduled';
         }
-        $exists = action::find_action($course_id);
+        $exists = action::find_action($courseid);
         $action = new stdClass();
-        $action->course_id = $course_id;
+        $action->courseid = $courseid;
         $action->action = $task;
         $action->status = $status;
         $action->lastupdated = time();
@@ -64,12 +63,12 @@ class action_handler
         return $DB->insert_record('tool_coursewrangler_action', $action);
     }
 
-    public static function purge(int $course_id) {
-        if ($course_id < 1) {
+    public static function purge(int $courseid) {
+        if ($courseid < 1) {
             return false;
         }
         global $DB;
-        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id], 'id', IGNORE_MISSING);
+        $action = $DB->get_record('tool_coursewrangler_action', ['courseid' => $courseid], 'id', IGNORE_MISSING);
         if ($action == true) {
             return $DB->delete_records('tool_coursewrangler_action', ['id' => $action->id]);
         }
@@ -86,7 +85,7 @@ class action_handler
         $responsibleuserids = [];
         foreach ($scheduled as $action) {
             // Getting user roles for course by course ID.
-            $coursecontext = \context_course::instance($action->course_id);
+            $coursecontext = \context_course::instance($action->courseid);
             $userroles = get_users_roles($coursecontext, [], false);
             // Validate archetypes.
             $allarchetypes = get_role_archetypes();
@@ -105,7 +104,7 @@ class action_handler
             foreach ($userroles as $userid => $enrolmentarray) {
                 $roledata = reset($enrolmentarray);
                 if (in_array($roledata->roleid, $roles)) {
-                    $responsibleuserids[$userid][] = $action->course_id;
+                    $responsibleuserids[$userid][] = $action->courseid;
                 }
             }
         }
@@ -121,14 +120,14 @@ class action_handler
         $owners = [];
         foreach ($scheduled as $action) {
             // TODO Issue is only finds one owner when there might be more.
-            $findowners = find_owners($action->course_id);
+            $findowners = find_owners($action->courseid);
             if (empty($findowners)) {
                 continue;
             }
-            foreach($findowners as $owner) {
-                // This preserves all enrolments whilst keeping the course_id
+            foreach ($findowners as $owner) {
+                // This preserves all enrolments whilst keeping the courseid
                 // as an array key so we can easily use that in the templates.
-                $owners[$owner->userid][$action->course_id][] = $owner;
+                $owners[$owner->userid][$action->courseid][] = $owner;
             }
         }
         return $owners;
@@ -140,11 +139,11 @@ class action_handler
         // Prepare course information for template.
         foreach ($courseids as $cid) {
             $course = get_course_metric($cid);
-            $course->course_url = new \moodle_url('/course/view.php', ['id' => $course->course_id]);
+            $course->courseurl = new \moodle_url('/course/view.php', ['id' => $course->courseid]);
             $courses[] = $course;
         }
         $messagebody = $OUTPUT->render_from_template(
-            'tool_coursewrangler/scheduled_notification', 
+            'tool_coursewrangler/scheduled_notification',
             [
                 'courses' => $courses,
                 'user_table_url' => new \moodle_url('/admin/tool/coursewrangler/user_table.php')

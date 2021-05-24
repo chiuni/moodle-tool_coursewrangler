@@ -16,7 +16,7 @@
 
 /**
  * This file is a command line script example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -46,14 +46,14 @@ $courses = $scorekeeper->get_courses();
 
 $scores = [];
 foreach ($courses as $metrics) {
-    $score_data = [
+    $scoredata = [
         'metrics_id' => $metrics->id,
         'timemodified' => time(),
         'raw' => $metrics->score->raw,
         'rounded' => $metrics->score->rounded,
         'percentage' => $metrics->score->percentage,
     ];
-    $DB->insert_record('tool_coursewrangler_score', $score_data, true) ?? false;
+    $DB->insert_record('tool_coursewrangler_score', $scoredata, true) ?? false;
 }
 $time = time();
 // file_put_contents("./score_$time.json", json_encode($courses));

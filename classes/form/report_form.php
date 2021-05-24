@@ -16,14 +16,11 @@
 
 /**
  * This file is a class example.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 
 namespace tool_coursewrangler\form;
 
@@ -42,190 +39,191 @@ class report_form extends moodleform {
         $customdata = $this->_customdata;
 
         // Header filter options.
-        $bycourseids_areanames = [];
+        $bycourseidsareanames = [];
         $allmetrics = $DB->get_records('tool_coursewrangler_metrics');
         foreach ($allmetrics as $course) {
-            $bycourseids_areanames[$course->course_id] = $course->course_idnumber ?? $course->course_shortname ?? $course->course_fullname ?? $course->course_id;
+            $bycourseidsareanames[$course->courseid] =
+                $course->courseidnumber ?? $course->courseshortname ?? $course->coursefullname ?? $course->courseid;
         }
-        $bycourseids_options = [
+        $bycourseidsoptions = [
             'multiple' => true,
             'showsuggestions' => false,
             'tags' => true,
-            'noselectionstring' => get_string('report_form_filter_by_courseids_noselectionstring', 'tool_coursewrangler'),
+            'noselectionstring' => get_string('report_form_filterbycourseids_noselectionstring', 'tool_coursewrangler'),
         ];
 
         $mform->addElement(
             'autocomplete',
-            'filter_by_courseids',
-            get_string('report_form_filter_by_courseids', 'tool_coursewrangler'),
-            $bycourseids_areanames,
-            $bycourseids_options
+            'filterbycourseids',
+            get_string('report_form_filterbycourseids', 'tool_coursewrangler'),
+            $bycourseidsareanames,
+            $bycourseidsoptions
         );
         // Short string match for course idnumber and course short name.
         $mform->addElement(
             'text',
-            'matchstring_short', 
-            get_string('report_form_matchstring_short', 'tool_coursewrangler')
+            'matchstringshort',
+            get_string('report_form_matchstringshort', 'tool_coursewrangler')
         );
         // Full string match for course full name.
         $mform->addElement(
-            'text', 
-            'matchstring_full', 
-            get_string('report_form_matchstring_full', 'tool_coursewrangler')
+            'text',
+            'matchstringfull',
+            get_string('report_form_matchstringfull', 'tool_coursewrangler')
         );
-        $pagesize_options = [50=>50, 100=>100, 250=>250, 500=>500];
+        $pagesizeoptions = [50 => 50, 100 => 100, 250 => 250, 500 => 500];
         $mform->addElement(
-            'select', 
-            'pagesize', 
-            get_string('report_form_pagesize', 'tool_coursewrangler'), 
-            $pagesize_options
+            'select',
+            'pagesize',
+            get_string('report_form_pagesize', 'tool_coursewrangler'),
+            $pagesizeoptions
         );
         // Autocomplete search box for categories.
         $categories = $DB->get_records('course_categories', ['parent' => 0], 'name ASC');
-        $category_areanames = [];
+        $categoryareanames = [];
         foreach ($categories as $id => $category) {
             $category->idnumber = $category->idnumber ?? '*no id number*'; // To do: missing get_string, improve this.
-            $category_areanames[$id] = $category->name . ": $category->idnumber";
+            $categoryareanames[$id] = $category->name . ": $category->idnumber";
         }
-        $category_options = [
+        $categoryoptions = [
                 'multiple' => true,
                 'noselectionstring' => get_string('report_form_filter_categories_noselectionstring', 'tool_coursewrangler'),
         ];
         $mform->addElement(
-            'autocomplete', 
-            'category_ids', 
-            get_string('report_form_filter_categories', 'tool_coursewrangler'), 
-            $category_areanames, 
-            $category_options
+            'autocomplete',
+            'categoryids',
+            get_string('report_form_filter_categories', 'tool_coursewrangler'),
+            $categoryareanames,
+            $categoryoptions
         );
         $mform->addElement(
-            'checkbox', 
-            'display_action_data', 
-            get_string('report_form_filter_display_action_data', 'tool_coursewrangler')
+            'checkbox',
+            'displayactiondata',
+            get_string('report_form_filter_displayactiondata', 'tool_coursewrangler')
         );
-        $actions_areanames = [
+        $actionsareanames = [
             'null' => get_string('report_form_filter_display_action_null', 'tool_coursewrangler'),
             'delete' => get_string('report_form_filter_display_action_delete', 'tool_coursewrangler'),
             'protect' => get_string('report_form_filter_display_action_protect', 'tool_coursewrangler')
         ];
-        $actions_options = [
+        $actionsoptions = [
             'multiple' => true,
-            'noselectionstring' => get_string('report_form_filter_action_data_noselectionstring', 'tool_coursewrangler'),
+            'noselectionstring' => get_string('report_form_filteractiondata_noselectionstring', 'tool_coursewrangler'),
         ];
 
         $mform->addElement(
-            'autocomplete', 
-            'filter_action_data', 
-            get_string('report_form_filter_action_data', 'tool_coursewrangler'), 
-            $actions_areanames, 
-            $actions_options
+            'autocomplete',
+            'filteractiondata',
+            get_string('report_form_filteractiondata', 'tool_coursewrangler'),
+            $actionsareanames,
+            $actionsoptions
         );
 
-        $mform->hideIf('filter_action_data', 'display_action_data');
+        $mform->hideIf('filteractiondata', 'displayactiondata');
 
         // Header date options.
         $mform->addElement(
-            'header', 
-            'header_date_options', 
-            get_string('report_form_date_options', 
+            'header',
+            'header_date_options',
+            get_string('report_form_date_options',
             'tool_coursewrangler')
         );
         $mform->setExpanded('header_date_options', false);
         if (
-            isset($customdata['course_timecreated_after']) ||
-            isset($customdata['course_timecreated_before']) ||
-            isset($customdata['course_timecreated_notset']) ||
-            isset($customdata['course_startdate_after']) ||
-            isset($customdata['course_startdate_before']) ||
-            isset($customdata['course_startdate_notset']) ||
-            isset($customdata['course_enddate_after']) ||
-            isset($customdata['course_enddate_before']) ||
-            isset($customdata['course_enddate_notset']) ||
-            isset($customdata['course_timeaccess_after']) ||
-            isset($customdata['course_timeaccess_before']) ||
-            isset($customdata['course_timeaccess_notset'])
-        ){
+            isset($customdata['coursetimecreatedafter']) ||
+            isset($customdata['coursetimecreatedbefore']) ||
+            isset($customdata['coursetimecreatednotset']) ||
+            isset($customdata['coursestartdateafter']) ||
+            isset($customdata['coursestartdatebefore']) ||
+            isset($customdata['coursestartdatenotset']) ||
+            isset($customdata['courseenddateafter']) ||
+            isset($customdata['courseenddatebefore']) ||
+            isset($customdata['courseenddatenotset']) ||
+            isset($customdata['coursetimeaccessafter']) ||
+            isset($customdata['coursetimeaccessbefore']) ||
+            isset($customdata['coursetimeaccessnotset'])
+        ) {
             $mform->setExpanded('header_date_options', true);
         }
 
         // COURSE_TIMECREATED.
         $mform->addElement(
             'date_selector',
-            'course_timecreated_after',
-            get_string('report_form_filter_course_timecreated_after', 'tool_coursewrangler'),
+            'coursetimecreatedafter',
+            get_string('report_form_filter_coursetimecreatedafter', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
             'date_selector',
-            'course_timecreated_before',
-            get_string('report_form_filter_course_timecreated_before', 'tool_coursewrangler'),
+            'coursetimecreatedbefore',
+            get_string('report_form_filter_coursetimecreatedbefore', 'tool_coursewrangler'),
             ['optional' => true]
         );
         // COURSE_TIMECREATED_NOTSET.
         $mform->addElement(
             'checkbox',
-            'course_timecreated_notset',
-            get_string('report_form_filter_course_timecreated_notset', 'tool_coursewrangler')
+            'coursetimecreatednotset',
+            get_string('report_form_filter_coursetimecreatednotset', 'tool_coursewrangler')
         );
 
         // COURSE_STARTDATE.
         $mform->addElement(
             'date_selector',
-            'course_startdate_after',
-            get_string('report_form_filter_course_startdate_after', 'tool_coursewrangler'),
+            'coursestartdateafter',
+            get_string('report_form_filter_coursestartdateafter', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
             'date_selector',
-            'course_startdate_before',
-            get_string('report_form_filter_course_startdate_before', 'tool_coursewrangler'),
+            'coursestartdatebefore',
+            get_string('report_form_filter_coursestartdatebefore', 'tool_coursewrangler'),
             ['optional' => true]
         );
         // COURSE_STARTDATE_NOTSET.
         $mform->addElement(
             'checkbox',
-            'course_startdate_notset',
-            get_string('report_form_filter_course_startdate_notset', 'tool_coursewrangler')
+            'coursestartdatenotset',
+            get_string('report_form_filter_coursestartdatenotset', 'tool_coursewrangler')
         );
 
         // COURSE_ENDDATE.
         $mform->addElement(
             'date_selector',
-            'course_enddate_after',
-            get_string('report_form_filter_course_enddate_after', 'tool_coursewrangler'),
+            'courseenddateafter',
+            get_string('report_form_filter_courseenddateafter', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
             'date_selector',
-            'course_enddate_before',
-            get_string('report_form_filter_course_enddate_before', 'tool_coursewrangler'),
+            'courseenddatebefore',
+            get_string('report_form_filter_courseenddatebefore', 'tool_coursewrangler'),
             ['optional' => true]
         );
         // COURSE_ENDDATE_NOTSET.
         $mform->addElement(
             'checkbox',
-            'course_enddate_notset',
-            get_string('report_form_filter_course_enddate_notset', 'tool_coursewrangler')
+            'courseenddatenotset',
+            get_string('report_form_filter_courseenddatenotset', 'tool_coursewrangler')
         );
 
         // COURSE_TIMEACCESS.
         $mform->addElement(
             'date_selector',
-            'course_timeaccess_after',
-            get_string('report_form_filter_course_timeaccess_after', 'tool_coursewrangler'),
+            'coursetimeaccessafter',
+            get_string('report_form_filter_coursetimeaccessafter', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
             'date_selector',
-            'course_timeaccess_before',
-            get_string('report_form_filter_course_timeaccess_before', 'tool_coursewrangler'),
+            'coursetimeaccessbefore',
+            get_string('report_form_filter_coursetimeaccessbefore', 'tool_coursewrangler'),
             ['optional' => true]
         );
         // COURSE_TIMEACCESS_NOTSET.
         $mform->addElement(
             'checkbox',
-            'course_timeaccess_notset',
-            get_string('report_form_filter_course_timeaccess_notset', 'tool_coursewrangler')
+            'coursetimeaccessnotset',
+            get_string('report_form_filter_coursetimeaccessnotset', 'tool_coursewrangler')
         );
 
         // HEADER FLAG OPTIONS.
@@ -238,46 +236,46 @@ class report_form extends moodleform {
         $mform->setExpanded('header_flag_options', false);
 
         if (
-            (isset($customdata['hideshow_meta_parents']) && $customdata['hideshow_meta_parents'] != 'default') ||
-            (isset($customdata['hideshow_hidden_courses']) && $customdata['hideshow_hidden_courses'] != 'default')
-        ){
+            (isset($customdata['hideshowmetaparents']) && $customdata['hideshowmetaparents'] != 'default') ||
+            (isset($customdata['hideshowhiddencourses']) && $customdata['hideshowhiddencourses'] != 'default')
+        ) {
             $mform->setExpanded('header_flag_options', true);
         }
         // Hideshow_meta_children.
-        $meta_children_options = [
+        $metachildrenoptions = [
             'default' => get_string('select_an_option', 'tool_coursewrangler'),
-            'hide' => get_string('hideshow_meta_children_hideonly', 'tool_coursewrangler'),
-            'show' => get_string('hideshow_meta_children_showonly', 'tool_coursewrangler')
+            'hide' => get_string('hideshowmetachildren_hideonly', 'tool_coursewrangler'),
+            'show' => get_string('hideshowmetachildren_showonly', 'tool_coursewrangler')
         ];
         $mform->addElement(
             'select',
-            'hideshow_meta_children',
-            get_string('report_form_filter_hideshow_meta_children', 'tool_coursewrangler'),
-            $meta_children_options
+            'hideshowmetachildren',
+            get_string('report_form_filter_hideshowmetachildren', 'tool_coursewrangler'),
+            $metachildrenoptions
         );
-        // hideshow_meta_parents
-        $meta_parents_options = [
+        // Hideshowmetaparents.
+        $metaparentsoptions = [
             'default' => get_string('select_an_option', 'tool_coursewrangler'),
-            'hide' => get_string('hideshow_meta_parents_hideonly', 'tool_coursewrangler'),
-            'show' => get_string('hideshow_meta_parents_showonly', 'tool_coursewrangler')
+            'hide' => get_string('hideshowmetaparents_hideonly', 'tool_coursewrangler'),
+            'show' => get_string('hideshowmetaparents_showonly', 'tool_coursewrangler')
         ];
         $mform->addElement(
             'select',
-            'hideshow_meta_parents',
-            get_string('report_form_filter_hideshow_meta_parents', 'tool_coursewrangler'),
-            $meta_parents_options
+            'hideshowmetaparents',
+            get_string('report_form_filter_hideshowmetaparents', 'tool_coursewrangler'),
+            $metaparentsoptions
         );
-        // hideshow_hidden_courses
-        $meta_parents_options = [
+        // Hideshowhiddencourses.
+        $metaparentsoptions = [
             'default' => get_string('select_an_option', 'tool_coursewrangler'),
-            'hide' => get_string('hideshow_hidden_courses_hideonly', 'tool_coursewrangler'),
-            'show' => get_string('hideshow_hidden_courses_showonly', 'tool_coursewrangler')
+            'hide' => get_string('hideshowhiddencourses_hideonly', 'tool_coursewrangler'),
+            'show' => get_string('hideshowhiddencourses_showonly', 'tool_coursewrangler')
         ];
         $mform->addElement(
             'select',
-            'hideshow_hidden_courses',
-            get_string('report_form_filter_hideshow_hidden_courses', 'tool_coursewrangler'),
-            $meta_parents_options
+            'hideshowhiddencourses',
+            get_string('report_form_filter_hideshowhiddencourses', 'tool_coursewrangler'),
+            $metaparentsoptions
         );
         // Filter button.
         $this->add_action_buttons(true, get_string('report_form_filter_results', 'tool_coursewrangler'));

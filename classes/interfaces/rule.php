@@ -34,6 +34,6 @@ interface rule
     public function __construct(\stdClass $course, array $settings = []);
     public function evaluate_condition(): bool;
     public function calculate_score(): float;
-    public function has_params(): bool;
+    public function hasparams(): bool;
     public function set_params();
 }

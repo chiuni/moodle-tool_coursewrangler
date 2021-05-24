@@ -16,7 +16,7 @@
 
 /**
  * This file is a command line script example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -45,52 +45,52 @@ global $DB;
 mtrace(">>> Starting " . '.');
 mtrace('>>> Calculating score...');
 
-$start_time = time();
-$start_time_formatted = date('r', $start_time);
+$starttime = time();
+$starttimeformatted = date('r', $starttime);
 mtrace('tool_coursewrangler ::: Gather Course Data PHP Script');
 mtrace('=====================================================');
 mtrace('=============== Starting DB Queries =================');
 mtrace('=====================================================');
 \core_php_time_limit::raise();
-mtrace("Start time: $start_time_formatted");
-$course_data = find_relevant_course_data_lite();
+mtrace("Start time: $starttimeformatted");
+$coursedata = find_relevant_coursedata_lite();
 mtrace("Printing object");
-print_object($course_data[88533]);
+print_object($coursedata[88533]);
 exit;
-$db_end_time = time();
-mtrace('Queries took a total of: ' . ($db_end_time - $start_time) . ' seconds');
+$dbendtime = time();
+mtrace('Queries took a total of: ' . ($dbendtime - $starttime) . ' seconds');
 mtrace('Creating metrics data.');
-foreach ($course_data as $data) {
-    $fetch_metric = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $data->course_id]);
-    if (!$fetch_metric) {
+foreach ($coursedata as $data) {
+    $fetchmetric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $data->courseid]);
+    if (!$fetchmetric) {
         // This is a new entry.
-        $data->metrics_updated = time();
+        $data->metricsupdated = time();
         $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
         continue;
     }
     // Compare data to highlight changes.
-    $compare_data = $data;
-    $compare_data->id = $fetch_metric->id;
-    unset($fetch_metric->metrics_updated);
-    $changed_data = new \stdClass();
+    $comparedata = $data;
+    $comparedata->id = $fetchmetric->id;
+    unset($fetchmetric->metricsupdated);
+    $changeddata = new \stdClass();
     $diff = false;
-    foreach ($fetch_metric as $key => $value) {
-        if ($value != $compare_data->$key) {
+    foreach ($fetchmetric as $key => $value) {
+        if ($value != $comparedata->$key) {
             mtrace("change detected: ". $key);
-            $changed_data->$key = $compare_data->$key;
+            $changeddata->$key = $comparedata->$key;
             $diff = true;
         }
     }
     if (!$diff) {
         continue;
     }
-    $changed_data->id = $fetch_metric->id;
-    $changed_data->metrics_updated = time();
-    $DB->update_record('tool_coursewrangler_metrics', $changed_data);
+    $changeddata->id = $fetchmetric->id;
+    $changeddata->metricsupdated = time();
+    $DB->update_record('tool_coursewrangler_metrics', $changeddata);
 }
-$script_end_time = time();
+$scriptendtime = time();
 
-mtrace('>>> Script took ' . ($script_end_time - $start_time) . ' seconds.');
+mtrace('>>> Script took ' . ($scriptendtime - $starttime) . ' seconds.');
 mtrace(">>> Finishing ");
 
 $elapsed = time() - $starttime;

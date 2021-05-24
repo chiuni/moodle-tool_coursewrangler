@@ -16,38 +16,41 @@
 
 /**
  * This file is a class example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler;
 
 use stdClass;
 
 class deletion_score
 {
-    protected int $course_parent_weight = 10;
-    protected int $low_enrolments_flag = 10;
-    protected int $time_unit = 86400;
-    protected int $score_limiter_positive = 400;
-    protected int $ratio_limit;
+    protected int $courseparentweight = 10;
+    protected int $lowenrolmentsflag = 10;
+    protected int $timeunit = 86400;
+    protected int $scorelimiterpositive = 400;
+    protected int $ratiolimit;
     protected stdClass $scores;
     protected array $courses;
 
     public function __construct(array $courses = []) {
         // Initialising settings.
-        $this->course_parent_weight = (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10; // this makes parent courses more or less important
-        $this->low_enrolments_flag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10; // this triggers a low score for courses with less enrolments than n enrolments
-        $this->time_unit = (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400; // this makes each time unit = 1 score point
-        $this->score_limiter = (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400; // this is the value used for limiting each score to a upper/lower limit
+        // This makes parent courses more or less important.
+        $this->courseparentweight = (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10;
+        // This triggers a low score for courses with less enrolments than n enrolments.
+        $this->lowenrolmentsflag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10;
+        // This makes each time unit = 1 score point.
+        $this->timeunit = (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400;
+        // This is the value used for limiting each score to a upper/lower limit.
+        $this->score_limiter = (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400;
         // Preventing zeros, they cause division by zero errors.
-        $this->course_parent_weight = $this->course_parent_weight > 0 ? $this->course_parent_weight : 10;
-        $this->low_enrolments_flag = $this->low_enrolments_flag > 0 ? $this->low_enrolments_flag : 10;
-        $this->time_unit = $this->time_unit > 0 ? $this->time_unit : 86400;
+        $this->courseparentweight = $this->courseparentweight > 0 ? $this->courseparentweight : 10;
+        $this->lowenrolmentsflag = $this->lowenrolmentsflag > 0 ? $this->lowenrolmentsflag : 10;
+        $this->timeunit = $this->timeunit > 0 ? $this->timeunit : 86400;
         $this->score_limiter = $this->score_limiter > 0 ? $this->score_limiter : 400;
         if (empty($courses)) {
             return;
@@ -66,7 +69,7 @@ class deletion_score
     public function apply_rules(stdClass $course) : stdClass {
         $rules = [];
         $settings = [
-            'time_unit' => $this->time_unit
+            'timeunit' => $this->timeunit
         ];
         $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
         $rules['course_haschildren'] = new rules\course_haschildren($course);
@@ -86,13 +89,13 @@ class deletion_score
         if (!isset($course->rules)) {
             return false;
         }
-        $ratio_limit = count($course->rules) * $this->score_limiter;
+        $ratiolimit = count($course->rules) * $this->score_limiter;
         foreach ($course->rules as $rule) {
             // Setting score in different forms.
             $score->raw += $rule->get_limit_score($this->score_limiter) ?? 0;
         }
         $score->rounded = round($score->raw, 2) ?? 0;
-        $score->percentage = round(($score->raw / $ratio_limit) * 100, 2) ?? 0;
+        $score->percentage = round(($score->raw / $ratiolimit) * 100, 2) ?? 0;
         $course->score = $score;
         return $course;
     }

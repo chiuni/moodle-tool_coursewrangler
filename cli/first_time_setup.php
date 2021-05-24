@@ -38,7 +38,7 @@ require_once(__DIR__ . '/../locallib.php');
 // This install script generates the initial metrics load.
 $eol = "\n";
 if (!CLI_SCRIPT) {
-    $eol = "<br>"; 
+    $eol = "<br>";
 }
 // If there are no settings yet use default value of WEEKSECS.
 $options = [
@@ -46,25 +46,25 @@ $options = [
 ];
 
 $format = "r";
-$start_time = time();
-$start_time_formatted = date($format, $start_time);
+$starttime = time();
+$starttimeformatted = date($format, $starttime);
 mtrace('======================================================', $eol);
 mtrace('============ Installing Course Wrangler ==============', $eol);
 mtrace('======================================================', $eol);
-mtrace(">>> Start time: $start_time_formatted", $eol);
+mtrace(">>> Start time: $starttimeformatted", $eol);
 mtrace('>>> Gathering course data...', $eol);
-$dbq_start_time = time();
-$course_data = find_relevant_course_data_lite($options);
+$dbq_starttime = time();
+$coursedata = find_relevant_coursedata_lite($options);
 $dbq_end_time = time();
-mtrace('>>> Select queries took ' . ($dbq_end_time - $dbq_start_time) . ' seconds.', $eol);
+mtrace('>>> Select queries took ' . ($dbq_end_time - $dbq_starttime) . ' seconds.', $eol);
 mtrace('>>> Inserting metrics data...', $eol);
 global $DB;
-$ins_start_time = time();
-foreach ($course_data as $data) {
-    $data->metrics_updated = time();
+$ins_starttime = time();
+foreach ($coursedata as $data) {
+    $data->metricsupdated = time();
     $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
 }
 $ins_end_time = time();
-mtrace('>>> Insert queries took ' . ($ins_end_time - $ins_start_time) . ' seconds.', $eol);
+mtrace('>>> Insert queries took ' . ($ins_end_time - $ins_starttime) . ' seconds.', $eol);
 $end_time = time();
-mtrace('>>> Finished install.php, took ' . ($end_time - $start_time) . ' seconds.', $eol);
+mtrace('>>> Finished install.php, took ' . ($end_time - $starttime) . ' seconds.', $eol);

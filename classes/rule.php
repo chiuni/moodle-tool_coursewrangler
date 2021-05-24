@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler;
 
 use stdClass;
@@ -35,7 +34,7 @@ abstract class rule {
     protected array $settings;
     protected array $params;
     protected bool $state;
-    protected bool $has_param;
+    protected bool $hasparam;
     public float $score;
 
     public function __construct(
@@ -47,8 +46,8 @@ abstract class rule {
         $this->settings     = $settings;
         $this->course       = $course;
         $this->set_params();
-        $this->has_params   = $this->has_params();
-        if (!$this->has_params) {
+        $this->hasparams   = $this->hasparams();
+        if (!$this->hasparams) {
             return false;
         }
         $this->evaluate_condition();
@@ -60,7 +59,7 @@ abstract class rule {
     public abstract function calculate_score();
     public abstract function set_params();
 
-    public function has_params(): bool {
+    public function hasparams(): bool {
         if (!isset($this->params)) {
             return false;
         }

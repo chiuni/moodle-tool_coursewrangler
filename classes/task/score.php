@@ -15,8 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file is a ...
- * 
+ * This file is the task that generates the score form metrics data.
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -48,34 +48,34 @@ class score extends \core\task\scheduled_task {
         global $DB;
         mtrace(">>> Starting " . $this->get_name() . '.');
         mtrace('>>> Calculating score...');
-        $scr_start_time = time();
+        $scrstarttime = time();
         $data = $DB->get_records('tool_coursewrangler_metrics');
         $scorekeeper = new deletion_score($data);
         $courses = $scorekeeper->get_courses();
         $insert = [];
         foreach ($courses as $metrics) {
-            $current_score = $DB->get_record('tool_coursewrangler_score', ['metrics_id' => $metrics->id]) ?? false;
-            $score_data = [
+            $currentscore = $DB->get_record('tool_coursewrangler_score', ['metrics_id' => $metrics->id]) ?? false;
+            $scoredata = [
                 'metrics_id' => $metrics->id,
-                'timemodified' => $scr_start_time,
+                'timemodified' => $scrstarttime,
                 'raw' => $metrics->score->raw,
                 'rounded' => $metrics->score->rounded,
                 'percentage' => (float) $metrics->score->percentage,
             ];
-            if ($current_score === false) {
+            if ($currentscore === false) {
                 // If record does not exist, create new one.
-                $insert[] = $score_data;
+                $insert[] = $scoredata;
                 continue;
             }
-            $score_data['id'] = $current_score->id;
+            $scoredata['id'] = $currentscore->id;
             // Update record does not support bulk queries.
-            $DB->update_record('tool_coursewrangler_score', $score_data, true);
+            $DB->update_record('tool_coursewrangler_score', $scoredata, true);
         }
         if (!empty($insert)) {
             $DB->insert_records('tool_coursewrangler_score', $insert, true, true);
         }
-        $scr_end_time = time();
-        mtrace('>>> Calculating score took ' . ($scr_end_time - $scr_start_time) . ' seconds.');
+        $screndtime = time();
+        mtrace('>>> Calculating score took ' . ($screndtime - $scrstarttime) . ' seconds.');
         mtrace(">>> Finishing " . $this->get_name() . '.');
     }
 }

@@ -27,34 +27,34 @@ use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 /**
- * @deprecated use find_relevant_course_data_lite instead
+ * @deprecated use find_relevant_coursedata_lite instead
  */
-function find_relevant_course_data() {
+function find_relevant_coursedata() {
     global $DB, $CFG;
     $modules = $DB->get_records_sql("SELECT id, name FROM {modules};");
-    $union_segments = [];
+    $unionsegments = [];
     foreach ($modules as $module) {
-        $union_segments[] = " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act ";
+        $unionsegments[] = " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act ";
     }
-    $union_statement = implode(" UNION ", $union_segments);
+    $unionstatement = implode(" UNION ", $unionsegments);
     return $DB->get_records_sql(
-        "SELECT c.id AS course_id,
-                cm.id AS course_module_id,
+        "SELECT c.id AS courseid,
+                cm.id AS coursemoduleid,
                 act.id AS activity_id,
-                c.fullname AS course_fullname,
-                c.shortname AS course_shortname,
-                c.idnumber AS course_idnumber,
-                c.startdate AS course_startdate,
-                c.enddate AS course_enddate,
-                c.timecreated AS course_timecreated,
-                c.timemodified AS course_timemodified,
-                c.visible AS course_visible,
-                m.name AS activity_type,
+                c.fullname AS coursefullname,
+                c.shortname AS courseshortname,
+                c.idnumber AS courseidnumber,
+                c.startdate AS coursestartdate,
+                c.enddate AS courseenddate,
+                c.timecreated AS coursetimecreated,
+                c.timemodified AS coursetimemodified,
+                c.visible AS coursevisible,
+                m.name AS activitytype,
                 MAX(act.timemodified) AS activity_last_modified
         FROM    {course} AS c
             JOIN {course_modules} AS cm ON cm.course=c.id
             JOIN {modules} AS m ON cm.module=m.id
-            JOIN (  $union_statement ) AS act ON act.course=c.id AND act.id=cm.instance
+            JOIN (  $unionstatement ) AS act ON act.course=c.id AND act.id=cm.instance
             JOIN (  SELECT ula.id,
                             ula.userid,
                             ula.courseid,
@@ -87,32 +87,32 @@ function find_relevant_course_data() {
  *                                          guests and site admins.
  *      find_meta_parents()->           Finds meta parents and enrolments.
  */
-function find_relevant_course_data_lite(array $options = []) {
-    $course_query = find_course_activity_data();
-    $ula_query = find_course_last_access();
-    $meta_query = find_meta_parents();
-    $course_children = [];
-    $course_parents = [];
-    foreach ($meta_query as $value) {
-        $course_parents[$value->courseid][] = $value->parent_course_id;
+function find_relevant_coursedata_lite(array $options = []) {
+    $coursequery = find_course_activity_data();
+    $ulaquery = find_course_last_access();
+    $metaquery = find_meta_parents();
+    $coursechildren = [];
+    $courseparents = [];
+    foreach ($metaquery as $value) {
+        $courseparents[$value->courseid][] = $value->parentcourseid;
     }
-    foreach ($meta_query as $value) {
-        $course_children[$value->parent_course_id][] = $value->courseid;
+    foreach ($metaquery as $value) {
+        $coursechildren[$value->parentcourseid][] = $value->courseid;
     }
-    foreach ($course_query as $key => $result) {
-        $result->course_timeaccess = $ula_query[$result->course_id]->timeaccess ?? 0;
-        $result->course_parents = null;
-        $result->course_children = null;
-        if (array_key_exists($result->course_id, $course_children)) {
-            $result->course_children = implode(',', $course_children[$result->course_id]);
+    foreach ($coursequery as $key => $result) {
+        $result->coursetimeaccess = $ulaquery[$result->courseid]->timeaccess ?? 0;
+        $result->courseparents = null;
+        $result->coursechildren = null;
+        if (array_key_exists($result->courseid, $coursechildren)) {
+            $result->coursechildren = implode(',', $coursechildren[$result->courseid]);
         }
-        if (array_key_exists($result->course_id, $course_parents)) {
-            $result->course_parents = implode(',', $course_parents[$result->course_id]);
+        if (array_key_exists($result->courseid, $courseparents)) {
+            $result->courseparents = implode(',', $courseparents[$result->courseid]);
         }
-        $result->course_modulescount = count_course_modules($result->course_id)->course_modulescount ?? 0;
-        $result->course_lastenrolment = find_last_enrolment($result->course_id)->course_lastenrolment ?? 0;
-        $course_students = find_course_students($result->course_id);
-        foreach ($course_students as $key => $value) {
+        $result->coursemodulescount = count_course_modules($result->courseid)->coursemodulescount ?? 0;
+        $result->courselastenrolment = find_last_enrolment($result->courseid)->courselastenrolment ?? 0;
+        $coursestudents = find_coursestudents($result->courseid);
+        foreach ($coursestudents as $key => $value) {
             $result->$key = $value;
         }
     }
@@ -120,20 +120,20 @@ function find_relevant_course_data_lite(array $options = []) {
     // We must always have $minimumage specified, if missing defaults to settings.
     // This enables us to bypass the settings if needed for minimum age.
     $minimumage = isset($options['minimumage']) ? $options['minimumage'] : get_config('tool_coursewrangler', 'minimumage');
-    foreach ($course_query as $id => $course) {
-        if ($course->course_startdate < 1) {
+    foreach ($coursequery as $id => $course) {
+        if ($course->coursestartdate < 1) {
             continue;
         }
-        $course_age = time() - $course->course_startdate;
-        $new_course = false;
+        $courseage = time() - $course->coursestartdate;
+        $newcourse = false;
         if ($minimumage !== null && $minimumage > 0) {
-            $new_course = $minimumage > $course_age;
+            $newcourse = $minimumage > $courseage;
         }
-        if ($new_course) {
-            unset($course_query[$id]);
+        if ($newcourse) {
+            unset($coursequery[$id]);
         }
     }
-    return $course_query;
+    return $coursequery;
 }
 
 /**
@@ -142,22 +142,22 @@ function find_relevant_course_data_lite(array $options = []) {
  */
 function find_meta_parents() {
     global $DB;
-    return $DB->get_records_sql("SELECT id, courseid, customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
+    return $DB->get_records_sql("SELECT id, courseid, customint1 AS parentcourseid FROM {enrol} WHERE enrol = 'meta';");
 }
 
 /**
  * Simple query to find the latest enrolment in a course by course id.
  */
-function find_last_enrolment(int $course_id) {
-    if ($course_id < 1) {
+function find_last_enrolment(int $courseid) {
+    if ($courseid < 1) {
         return null;
     }
     global $DB;
     return $DB->get_record_sql(
-        "SELECT id, courseid AS course_id,
-                MAX(timecreated) AS course_lastenrolment
-            FROM {enrol} WHERE courseid=:course_id;",
-        ['course_id' => $course_id]);
+        "SELECT id, courseid AS courseid,
+                MAX(timecreated) AS courselastenrolment
+            FROM {enrol} WHERE courseid=:courseid;",
+        ['courseid' => $courseid]);
 }
 
 /**
@@ -165,16 +165,16 @@ function find_last_enrolment(int $course_id) {
  * By finding students, we can figure out if the course is still in use or not,
  *  since courses without a single student are likely to be no longer needed.
  * @param int $id The course ID.
- * @return array $course_students List of all students for a course.
+ * @return array $coursestudents List of all students for a course.
  */
-function find_course_students(int $id) {
+function find_coursestudents(int $id) {
     global $DB;
     // By using the archetype we can firmly establish if they are students or not.
     $archetype = 'student';
     $coursecontext = \context_course::instance($id);
     // Then foreach result, depending on type of enrol (e.enrol), store that information
     // also remember to check for students only, we do not want any other archetypes for now.
-    $all_students = [];
+    $allstudents = [];
     $sql = "SELECT  concat(ra.id, '-', e.id) as id,
                     ue.userid AS userid,
                     r.shortname,
@@ -190,22 +190,22 @@ function find_course_students(int $id) {
         LEFT JOIN {role} AS r ON ra.roleid = r.id
         LEFT JOIN {context} AS c ON c.id = ra.contextid
         LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id
-        WHERE r.archetype=:archetype AND e.courseid = :course_id;";
-    $students = $DB->get_records_sql($sql,['course_id' => $id, 'archetype' => $archetype]);
-    $all_students[] = $students;
+        WHERE r.archetype=:archetype AND e.courseid = :courseid;";
+    $students = $DB->get_records_sql($sql, ['courseid' => $id, 'archetype' => $archetype]);
+    $allstudents[] = $students;
     // This might need review, but the idea is that we create a total enrolment
     // count, and other enrolment counts to help admins make decisions when
     // deleting courses.
-    $course_students = new stdClass;
-    $course_students->total_enrol_count = 0;
-    $course_students->active_enrol_count = 0;
-    $course_students->self_enrol_count = 0;
-    $course_students->manual_enrol_count = 0;
-    $course_students->meta_enrol_count = 0;
-    $course_students->other_enrol_count = 0;
-    $course_students->suspended_enrol_count = 0;
-    foreach ($all_students as $students) {
-        $course_students->total_enrol_count += count($students) ?? 0;
+    $coursestudents = new stdClass;
+    $coursestudents->totalenrolcount = 0;
+    $coursestudents->activeenrolcount = 0;
+    $coursestudents->selfenrolcount = 0;
+    $coursestudents->manualenrolcount = 0;
+    $coursestudents->metaenrolcount = 0;
+    $coursestudents->otherenrolcount = 0;
+    $coursestudents->suspendedenrolcount = 0;
+    foreach ($allstudents as $students) {
+        $coursestudents->totalenrolcount += count($students) ?? 0;
         foreach ($students as $student) {
             $roles = get_user_roles($coursecontext, $student->userid);
             if ($roles) {
@@ -214,39 +214,39 @@ function find_course_students(int $id) {
             // This switch checks if enrolment status is active.
             switch ($student->enrol_status) {
                 case 0:
-                    $course_students->active_enrol_count += 1;
+                    $coursestudents->activeenrolcount += 1;
                     break;
                 default:
                     break;
             }
             switch ($student->enrol_type) {
                 case 'self':
-                    $course_students->self_enrol_count += 1;
+                    $coursestudents->selfenrolcount += 1;
                     break;
                 case 'manual':
-                    $course_students->manual_enrol_count += 1;
+                    $coursestudents->manualenrolcount += 1;
                     break;
                 case 'meta':
-                    $course_students->meta_enrol_count += 1;
+                    $coursestudents->metaenrolcount += 1;
                     break;
                 default:
-                    $course_students->other_enrol_count += 1;
+                    $coursestudents->otherenrolcount += 1;
                     break;
             }
         }
-        $course_students->suspended_enrol_count += $course_students->total_enrol_count - $course_students->active_enrol_count ?? 0;
+        $coursestudents->suspendedenrolcount += $coursestudents->totalenrolcount - $coursestudents->activeenrolcount ?? 0;
     }
-    return $course_students;
+    return $coursestudents;
 }
 /**
  * Simple function to count modules in a course by course id.
  */
-function count_course_modules(int $course_id) {
-    if ($course_id < 1) {
+function count_course_modules(int $courseid) {
+    if ($courseid < 1) {
         return null;
     }
     global $DB;
-    return $DB->get_record_sql("SELECT COUNT(id) AS course_modulescount FROM {course_modules} WHERE course=:course_id;", ['course_id' => $course_id]);
+    return $DB->get_record_sql("SELECT COUNT(id) AS coursemodulescount FROM {course_modules} WHERE course=:courseid;", ['courseid' => $courseid]);
 }
 /**
  * Large query that fetches the core course data plus activity data regarding that course.
@@ -256,29 +256,29 @@ function count_course_modules(int $course_id) {
 function find_course_activity_data(string $where = '') {
     global $DB;
     $modules = $DB->get_records_sql("SELECT id, name FROM {modules};");
-    $union_segments = [];
+    $unionsegments = [];
     foreach ($modules as $module) {
-        $union_segments[] =    " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act $where";
+        $unionsegments[] =    " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act $where";
     }
-    $union_statement = implode(" UNION ", $union_segments);
+    $unionstatement = implode(" UNION ", $unionsegments);
     return $DB->get_records_sql(
-        "SELECT c.id AS course_id,
-                cm.id AS course_module_id,
+        "SELECT c.id AS courseid,
+                cm.id AS coursemoduleid,
                 act.id AS activity_id,
-                c.fullname AS course_fullname,
-                c.shortname AS course_shortname,
-                c.idnumber AS course_idnumber,
-                c.startdate AS course_startdate,
-                c.enddate AS course_enddate,
-                c.timecreated AS course_timecreated,
-                c.timemodified AS course_timemodified,
-                c.visible AS course_visible,
-                m.name AS activity_type,
-                MAX(act.timemodified) AS activity_lastmodified
+                c.fullname AS coursefullname,
+                c.shortname AS courseshortname,
+                c.idnumber AS courseidnumber,
+                c.startdate AS coursestartdate,
+                c.enddate AS courseenddate,
+                c.timecreated AS coursetimecreated,
+                c.timemodified AS coursetimemodified,
+                c.visible AS coursevisible,
+                m.name AS activitytype,
+                MAX(act.timemodified) AS activitylastmodified
         FROM    {course} AS c
             LEFT JOIN {course_modules} AS cm ON cm.course=c.id
             LEFT JOIN {modules} AS m ON cm.module=m.id
-            LEFT JOIN ( $union_statement ) AS act
+            LEFT JOIN ( $unionstatement ) AS act
         ON act.course=c.id
         AND act.id=cm.instance
         WHERE c.id!=:siteid
@@ -318,10 +318,10 @@ function get_course_metric(int $courseid) {
         return;
     }
     global $DB;
-    return $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $courseid], '*', MUST_EXIST);
+    return $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $courseid], '*', MUST_EXIST);
 }
-function get_enrolments(int $course_id, string $archetype) {
-    if ($course_id < 1) {
+function get_enrolments(int $courseid, string $archetype) {
+    if ($courseid < 1) {
         return false;
     }
     global $DB;
@@ -339,18 +339,18 @@ function get_enrolments(int $course_id, string $archetype) {
        LEFT JOIN {role} AS r ON ra.roleid = r.id
        LEFT JOIN {context} AS c ON c.id = ra.contextid
        LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id
-       WHERE e.courseid = :course_id
+       WHERE e.courseid = :courseid
        AND r.archetype = :archetype;";
-    return $DB->get_records_sql($sql, ['course_id' => $course_id, 'archetype' => $archetype]);
+    return $DB->get_records_sql($sql, ['courseid' => $courseid, 'archetype' => $archetype]);
 }
 
-function find_owners(int $course_id, string $archetype = 'editingteacher') {
+function find_owners(int $courseid, string $archetype = 'editingteacher') {
     $archetypes = get_role_archetypes();
     if (!in_array($archetype, $archetypes)) {
         // Archetype does not exist.
         return false;
     }
-    $enrolments = get_enrolments($course_id, $archetype);
+    $enrolments = get_enrolments($courseid, $archetype);
     if (!$enrolments) {
         return false;
     }
@@ -406,7 +406,7 @@ function test_sendmessage($subject, $messagebody, $user) {
  * Temporary function to help debug within html.
  */
 function cwt_debugger($data, string $leadingtext = 'Debug') {
-    if (!debugging()){
+    if (!debugging()) {
         return false;
     }
     $id = 'coursewrangler_debug_' . random_int(100, 100000);

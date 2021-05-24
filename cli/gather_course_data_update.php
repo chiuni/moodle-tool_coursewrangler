@@ -16,7 +16,7 @@
 
 /**
  * This file is a command line script example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -39,33 +39,33 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/../locallib.php');
 $context = context_system::instance();
 
-$start_time = time();
-$start_time_formatted = date('r', $start_time);
+$starttime = time();
+$starttimeformatted = date('r', $starttime);
 echo PHP_EOL .'tool_coursewrangler ::: Gather Course Data PHP Script' . PHP_EOL;
 echo '=====================================================' . PHP_EOL;
 echo '=============== Starting DB Queries =================' . PHP_EOL;
 echo '=====================================================' . PHP_EOL;
 \core_php_time_limit::raise();
-echo "Start time: $start_time_formatted" . PHP_EOL . PHP_EOL;
-$course_data = find_relevant_course_data_lite();
+echo "Start time: $starttimeformatted" . PHP_EOL . PHP_EOL;
+$coursedata = find_relevant_coursedata_lite();
 $metrics_data = $DB->get_records('tool_coursewrangler_metrics');
-$db_end_time = time();
-echo 'Queries took a total of: ' . ($db_end_time - $start_time) . ' seconds' . PHP_EOL;
+$dbendtime = time();
+echo 'Queries took a total of: ' . ($dbendtime - $starttime) . ' seconds' . PHP_EOL;
 echo 'Creating metrics data.' . PHP_EOL;
-foreach ($course_data as $data) {
-    $fetch_metric = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $data->course_id]);
-    $data->metrics_updated = time();
-    if (!$fetch_metric) {
+foreach ($coursedata as $data) {
+    $fetchmetric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $data->courseid]);
+    $data->metricsupdated = time();
+    if (!$fetchmetric) {
         $entry_id = $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
         continue;
     }
-    $data->id = $fetch_metric->id;
+    $data->id = $fetchmetric->id;
     $DB->update_record('tool_coursewrangler_metrics', $data);
 
 }
-$script_end_time = time();
+$scriptendtime = time();
 exit;
-$score_handler = new deletion_score($course_data);
+$score_handler = new deletion_score($coursedata);
 $courses = $score_handler->get_courses();
 echo 'End of script.' . PHP_EOL;
 echo 'Triggering generate_score.php...' . PHP_EOL;

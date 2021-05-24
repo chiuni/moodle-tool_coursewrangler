@@ -16,14 +16,13 @@
 
 /**
  * This file is an Action class for managing courses.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler;
 
 require_once($CFG->dirroot . '/course/lib.php');
@@ -35,24 +34,24 @@ class action {
             return null;
         }
         global $DB;
-        $action_class = $DB->get_record('tool_coursewrangler_action', ['id' => $id], '*', MUST_EXIST);
-        if (!$action_class) {
+        $actionclass = $DB->get_record('tool_coursewrangler_action', ['id' => $id], '*', MUST_EXIST);
+        if (!$actionclass) {
             $this->action_not_found = true;
             return false;
         }
-        foreach ($action_class as $key => $value) {
+        foreach ($actionclass as $key => $value) {
             $this->$key = $value;
         }
 
         return true;
     }
 
-    public static function find_action(int $course_id) {
-        if ($course_id < 1) {
+    public static function find_action(int $courseid) {
+        if ($courseid < 1) {
             return null;
         }
         global $DB;
-        $action = $DB->get_record('tool_coursewrangler_action', ['course_id' => $course_id], '*');
+        $action = $DB->get_record('tool_coursewrangler_action', ['courseid' => $courseid], '*');
         if ($action == false) {
             return false;
         }
@@ -60,24 +59,24 @@ class action {
     }
 
     public function delete_course() {
-        if (!isset($this->course_id) || !is_integer((int) $this->course_id) || $this->course_id < 1) {
+        if (!isset($this->courseid) || !is_integer((int) $this->courseid) || $this->courseid < 1) {
             return false;
         }
         // Double check course exits:
-        $course = get_course($this->course_id, false);
+        $course = get_course($this->courseid, false);
         if ($course == false) {
             return false;
         }
         \core_php_time_limit::raise();
         // We do this here because it spits out feedback as it goes.
-        $delete_status = delete_course($this->course_id);
-        if ($delete_status) {
+        $deletestatus = delete_course($this->courseid);
+        if ($deletestatus) {
             global $DB;
-            $DB->delete_record('tool_coursewrangler_action', ['course_id' => $this->course_id]);
-            $DB->delete_record('tool_coursewrangler_metrics', ['course_id' => $this->course_id]);
-            insert_cw_logentry("Course with ID: $this->course_id ", 'course_wrangler', $this->id);
+            $DB->delete_record('tool_coursewrangler_action', ['courseid' => $this->courseid]);
+            $DB->delete_record('tool_coursewrangler_metrics', ['courseid' => $this->courseid]);
+            insert_cw_logentry("Course with ID: $this->courseid ", 'course_wrangler', $this->id);
         }
-        return $delete_status;
+        return $deletestatus;
     }
 
     public function wait() {
@@ -93,9 +92,9 @@ class action {
     public static function hide_course(int $courseid) {
         global $DB;
         $course = $DB->get_record('course', ['id' => $courseid]);
-        $metric = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $courseid]);
+        $metric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $courseid]);
         $course->visible = 0;
-        $metric->course_visible = 0;
+        $metric->coursevisible = 0;
         $DB->update_record('tool_coursewrangler_metrics', $metric);
         return update_course($course);
     }

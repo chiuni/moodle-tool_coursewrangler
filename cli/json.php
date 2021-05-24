@@ -16,7 +16,7 @@
 
 /**
  * This file is a command line script example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -39,7 +39,7 @@ require_once(__DIR__ . '/../locallib.php');
 $context = context_system::instance();
 
 echo 'tool_coursewrangler ::: Make JSON script test' . PHP_EOL;
-$data = find_relevant_course_data_lite();
+$data = find_relevant_coursedata_lite();
 $time = time();
 file_put_contents("./score_$time.json", json_encode($data));
 echo 'End of script.' . PHP_EOL;

@@ -16,14 +16,13 @@
 
 /**
  * This is a rule implementation class.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler\rules;
 
 use tool_coursewrangler\interfaces\rule as rule_interface;
@@ -34,11 +33,11 @@ class course_isover extends rule implements rule_interface
     public function evaluate_condition(): bool {
         // If this course has children, do not apply this rule.
         // This is because this course is being used for meta enrolments.
-        if ($this->course->course_children != null) {
+        if ($this->course->coursechildren != null) {
             return $this->state;
         }
         // If course has open ended date, do not apply this rule.
-        if ($this->course->course_enddate == 0) {
+        if ($this->course->courseenddate == 0) {
             return $this->state;
         }
         $this->state = true;
@@ -52,18 +51,18 @@ class course_isover extends rule implements rule_interface
         // If course is not over, lower score by 50.
         $this->score = -50;
         // If is course date is older than current date, means course is over.
-        if ($this->course->course_enddate < time()) {
+        if ($this->course->courseenddate < time()) {
             // Else, add 100 to deletion score.
             $this->score = 100;
             // And for each time-period past the course enddate, we add a score point.
-            $time_period = $this->settings['time_unit'];
-            $this->score += (time() - $this->course->course_enddate) / $time_period;
+            $timeperiod = $this->settings['timeunit'];
+            $this->score += (time() - $this->course->courseenddate) / $timeperiod;
         }
         return $this->score;
     }
     public function set_params() {
-        // The only param needed for this is course_visible.
+        // The only param needed for this is coursevisible.
         $this->params = [];
-        $this->params[] = 'course_enddate';
+        $this->params[] = 'courseenddate';
     }
 }

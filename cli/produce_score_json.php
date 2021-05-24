@@ -16,7 +16,7 @@
 
 /**
  * This file is a command line script example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -49,7 +49,7 @@ usort($courses, function ($item1, $item2) {
 });
 $scores = [];
 foreach ($courses as $course) {
-    $scores[$course->course_id] = ['rules' => $course->rules, 'score' => $course->score];
+    $scores[$course->courseid] = ['rules' => $course->rules, 'score' => $course->score];
 }
 $time = time();
 file_put_contents("./score_$time.json", json_encode($scores));

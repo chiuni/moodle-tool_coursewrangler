@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler\rules;
 
 use tool_coursewrangler\interfaces\rule as rule_interface;
@@ -32,8 +31,8 @@ class course_noenrol extends rule implements rule_interface
 {
     public function evaluate_condition(): bool {
         // This checks to make sure the values are valid.
-        // For total_enrol_count, just needs to be not negative.
-        if ($this->course->total_enrol_count >= 0) {
+        // For totalenrolcount, just needs to be not negative.
+        if ($this->course->totalenrolcount >= 0) {
             $this->state = true;
         }
         return $this->state;
@@ -45,15 +44,15 @@ class course_noenrol extends rule implements rule_interface
         }
         // If is course has enrolments, lower deletion score by 25.
         $this->score = -50;
-        if ($this->course->total_enrol_count == 0) {
+        if ($this->course->totalenrolcount == 0) {
             // Else, add 100 to deletion score.
             $this->score = 100;
         }
         return $this->score;
     }
     public function set_params() {
-        // The only param needed for this is course_visible.
+        // The only param needed for this is coursevisible.
         $this->params = [];
-        $this->params[] = 'total_enrol_count';
+        $this->params[] = 'totalenrolcount';
     }
 }

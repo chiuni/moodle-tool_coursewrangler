@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler\rules;
 
 use tool_coursewrangler\interfaces\rule as rule_interface;
@@ -33,15 +32,15 @@ class course_neverused extends rule implements rule_interface
     public function evaluate_condition(): bool {
         // If this course has children, do not apply this rule.
         // This is because this course is being used for meta enrolments.
-        if ($this->course->course_children != null) {
+        if ($this->course->coursechildren != null) {
             return $this->state;
         }
         // If it has been accessed, do not apply rule.
-        if ($this->course->course_timeaccess != 0) {
+        if ($this->course->coursetimeaccess != 0) {
             return $this->state;
         }
         // If course has at least 2 activities, do not apply rule.
-        if ($this->course->course_modulescount > 1) {
+        if ($this->course->coursemodulescount > 1) {
             return $this->state;
         }
         $this->state = true;
@@ -57,10 +56,10 @@ class course_neverused extends rule implements rule_interface
         return $this->score;
     }
     public function set_params() {
-        // The only param needed for this is course_visible.
+        // The only param needed for this is coursevisible.
         $this->params = [];
-        $this->params[] = 'total_enrol_count';
-        $this->params[] = 'course_timeaccess';
-        $this->params[] = 'course_modulescount';
+        $this->params[] = 'totalenrolcount';
+        $this->params[] = 'coursetimeaccess';
+        $this->params[] = 'coursemodulescount';
     }
 }

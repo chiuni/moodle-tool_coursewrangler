@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler\rules;
 
 use tool_coursewrangler\interfaces\rule as rule_interface;
@@ -32,13 +31,13 @@ class course_isvisible extends rule implements rule_interface
 {
     public function evaluate_condition(): bool {
         // If this course has children, we do not evaluate
-        //  its visibility.
-        if ($this->course->course_children != null) {
+        // its visibility.
+        if ($this->course->coursechildren != null) {
             return $this->state;
         }
         // This checks to make sure the values are valid.
-        if ($this->course->course_visible == 1 ||
-            $this->course->course_visible == 0) {
+        if ($this->course->coursevisible == 1 ||
+            $this->course->coursevisible == 0) {
             $this->state = true;
         }
         return $this->state;
@@ -50,17 +49,17 @@ class course_isvisible extends rule implements rule_interface
         }
         // If is course visible, reduce deletion score by 25.
         $this->score = -50;
-        if ($this->course->course_visible == 0) {
+        if ($this->course->coursevisible == 0) {
             // Else, add 50 to deletion score.
             $this->score = 100;
         }
         return $this->score;
     }
     public function set_params() {
-        // The only param needed for this is course_visible.
+        // The only param needed for this is coursevisible.
         $this->params = [];
-        $this->params[] = 'course_visible';
+        $this->params[] = 'coursevisible';
         // Course children can be null, so we don't use it here.
-        // $this->params[] = 'course_children';
+        // $this->params[] = 'coursechildren';
     }
 }

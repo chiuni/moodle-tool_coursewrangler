@@ -3,90 +3,90 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">{{{course_title_link}}}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{#str}}table_course_timeaccess, tool_coursewrangler{{/str}}: {{{course_timeaccess}}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{#str}}table_coursetimeaccess, tool_coursewrangler{{/str}}: {{{coursetimeaccess}}}</h6>
                 <hr>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_id, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_id}}}</dd>
+                        <dt>{{#str}}table_courseid, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{courseid}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_module_id, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_module_id}}}</dd>
+                        <dt>{{#str}}table_coursemoduleid, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursemoduleid}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_shortname, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_shortname}}}</dd>
+                        <dt>{{#str}}table_courseshortname, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{courseshortname}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_fullname, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_fullname}}}</dd>
+                        <dt>{{#str}}table_coursefullname, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursefullname}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_idnumber, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_idnumber}}}</dd>
+                        <dt>{{#str}}table_courseidnumber, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{courseidnumber}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_timecreated, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_timecreated}}}</dd>
+                        <dt>{{#str}}table_coursetimecreated, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursetimecreated}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_timemodified, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_timemodified}}}</dd>
+                        <dt>{{#str}}table_coursetimemodified, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursetimemodified}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_startdate, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_startdate}}}</dd>
+                        <dt>{{#str}}table_coursestartdate, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursestartdate}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_enddate, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_enddate}}}</dd>
+                        <dt>{{#str}}table_courseenddate, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{courseenddate}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_visible, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_visible}}}</dd>
+                        <dt>{{#str}}table_coursevisible, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursevisible}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_parents, tool_coursewrangler{{/str}}</dt> 
+                        <dt>{{#str}}table_courseparents, tool_coursewrangler{{/str}}</dt>
                         <dd>
-                            {{#course_parents}}
-                                <a href="{{{course_link}}}">{{course_id}}</a>
-                            {{/course_parents}}
-                            {{^course_parents}}
-                                {{#str}}table_course_parents_none, tool_coursewrangler{{/str}}
-                            {{/course_parents}}
+                            {{#courseparents}}
+                                <a href="{{{course_link}}}">{{courseid}}</a>
+                            {{/courseparents}}
+                            {{^courseparents}}
+                                {{#str}}table_courseparents_none, tool_coursewrangler{{/str}}
+                            {{/courseparents}}
                         </dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_children, tool_coursewrangler{{/str}}</dt> 
+                        <dt>{{#str}}table_coursechildren, tool_coursewrangler{{/str}}</dt>
                         <dd>
-                            {{#course_children}}
-                                <a href="{{{course_link}}}">{{course_id}}</a>
-                            {{/course_children}}
-                            {{^course_children}}
-                                {{#str}}table_course_children_none, tool_coursewrangler{{/str}}
-                            {{/course_children}}
+                            {{#coursechildren}}
+                                <a href="{{{course_link}}}">{{courseid}}</a>
+                            {{/coursechildren}}
+                            {{^coursechildren}}
+                                {{#str}}table_coursechildren_none, tool_coursewrangler{{/str}}
+                            {{/coursechildren}}
                         </dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_modulescount, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_modulescount}}}</dd>
+                        <dt>{{#str}}table_coursemodulescount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursemodulescount}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_timeaccess, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_timeaccess}}}</dd>
+                        <dt>{{#str}}table_coursetimeaccess, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{coursetimeaccess}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_course_lastenrolment, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{course_lastenrolment}}}</dd>
+                        <dt>{{#str}}table_courselastenrolment, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{courselastenrolment}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_activity_type, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{activity_type}}}</dd>
+                        <dt>{{#str}}table_activitytype, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{activitytype}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_activity_lastmodified, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{activity_lastmodified}}}</dd>
+                        <dt>{{#str}}table_activitylastmodified, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{activitylastmodified}}}</dd>
                     </li>
                 </u>
             </div>
@@ -96,13 +96,13 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">{{#str}}pluginname, tool_coursewrangler{{/str}}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{#str}}report_details_report_date, tool_coursewrangler{{/str}}: {{{metrics_updated}}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted">{{#str}}report_details_report_date, tool_coursewrangler{{/str}}: {{{metricsupdated}}}</h6>
                 <ul class="list-group list-group-flush">
                     {{#actionstatus}}
                         {{#str}}report_details_actionstatus, tool_coursewrangler{{/str}}: {{{actionstatus}}}
                     {{/actionstatus}}
                     {{#links}}
-                    {{#return_link}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{return_link}}}"><i class="icon fa fa-arrow-left fa-fw "></i>{{#str}}report_details_return, tool_coursewrangler{{/str}}</a></span></li>{{/return_link}}
+                    {{#returnlink}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{returnlink}}}"><i class="icon fa fa-arrow-left fa-fw "></i>{{#str}}report_details_return, tool_coursewrangler{{/str}}</a></span></li>{{/returnlink}}
                     {{#action_delete_link}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{action_delete_link}}}"><i class="icon fa fa-trash fa-fw "></i>{{#str}}report_details_action_delete, tool_coursewrangler{{/str}}</a></span></li>{{/action_delete_link}}
                     {{#action_reset_link}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{action_reset_link}}}"><i class="icon fa fa-undo fa-fw "></i>{{#str}}report_details_action_reset, tool_coursewrangler{{/str}}</a></span></li>{{/action_reset_link}}
                     {{#action_protect_link}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{action_protect_link}}}"><i class="icon fa fa-shield fa-fw "></i>{{#str}}report_details_action_protect, tool_coursewrangler{{/str}}</a></span></li>{{/action_protect_link}}
@@ -110,7 +110,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="card mb-4">
             <div class="card-body">
                 {{#score}}
@@ -119,13 +119,13 @@
                 <hr>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_score_raw, tool_coursewrangler{{/str}}</dt> 
+                        <dt>{{#str}}table_score_raw, tool_coursewrangler{{/str}}</dt>
                         <dd>{{{raw}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_score_percentage, tool_coursewrangler{{/str}}</dt> 
+                        <dt>{{#str}}table_score_percentage, tool_coursewrangler{{/str}}</dt>
                         <dd>{{{percentage}}}%</dd>
-                    </li>    
+                    </li>
                 </u>
                 {{/score}}
                 {{^score}}
@@ -140,32 +140,32 @@
                 <hr>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_total_enrol_count, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{total_enrol_count}}}</dd>
+                        <dt>{{#str}}table_totalenrolcount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{totalenrolcount}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_active_enrol_count, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{active_enrol_count}}}</dd>
+                        <dt>{{#str}}table_activeenrolcount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{activeenrolcount}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_self_enrol_count, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{self_enrol_count}}}</dd>
+                        <dt>{{#str}}table_selfenrolcount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{selfenrolcount}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_manual_enrol_count, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{manual_enrol_count}}}</dd>
+                        <dt>{{#str}}table_manualenrolcount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{manualenrolcount}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_meta_enrol_count, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{meta_enrol_count}}}</dd>
+                        <dt>{{#str}}table_metaenrolcount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{metaenrolcount}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_other_enrol_count, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{other_enrol_count}}}</dd>
+                        <dt>{{#str}}table_otherenrolcount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{otherenrolcount}}}</dd>
                     </li>
                     <li class="list-group-item border-0 p-0 pb-2">
-                        <dt>{{#str}}table_suspended_enrol_count, tool_coursewrangler{{/str}}</dt> 
-                        <dd>{{{suspended_enrol_count}}}</dd>
+                        <dt>{{#str}}table_suspendedenrolcount, tool_coursewrangler{{/str}}</dt>
+                        <dd>{{{suspendedenrolcount}}}</dd>
                     </li>
                 </u>
             </div>

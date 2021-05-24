@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler\rules;
 
 use tool_coursewrangler\interfaces\rule as rule_interface;
@@ -31,7 +30,7 @@ use tool_coursewrangler\rule;
 class course_haschildren extends rule implements rule_interface
 {
     public function evaluate_condition(): bool {
-        $children = explode(',', $this->course->course_children);
+        $children = explode(',', $this->course->coursechildren);
         if (count($children) > 0) {
             $this->state = true;
         }
@@ -41,7 +40,7 @@ class course_haschildren extends rule implements rule_interface
         if (!$this->state) {
             return $this->score;
         }
-        $children = explode(',', $this->course->course_children);
+        $children = explode(',', $this->course->coursechildren);
         $count = count($children);
         // For each children course, reduce score by 100 points.
         $this->score = $count * -100;
@@ -49,6 +48,6 @@ class course_haschildren extends rule implements rule_interface
     }
     public function set_params() {
         $this->params = [];
-        $this->params[] = 'course_children';
+        $this->params[] = 'coursechildren';
     }
 }

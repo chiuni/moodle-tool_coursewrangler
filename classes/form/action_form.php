@@ -16,14 +16,13 @@
 
 /**
  * This file is a class example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 
 namespace tool_coursewrangler\form;
 
@@ -38,11 +37,11 @@ class action_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
         $customdata = $this->_customdata;
-        $report_form_data_json = null;
-        $report_form_data_json = $customdata['report_form_data_json'] ?? null;
+        $reportformdatajson = null;
+        $reportformdatajson = $customdata['reportformdatajson'] ?? null;
 
-        $mform->addElement('hidden', 'report_form_data_json', $report_form_data_json);
-        $mform->addElement('hidden', 'rows_selected', null, ['class' => 'action_form-selected']);
+        $mform->addElement('hidden', 'reportformdatajson', $reportformdatajson);
+        $mform->addElement('hidden', 'rowsselected', null, ['class' => 'action_form-selected']);
 
         $options = array();
         $options['delete'] = get_string('action_form_scheduledelete', 'tool_coursewrangler');

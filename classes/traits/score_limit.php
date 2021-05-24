@@ -16,14 +16,13 @@
 
 /**
  * This file is a class example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler\traits;
 
 trait score_limit
@@ -35,7 +34,7 @@ trait score_limit
         $this->score = $this->score ?? 0;
         $polarity = $this->score <=> 0;
         $compare = $limit <=> abs($this->score);
-        $limited_score = $compare == -1 ? $polarity * $limit : $this->score;
-        return (int) $limited_score;
+        $limitedscore = $compare == -1 ? $polarity * $limit : $this->score;
+        return (int) $limitedscore;
     }
 }

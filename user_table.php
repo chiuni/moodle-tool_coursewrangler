@@ -54,12 +54,12 @@ $PAGE->navbar->add(get_string('table_usertable_name', 'tool_coursewrangler'), ne
 $enrolments = enrol_get_all_users_courses($userid);
 $enrolids = array_keys($enrolments);
 // Creating url params.
-$base_url_str = '/admin/tool/coursewrangler/user_table.php';
-// Parameter category_ids must be string.
-$base_url = new moodle_url($base_url_str, []);
+$baseurlstr = '/admin/tool/coursewrangler/user_table.php';
+// Parameter categoryids must be string.
+$baseurl = new moodle_url($baseurlstr, []);
 
 $table = new table\user_report_table(
-    $base_url,
+    $baseurl,
     ['courseids' => $enrolids]
 );
 

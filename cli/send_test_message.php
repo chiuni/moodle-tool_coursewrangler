@@ -16,7 +16,7 @@
 
 /**
  * This file is a command line script example.
- * 
+ *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -43,9 +43,9 @@ echo 'Starting tool_coursewrangler send test message script.' . PHP_EOL;
 $user = \core_user::get_user(1426261);
 action_handler::send_schedulednotification($user, [58558, 58560]);
 mtrace("Assembling mailing list.");
-$scheduled_mailinglist = action_handler::getmaillist($scheduled_actions_notify);
+$scheduledmailinglist = action_handler::getmaillist($scheduledactionsnotify);
 mtrace("Emailing course managers and teachers for new scheduled tasks.");
-action_handler::notify_owners($scheduled_mailinglist);
+action_handler::notify_owners($scheduledmailinglist);
 
 $elapsed = time() - $starttime;
 echo "Finished script in $elapsed seconds." . PHP_EOL;

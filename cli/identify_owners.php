@@ -57,13 +57,13 @@ $courses = get_courses();;
 // print_object(find_owners(70248));
 
 $scheduledduration = time() - get_config('tool_coursewrangler', 'scheduledduration');
-$scheduled_actions = $DB->get_records_sql(
-            'SELECT * FROM {tool_coursewrangler_action} 
-                WHERE action="delete" AND status="scheduled" 
-                AND lastupdated < :lastupdated ;', 
+$scheduledactions = $DB->get_records_sql(
+            'SELECT * FROM {tool_coursewrangler_action}
+                WHERE action="delete" AND status="scheduled"
+                AND lastupdated < :lastupdated ;',
             ['lastupdated' => $scheduledduration]
         );
-$maillist = action_handler::getmaillist($scheduled_actions);
+$maillist = action_handler::getmaillist($scheduledactions);
 print_object($maillist);
 
 foreach ($maillist as $userid => $owner) {

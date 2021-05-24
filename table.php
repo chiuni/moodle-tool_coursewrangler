@@ -26,121 +26,121 @@ if (!is_siteadmin($USER)) {
 
 // Report_form_data_json is reponsible for allowing cross-form
 // parameter sharing, to remember what the user options were.
-$report_form_data_json = optional_param('report_form_data_json', null, PARAM_RAW);
-$report_form_data_json = is_null($report_form_data_json) ? null : json_decode($report_form_data_json);
+$reportformdatajson = optional_param('reportformdatajson', null, PARAM_RAW);
+$reportformdatajson = is_null($reportformdatajson) ? null : json_decode($reportformdatajson);
 
 $action = optional_param('action', null, PARAM_RAW);
-$rows_selected = optional_param('rows_selected', null, PARAM_RAW);
-$rows_selected = is_array($rows_selected) ? $rows_selected : array_filter( (array) explode(',', $rows_selected) );
+$rowsselected = optional_param('rowsselected', null, PARAM_RAW);
+$rowsselected = is_array($rowsselected) ? $rowsselected : array_filter( (array) explode(',', $rowsselected) );
 
-$category_ids = optional_param('category_ids', null, PARAM_RAW);
-$category_ids = is_array($category_ids) ? $category_ids : array_filter( (array) explode(',', $category_ids) );
-$category_ids = empty($category_ids) && isset($report_form_data_json->category_ids)
-                    ? $report_form_data_json->category_ids
-                    : $category_ids;
+$categoryids = optional_param('categoryids', null, PARAM_RAW);
+$categoryids = is_array($categoryids) ? $categoryids : array_filter( (array) explode(',', $categoryids) );
+$categoryids = empty($categoryids) && isset($reportformdatajson->categoryids)
+                    ? $reportformdatajson->categoryids
+                    : $categoryids;
 
-$filter_action_data = optional_param('filter_action_data', null, PARAM_RAW);
-$filter_action_data = is_array($filter_action_data) ? $filter_action_data : array_filter( (array) explode(',', $filter_action_data) );
-$filter_action_data = empty($filter_action_data) && isset($report_form_data_json->filter_action_data)
-                    ? $report_form_data_json->filter_action_data
-                    : $filter_action_data;
+$filteractiondata = optional_param('filteractiondata', null, PARAM_RAW);
+$filteractiondata = is_array($filteractiondata) ? $filteractiondata : array_filter( (array) explode(',', $filteractiondata) );
+$filteractiondata = empty($filteractiondata) && isset($reportformdatajson->filteractiondata)
+                    ? $reportformdatajson->filteractiondata
+                    : $filteractiondata;
 
-$filter_by_courseids = optional_param('filter_by_courseids', null, PARAM_RAW);
-$filter_by_courseids = is_array($filter_by_courseids) ? $filter_by_courseids : array_filter( (array) explode(',', $filter_by_courseids) );
-$filter_by_courseids = empty($filter_by_courseids) && isset($report_form_data_json->filter_by_courseids)
-                    ? $report_form_data_json->filter_by_courseids
-                    : $filter_by_courseids;
+$filterbycourseids = optional_param('filterbycourseids', null, PARAM_RAW);
+$filterbycourseids = is_array($filterbycourseids) ? $filterbycourseids : array_filter( (array) explode(',', $filterbycourseids) );
+$filterbycourseids = empty($filterbycourseids) && isset($reportformdatajson->filterbycourseids)
+                    ? $reportformdatajson->filterbycourseids
+                    : $filterbycourseids;
 
 // Dates optional params.
-$course_timecreated_after = optional_param('course_timecreated_after', null, PARAM_INT);
-$course_timecreated_after = $course_timecreated_after ?? $report_form_data_json->course_timecreated_after ?? false;
-$course_timecreated_before = optional_param('course_timecreated_before', null, PARAM_INT);
-$course_timecreated_before = $course_timecreated_before ?? $report_form_data_json->course_timecreated_before ?? false;
-$course_startdate_after = optional_param('course_startdate_after', null, PARAM_INT);
-$course_startdate_after = $course_startdate_after ?? $report_form_data_json->course_startdate_after ?? false;
-$course_startdate_before = optional_param('course_startdate_before', null, PARAM_INT);
-$course_startdate_before = $course_startdate_before ?? $report_form_data_json->course_startdate_before ?? false;
-$course_enddate_after = optional_param('course_enddate_after', null, PARAM_INT);
-$course_enddate_after = $course_enddate_after ?? $report_form_data_json->course_enddate_after ?? false;
-$course_enddate_before = optional_param('course_enddate_before', null, PARAM_INT);
-$course_enddate_before = $course_enddate_before ?? $report_form_data_json->course_enddate_before ?? false;
-$course_timeaccess_after = optional_param('course_timeaccess_after', null, PARAM_INT);
-$course_timeaccess_after = $course_timeaccess_after ?? $report_form_data_json->course_timeaccess_after ?? false;
-$course_timeaccess_before = optional_param('course_timeaccess_before', null, PARAM_INT);
-$course_timeaccess_before = $course_timeaccess_before ?? $report_form_data_json->course_timeaccess_before ?? false;
+$coursetimecreatedafter = optional_param('coursetimecreatedafter', null, PARAM_INT);
+$coursetimecreatedafter = $coursetimecreatedafter ?? $reportformdatajson->coursetimecreatedafter ?? false;
+$coursetimecreatedbefore = optional_param('coursetimecreatedbefore', null, PARAM_INT);
+$coursetimecreatedbefore = $coursetimecreatedbefore ?? $reportformdatajson->coursetimecreatedbefore ?? false;
+$coursestartdateafter = optional_param('coursestartdateafter', null, PARAM_INT);
+$coursestartdateafter = $coursestartdateafter ?? $reportformdatajson->coursestartdateafter ?? false;
+$coursestartdatebefore = optional_param('coursestartdatebefore', null, PARAM_INT);
+$coursestartdatebefore = $coursestartdatebefore ?? $reportformdatajson->coursestartdatebefore ?? false;
+$courseenddateafter = optional_param('courseenddateafter', null, PARAM_INT);
+$courseenddateafter = $courseenddateafter ?? $reportformdatajson->courseenddateafter ?? false;
+$courseenddatebefore = optional_param('courseenddatebefore', null, PARAM_INT);
+$courseenddatebefore = $courseenddatebefore ?? $reportformdatajson->courseenddatebefore ?? false;
+$coursetimeaccessafter = optional_param('coursetimeaccessafter', null, PARAM_INT);
+$coursetimeaccessafter = $coursetimeaccessafter ?? $reportformdatajson->coursetimeaccessafter ?? false;
+$coursetimeaccessbefore = optional_param('coursetimeaccessbefore', null, PARAM_INT);
+$coursetimeaccessbefore = $coursetimeaccessbefore ?? $reportformdatajson->coursetimeaccessbefore ?? false;
 
 // Turning dates into timestamps.
-$course_timecreated_after = isset($course_timecreated_after['enabled'])
-                            && $course_timecreated_after['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_timecreated_after)
-                                : $course_timecreated_after;
-$course_timecreated_before = isset($course_timecreated_before['enabled'])
-                            && $course_timecreated_before['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_timecreated_before)
-                                : $course_timecreated_before;
-$course_startdate_after = isset($course_startdate_after['enabled'])
-                            && $course_startdate_after['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_startdate_after)
-                                : $course_startdate_after;
-$course_startdate_before = isset($course_startdate_before['enabled'])
-                            && $course_startdate_before['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_startdate_before)
-                                : $course_startdate_before;
-$course_enddate_after = isset($course_enddate_after['enabled'])
-                            && $course_enddate_after['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_enddate_after)
-                                : $course_enddate_after;
-$course_enddate_before = isset($course_enddate_before['enabled'])
-                            && $course_enddate_before['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_enddate_before)
-                                : $course_enddate_before;
-$course_timeaccess_after = isset($course_timeaccess_after['enabled'])
-                            && $course_timeaccess_after['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_timeaccess_after)
-                                : $course_timeaccess_after;
-$course_timeaccess_before = isset($course_timeaccess_before['enabled'])
-                            && $course_timeaccess_before['enabled'] == 1
-                                ? moodletime_to_unixtimestamp($course_timeaccess_before)
-                                : $course_timeaccess_before;
+$coursetimecreatedafter = isset($coursetimecreatedafter['enabled'])
+                            && $coursetimecreatedafter['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($coursetimecreatedafter)
+                                : $coursetimecreatedafter;
+$coursetimecreatedbefore = isset($coursetimecreatedbefore['enabled'])
+                            && $coursetimecreatedbefore['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($coursetimecreatedbefore)
+                                : $coursetimecreatedbefore;
+$coursestartdateafter = isset($coursestartdateafter['enabled'])
+                            && $coursestartdateafter['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($coursestartdateafter)
+                                : $coursestartdateafter;
+$coursestartdatebefore = isset($coursestartdatebefore['enabled'])
+                            && $coursestartdatebefore['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($coursestartdatebefore)
+                                : $coursestartdatebefore;
+$courseenddateafter = isset($courseenddateafter['enabled'])
+                            && $courseenddateafter['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($courseenddateafter)
+                                : $courseenddateafter;
+$courseenddatebefore = isset($courseenddatebefore['enabled'])
+                            && $courseenddatebefore['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($courseenddatebefore)
+                                : $courseenddatebefore;
+$coursetimeaccessafter = isset($coursetimeaccessafter['enabled'])
+                            && $coursetimeaccessafter['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($coursetimeaccessafter)
+                                : $coursetimeaccessafter;
+$coursetimeaccessbefore = isset($coursetimeaccessbefore['enabled'])
+                            && $coursetimeaccessbefore['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($coursetimeaccessbefore)
+                                : $coursetimeaccessbefore;
 
 // Validating timestamps.
-$course_timecreated_after = $course_timecreated_after > 0 ? $course_timecreated_after : null;
-$course_timecreated_before = $course_timecreated_before > 0 ? $course_timecreated_before : null;
-$course_startdate_after = $course_startdate_after > 0 ? $course_startdate_after : null;
-$course_startdate_before = $course_startdate_before > 0 ? $course_startdate_before : null;
-$course_enddate_after = $course_enddate_after > 0 ? $course_enddate_after : null;
-$course_enddate_before = $course_enddate_before > 0 ? $course_enddate_before : null;
-$course_timeaccess_after = $course_timeaccess_after > 0 ? $course_timeaccess_after : null;
-$course_timeaccess_before = $course_timeaccess_before > 0 ? $course_timeaccess_before : null;
+$coursetimecreatedafter = $coursetimecreatedafter > 0 ? $coursetimecreatedafter : null;
+$coursetimecreatedbefore = $coursetimecreatedbefore > 0 ? $coursetimecreatedbefore : null;
+$coursestartdateafter = $coursestartdateafter > 0 ? $coursestartdateafter : null;
+$coursestartdatebefore = $coursestartdatebefore > 0 ? $coursestartdatebefore : null;
+$courseenddateafter = $courseenddateafter > 0 ? $courseenddateafter : null;
+$courseenddatebefore = $courseenddatebefore > 0 ? $courseenddatebefore : null;
+$coursetimeaccessafter = $coursetimeaccessafter > 0 ? $coursetimeaccessafter : null;
+$coursetimeaccessbefore = $coursetimeaccessbefore > 0 ? $coursetimeaccessbefore : null;
 
 // Flag parameters.
-$course_timecreated_notset = optional_param('course_timecreated_notset', null, PARAM_BOOL);
-$course_timecreated_notset = $course_timecreated_notset ?? $report_form_data_json->course_timecreated_notset ?? false;
-$course_startdate_notset = optional_param('course_startdate_notset', null, PARAM_BOOL);
-$course_startdate_notset = $course_startdate_notset ?? $report_form_data_json->course_startdate_notset ?? false;
-$course_enddate_notset = optional_param('course_enddate_notset', null, PARAM_BOOL);
-$course_enddate_notset = $course_enddate_notset ?? $report_form_data_json->course_enddate_notset ?? false;
-$course_timeaccess_notset = optional_param('course_timeaccess_notset', null, PARAM_BOOL);
-$course_timeaccess_notset = $course_timeaccess_notset ?? $report_form_data_json->course_timeaccess_notset ?? false;
+$coursetimecreatednotset = optional_param('coursetimecreatednotset', null, PARAM_BOOL);
+$coursetimecreatednotset = $coursetimecreatednotset ?? $reportformdatajson->coursetimecreatednotset ?? false;
+$coursestartdatenotset = optional_param('coursestartdatenotset', null, PARAM_BOOL);
+$coursestartdatenotset = $coursestartdatenotset ?? $reportformdatajson->coursestartdatenotset ?? false;
+$courseenddatenotset = optional_param('courseenddatenotset', null, PARAM_BOOL);
+$courseenddatenotset = $courseenddatenotset ?? $reportformdatajson->courseenddatenotset ?? false;
+$coursetimeaccessnotset = optional_param('coursetimeaccessnotset', null, PARAM_BOOL);
+$coursetimeaccessnotset = $coursetimeaccessnotset ?? $reportformdatajson->coursetimeaccessnotset ?? false;
 
 // Other settings parameters.
-$display_action_data = optional_param('display_action_data', null, PARAM_BOOL);
-$display_action_data = $display_action_data ?? $report_form_data_json->display_action_data ?? false;
-$hideshow_meta_children = optional_param('hideshow_meta_children', null, PARAM_TEXT);
-$hideshow_meta_children = $hideshow_meta_children ?? $report_form_data_json->hideshow_meta_children ?? null;
-$hideshow_meta_parents = optional_param('hideshow_meta_parents', null, PARAM_TEXT);
-$hideshow_meta_parents = $hideshow_meta_parents ?? $report_form_data_json->hideshow_meta_parents ?? null;
-$hideshow_hidden_courses = optional_param('hideshow_hidden_courses', null, PARAM_TEXT);
-$hideshow_hidden_courses = $hideshow_hidden_courses ?? $report_form_data_json->hideshow_hidden_courses ?? null;
+$displayactiondata = optional_param('displayactiondata', null, PARAM_BOOL);
+$displayactiondata = $displayactiondata ?? $reportformdatajson->displayactiondata ?? false;
+$hideshowmetachildren = optional_param('hideshowmetachildren', null, PARAM_TEXT);
+$hideshowmetachildren = $hideshowmetachildren ?? $reportformdatajson->hideshowmetachildren ?? null;
+$hideshowmetaparents = optional_param('hideshowmetaparents', null, PARAM_TEXT);
+$hideshowmetaparents = $hideshowmetaparents ?? $reportformdatajson->hideshowmetaparents ?? null;
+$hideshowhiddencourses = optional_param('hideshowhiddencourses', null, PARAM_TEXT);
+$hideshowhiddencourses = $hideshowhiddencourses ?? $reportformdatajson->hideshowhiddencourses ?? null;
 $pagesize = optional_param('pagesize', null, PARAM_INT);
-$pagesize = $pagesize ?? $report_form_data_json->pagesize ?? 0; // This resets it back to 50, two lines below.
+$pagesize = $pagesize ?? $reportformdatajson->pagesize ?? 0; // This resets it back to 50, two lines below.
 $pagesize = ($pagesize > 500) ? 500 : $pagesize;
 $pagesize = ($pagesize < 50) ? 50 : $pagesize;
 
-$matchstring_short = optional_param('matchstring_short', null, PARAM_TEXT);
-$matchstring_short = $matchstring_short ?? $report_form_data_json->matchstring_short ?? null;
-$matchstring_full = optional_param('matchstring_full', null, PARAM_TEXT);
-$matchstring_full = $matchstring_full ?? $report_form_data_json->matchstring_full ?? null;
+$matchstringshort = optional_param('matchstringshort', null, PARAM_TEXT);
+$matchstringshort = $matchstringshort ?? $reportformdatajson->matchstringshort ?? null;
+$matchstringfull = optional_param('matchstringfull', null, PARAM_TEXT);
+$matchstringfull = $matchstringfull ?? $reportformdatajson->matchstringfull ?? null;
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
@@ -151,57 +151,57 @@ $PAGE->navbar->add(get_string('administrationsite'), new moodle_url('/admin/sear
 $PAGE->navbar->add(get_string('pluginname', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/index.php'));
 $PAGE->navbar->add(get_string('table_tablename', 'tool_coursewrangler'), new moodle_url('/admin/tool/coursewrangler/table.php'));
 
-$options_array = [];
-$options_array['category_ids'] = $category_ids ?? [];
-$options_array['filter_action_data'] = $filter_action_data ?? [];
-$options_array['filter_by_courseids'] = $filter_by_courseids ?? [];
-$options_array['course_timecreated_after'] = $course_timecreated_after > 0 ? $course_timecreated_after : null;
-$options_array['course_timecreated_before'] = $course_timecreated_before > 0 ? $course_timecreated_before : null;
-$options_array['course_startdate_after'] = $course_startdate_after > 0 ? $course_startdate_after : null;
-$options_array['course_startdate_before'] = $course_startdate_before > 0 ? $course_startdate_before : null;
-$options_array['course_enddate_after'] = $course_enddate_after > 0 ? $course_enddate_after : null;
-$options_array['course_enddate_before'] = $course_enddate_before > 0 ? $course_enddate_before : null;
-$options_array['course_timeaccess_after'] = $course_timeaccess_after > 0 ? $course_timeaccess_after : null;
-$options_array['course_timeaccess_before'] = $course_timeaccess_before > 0 ? $course_timeaccess_before : null;
-$options_array['course_timecreated_notset'] = $course_timecreated_notset ?? false;
-$options_array['course_startdate_notset'] = $course_startdate_notset ?? false;
-$options_array['course_enddate_notset'] = $course_enddate_notset ?? false;
-$options_array['course_timeaccess_notset'] = $course_timeaccess_notset ?? false;
-$options_array['display_action_data'] = $display_action_data ?? false;
-$options_array['hideshow_meta_children'] = $hideshow_meta_children ?? null;
-$options_array['hideshow_meta_parents'] = $hideshow_meta_parents ?? null;
-$options_array['hideshow_hidden_courses'] = $hideshow_hidden_courses ?? null;
-$options_array['pagesize'] = $pagesize ?? 50;
-$options_array['matchstring_short'] = $matchstring_short ?? null;
-$options_array['matchstring_full'] = $matchstring_full ?? null;
-$options_array = array_filter($options_array);
+$optionsarray = [];
+$optionsarray['categoryids'] = $categoryids ?? [];
+$optionsarray['filteractiondata'] = $filteractiondata ?? [];
+$optionsarray['filterbycourseids'] = $filterbycourseids ?? [];
+$optionsarray['coursetimecreatedafter'] = $coursetimecreatedafter > 0 ? $coursetimecreatedafter : null;
+$optionsarray['coursetimecreatedbefore'] = $coursetimecreatedbefore > 0 ? $coursetimecreatedbefore : null;
+$optionsarray['coursestartdateafter'] = $coursestartdateafter > 0 ? $coursestartdateafter : null;
+$optionsarray['coursestartdatebefore'] = $coursestartdatebefore > 0 ? $coursestartdatebefore : null;
+$optionsarray['courseenddateafter'] = $courseenddateafter > 0 ? $courseenddateafter : null;
+$optionsarray['courseenddatebefore'] = $courseenddatebefore > 0 ? $courseenddatebefore : null;
+$optionsarray['coursetimeaccessafter'] = $coursetimeaccessafter > 0 ? $coursetimeaccessafter : null;
+$optionsarray['coursetimeaccessbefore'] = $coursetimeaccessbefore > 0 ? $coursetimeaccessbefore : null;
+$optionsarray['coursetimecreatednotset'] = $coursetimecreatednotset ?? false;
+$optionsarray['coursestartdatenotset'] = $coursestartdatenotset ?? false;
+$optionsarray['courseenddatenotset'] = $courseenddatenotset ?? false;
+$optionsarray['coursetimeaccessnotset'] = $coursetimeaccessnotset ?? false;
+$optionsarray['displayactiondata'] = $displayactiondata ?? false;
+$optionsarray['hideshowmetachildren'] = $hideshowmetachildren ?? null;
+$optionsarray['hideshowmetaparents'] = $hideshowmetaparents ?? null;
+$optionsarray['hideshowhiddencourses'] = $hideshowhiddencourses ?? null;
+$optionsarray['pagesize'] = $pagesize ?? 50;
+$optionsarray['matchstringshort'] = $matchstringshort ?? null;
+$optionsarray['matchstringfull'] = $matchstringfull ?? null;
+$optionsarray = array_filter($optionsarray);
 
 // Instantiate report_form .
 $mform = new form\report_form(
     null,
-    $options_array,
+    $optionsarray,
     'post'
 );
 // Set default data (if any) do not remove!
 // This is for setting additional data so the form doesn't lose it.
-$mform->set_data($options_array);
+$mform->set_data($optionsarray);
 
 // Creating url params.
-$base_url_str = '/admin/tool/coursewrangler/table.php';
-$url_params = $options_array;
-// Parameter category_ids must be string.
-$url_params['category_ids'] = is_array($category_ids) ? implode(',', $category_ids) : $category_ids;
-$url_params['filter_action_data'] = is_array($filter_action_data) ? implode(',', $filter_action_data) : $filter_action_data;
-$url_params['filter_by_courseids'] = is_array($filter_by_courseids) ? implode(',', $filter_by_courseids) : $filter_by_courseids;
-$url_params = array_filter($url_params);
-$base_url = new moodle_url($base_url_str, $url_params);
-$base_url_reset = new moodle_url($base_url_str);
+$baseurlstr = '/admin/tool/coursewrangler/table.php';
+$urlparams = $optionsarray;
+// Parameter categoryids must be string.
+$urlparams['categoryids'] = is_array($categoryids) ? implode(',', $categoryids) : $categoryids;
+$urlparams['filteractiondata'] = is_array($filteractiondata) ? implode(',', $filteractiondata) : $filteractiondata;
+$urlparams['filterbycourseids'] = is_array($filterbycourseids) ? implode(',', $filterbycourseids) : $filterbycourseids;
+$urlparams = array_filter($urlparams);
+$baseurl = new moodle_url($baseurlstr, $urlparams);
+$baseurlreset = new moodle_url($baseurlstr);
 
 // Form processing and displaying is done here.
 if ($mform->is_cancelled()) {
     // Handle form cancel operation, if cancel button is present on form.
     // This is the default way Moodle handles cancelled forms.
-    redirect($base_url_reset);
+    redirect($baseurlreset);
     exit;
 } elseif ($fromform = $mform->get_data()) {
     // In this case you process validated data. $mform->get_data() returns data posted in form.
@@ -211,8 +211,8 @@ if ($mform->is_cancelled()) {
 }
 
 $table = new table\report_table(
-    $base_url,
-    $options_array
+    $baseurl,
+    $optionsarray
 );
 $table->prepare_report_table($pagesize, false);
 $totalrowstext = get_string('table_displayingtotalrows', 'tool_coursewrangler', $table->totalrows);
@@ -222,17 +222,17 @@ $totalrowshtml = \html_writer::tag(
     ['class' => 'h5 mdl-right']
 );
 
-if ($display_action_data == true) {
-    $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
+if ($displayactiondata == true) {
+    $aform = new form\action_form(null, ['reportformdatajson' => json_encode($optionsarray)]);
     if ($fromform = $aform->get_data()) {
         // In this case you process validated data. $mform->get_data() returns data posted in form.
-        if (isset($rows_selected) && isset($action)) {
-            $form_handler = new action_handler();
-            foreach ($rows_selected as $row_course_id) {
-                action_handler::update($row_course_id, $action);
+        if (isset($rowsselected) && isset($action)) {
+            $formhandler = new action_handler();
+            foreach ($rowsselected as $rowcourseid) {
+                action_handler::update($rowcourseid, $action);
             }
             // TODO: Is this the best way of doing redirects in Moodle?
-            redirect($base_url,
+            redirect($baseurl,
             get_string('table_actionredirectmessage', 'tool_coursewrangler'),
             0
             );
@@ -252,7 +252,7 @@ echo $OUTPUT->header();
 $mform->display();
 echo $totalrowshtml;
 
-if ($display_action_data == true) {
+if ($displayactiondata == true) {
     // We only display this one if required.
     $aform->display();
 }

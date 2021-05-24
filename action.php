@@ -36,13 +36,13 @@ $context = context_system::instance();
 // To do: review capabilities.
 require_capability('moodle/site:configview', $context);
 
-$course_id = required_param('course_id', PARAM_INT);
+$courseid = required_param('courseid', PARAM_INT);
 $action = required_param('action', PARAM_ALPHA);
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
-$PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/action.php', ['course_id' => $course_id, 'action' => $action]));
+$PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/action.php', ['courseid' => $courseid, 'action' => $action]));
 $PAGE->set_title(get_string('report_details_pageheader', 'tool_coursewrangler'));
 $PAGE->set_pagelayout('admin');
 
@@ -53,7 +53,7 @@ if (!$confirm) {
     echo $OUTPUT->single_button(
         new moodle_url(
             '/admin/tool/coursewrangler/action.php',
-            ['course_id' => $course_id, 'action' => $action, 'confirm' => true]
+            ['courseid' => $courseid, 'action' => $action, 'confirm' => true]
         ), get_string('actionpage_confirm_btn', 'tool_coursewrangler')
     );
 }
