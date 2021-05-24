@@ -29,7 +29,7 @@ namespace tool_coursewrangler;
 require_once($CFG->dirroot . '/course/lib.php');
 
 class action {
-    function __construct(int $id = 0) {
+    public function __construct(int $id = 0) {
         if ($id < 1) {
             $this->id_not_valid = true;
             return null;
@@ -47,7 +47,7 @@ class action {
         return true;
     }
 
-    static function find_action(int $course_id) {
+    public static function find_action(int $course_id) {
         if ($course_id < 1) {
             return null;
         }
@@ -59,7 +59,7 @@ class action {
         return new action($action->id);
     }
 
-    function delete_course() { 
+    public function delete_course() {
         if (!isset($this->course_id) || !is_integer((int) $this->course_id) || $this->course_id < 1) {
             return false;
         }
@@ -73,14 +73,14 @@ class action {
         $delete_status = delete_course($this->course_id);
         if ($delete_status) {
             global $DB;
-            $this->status = 'deleted';
-            $this->lastupdated = time();
-            $DB->update_record('tool_coursewrangler_action', $this);
+            $DB->delete_record('tool_coursewrangler_action', ['course_id' => $this->course_id]);
+            $DB->delete_record('tool_coursewrangler_metrics', ['course_id' => $this->course_id]);
+            insert_cw_logentry("Course with ID: $this->course_id ", 'course_wrangler', $this->id);
         }
         return $delete_status;
     }
 
-    function wait() {
+    public function wait() {
         if ($this->status != 'hidden') {
             // Log here that it must be hidden before waiting.
             return false;
@@ -90,7 +90,7 @@ class action {
         $DB->update_record('tool_coursewrangler_action', $this);
     }
 
-    static function hide_course(int $courseid) {
+    public static function hide_course(int $courseid) {
         global $DB;
         $course = $DB->get_record('course', ['id' => $courseid]);
         $metric = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $courseid]);

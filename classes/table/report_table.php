@@ -497,31 +497,31 @@ class report_table extends table_sql implements renderable
     /**
      * Processing dates for table.
      */
-    function col_course_timecreated($values) : string {
+    public function col_course_timecreated($values) : string {
         return ($values->course_timecreated == 0) ? '-' : userdate($values->course_timecreated);
     }
-    function col_course_timemodified($values) : string {
+    public function col_course_timemodified($values) : string {
         return ($values->course_timemodified == 0) ? '-' : userdate($values->course_timemodified);
     }
-    function col_course_startdate($values) : string {
+    public function col_course_startdate($values) : string {
         return ($values->course_startdate == 0) ? '-' : userdate($values->course_startdate);
     }
-    function col_course_enddate($values) : string {
+    public function col_course_enddate($values) : string {
         return ($values->course_enddate == 0) ? '-' : userdate($values->course_enddate);
     }
-    function col_course_timeaccess($values) : string {
+    public function col_course_timeaccess($values) : string {
         return ($values->course_timeaccess == 0) ? '-' : userdate($values->course_timeaccess);
     }
-    function col_course_lastenrolment($values) : string {
+    public function col_course_lastenrolment($values) : string {
         return ($values->course_lastenrolment == 0) ? '-' : userdate($values->course_lastenrolment);
     }
-    function col_activity_lastmodified($values) : string {
+    public function col_activity_lastmodified($values) : string {
         return ($values->activity_lastmodified == 0) ? '-' : userdate($values->activity_lastmodified);
     }
     /**
      * Processing visible and parent cols.
      */
-    function col_course_visible($values) : string {
+    public function col_course_visible($values) : string {
         $course_visible = $values->course_visible ? 'yes' : 'no';
         $display_value = isset($course_visible) ? "table_visible_$course_visible" : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
@@ -531,7 +531,7 @@ class report_table extends table_sql implements renderable
      * Turning course name into link for details area.
      * TODO: Improve this into a link that goes to a details page within coursewrangler?
      */
-    function col_course_fullname($values) : string {
+    public function col_course_fullname($values) : string {
         $url_params = [
             'course_id' => $values->course_id,
             'return_link' => $this->return_link
@@ -543,14 +543,16 @@ class report_table extends table_sql implements renderable
     /**
      * Creating the score when required.
      */
-    function col_percentage($values) : string {
-        $display_value = ($values->percentage != null) ? $values->percentage . '%' : get_string('table_percentage_notavailable', 'tool_coursewrangler');
+    public function col_percentage($values) : string {
+        $display_value = ($values->percentage != null)
+            ? $values->percentage . '%'
+            : get_string('table_percentage_notavailable', 'tool_coursewrangler');
         return ($display_value);
     }
     /**
      * Creating the action col.
      */
-    function col_action($values) : string {
+    public function col_action($values) : string {
         $display_value = isset($values->action) ? "table_action_$values->action" : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
         return ($display_value_string);
@@ -558,7 +560,7 @@ class report_table extends table_sql implements renderable
     /**
      * Creating the action status col.
      */
-    function col_status($values) : string {
+    public function col_status($values) : string {
         $display_value = (isset($values->status) && $values->status != '')
                             ? "table_status_$values->status"
                             : 'table_value_notavailable';
@@ -568,7 +570,7 @@ class report_table extends table_sql implements renderable
     /**
      * Creating the select col.
      */
-    function col_row_select($values) : string {
+    public function col_row_select($values) : string {
         $course_id = $values->course_id;
         $labelcontent = get_string('table_row_select', 'tool_coursewrangler') . " $values->course_fullname";
         $label = \html_writer::tag(
@@ -592,7 +594,7 @@ class report_table extends table_sql implements renderable
      *  before outputting table on scree. This was taken from ->out()
      *  function.
      */
-    function prepare_report_table($pagesize, $useinitialsbar) {
+    public function prepare_report_table($pagesize, $useinitialsbar) {
         global $DB;
         if (!$this->columns) {
             $onerow = $DB->get_record_sql("SELECT {$this->sql->fields} FROM {$this->sql->from} WHERE {$this->sql->where}",
@@ -609,7 +611,7 @@ class report_table extends table_sql implements renderable
      * After preparing table, now we can output on screen.
      * Must check totalrows has been set.
      */
-    function finish_report_table() {
+    public function finish_report_table() {
         if (!isset($this->totalrows) || $this->totalrows < 1) {
             return false;
         }

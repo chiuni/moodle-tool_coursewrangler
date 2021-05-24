@@ -31,8 +31,7 @@ use tool_coursewrangler\rule;
 
 class course_isover extends rule implements rule_interface
 {
-    function evaluate_condition(): bool
-    {
+    public function evaluate_condition(): bool {
         // If this course has children, do not apply this rule.
         // This is because this course is being used for meta enrolments.
         if ($this->course->course_children != null) {
@@ -45,8 +44,7 @@ class course_isover extends rule implements rule_interface
         $this->state = true;
         return $this->state;
     }
-    function calculate_score(): float
-    {
+    public function calculate_score(): float {
         // If state is not true, then cannot calculate score, return default.
         if (!$this->state) {
             return $this->score;
@@ -63,9 +61,7 @@ class course_isover extends rule implements rule_interface
         }
         return $this->score;
     }
-    
-    function set_params()
-    {
+    public function set_params() {
         // The only param needed for this is course_visible.
         $this->params = [];
         $this->params[] = 'course_enddate';

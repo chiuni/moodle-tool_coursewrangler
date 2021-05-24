@@ -16,7 +16,6 @@
 
 /**
  * This is a rule implementation class.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -31,8 +30,7 @@ use tool_coursewrangler\rule;
 
 class course_noenrol extends rule implements rule_interface
 {
-    function evaluate_condition(): bool
-    {
+    public function evaluate_condition(): bool {
         // This checks to make sure the values are valid.
         // For total_enrol_count, just needs to be not negative.
         if ($this->course->total_enrol_count >= 0) {
@@ -40,8 +38,7 @@ class course_noenrol extends rule implements rule_interface
         }
         return $this->state;
     }
-    function calculate_score(): float
-    {
+    public function calculate_score(): float {
         // If state is not true, then cannot calculate score, return default.
         if (!$this->state) {
             return $this->score;
@@ -54,9 +51,7 @@ class course_noenrol extends rule implements rule_interface
         }
         return $this->score;
     }
-    
-    function set_params()
-    {
+    public function set_params() {
         // The only param needed for this is course_visible.
         $this->params = [];
         $this->params[] = 'total_enrol_count';

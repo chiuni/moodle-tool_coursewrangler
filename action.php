@@ -16,7 +16,6 @@
 
 /**
  * This is a tool for managing retiring old courses, and categories.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -29,6 +28,7 @@ use context_system;
 use moodle_url;
 
 require_once(__DIR__ . '/../../../config.php');
+require_login();
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/locallib.php');
 require_once($CFG->libdir . '/tablelib.php');
@@ -51,8 +51,10 @@ echo $OUTPUT->heading(get_string('actionpage', 'tool_coursewrangler'));
 
 if (!$confirm) {
     echo $OUTPUT->single_button(
-        new moodle_url('/admin/tool/coursewrangler/action.php', ['course_id' => $course_id, 'action' => $action, 'confirm' => true]),
-        get_string('actionpage_confirm_btn', 'tool_coursewrangler')
+        new moodle_url(
+            '/admin/tool/coursewrangler/action.php',
+            ['course_id' => $course_id, 'action' => $action, 'confirm' => true]
+        ), get_string('actionpage_confirm_btn', 'tool_coursewrangler')
     );
 }
 

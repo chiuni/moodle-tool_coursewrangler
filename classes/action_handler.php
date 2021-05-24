@@ -30,7 +30,7 @@ use stdClass;
 
 class action_handler
 {
-    function __construct(?stdClass $action = null) {
+    public function __construct(?stdClass $action = null) {
         if ($action === null) {
             return;
         }
@@ -39,7 +39,7 @@ class action_handler
         }
     }
 
-    static function update(int $course_id, string $task, string $status = '') {
+    public static function update(int $course_id, string $task, string $status = '') {
         if ($course_id < 1) {
             return false;
         }
@@ -64,7 +64,7 @@ class action_handler
         return $DB->insert_record('tool_coursewrangler_action', $action);
     }
 
-    static function purge(int $course_id) {
+    public static function purge(int $course_id) {
         if ($course_id < 1) {
             return false;
         }
@@ -88,14 +88,12 @@ class action_handler
             // Getting user roles for course by course ID.
             $coursecontext = \context_course::instance($action->course_id);
             $userroles = get_users_roles($coursecontext, [], false);
-            
             // Validate archetypes.
             $allarchetypes = get_role_archetypes();
             $validarchetypes = $allarchetypes;
             if (!empty($relevantarchetypes)) {
                 $validarchetypes = array_intersect($allarchetypes, $relevantarchetypes);
             }
-            
             // Getting all roles and selecting based on archetype.
             $roles = get_all_roles($coursecontext);
             foreach ($roles as $key => $role) {
@@ -113,7 +111,6 @@ class action_handler
         }
         return $responsibleuserids;
     }
-    
     /**
      * @param array $scheduled Array of ALL scheduled actions.
      * @param array $relevantarchetypes Array of archetypes to select.
@@ -130,14 +127,14 @@ class action_handler
             }
             foreach($findowners as $owner) {
                 // This preserves all enrolments whilst keeping the course_id
-                //  as an array key so we can easily use that in the templates.
+                // as an array key so we can easily use that in the templates.
                 $owners[$owner->userid][$action->course_id][] = $owner;
             }
         }
         return $owners;
     }
 
-    static function send_schedulednotification(object $user, array $courseids) {
+    public static function send_schedulednotification(object $user, array $courseids) {
         global $OUTPUT;
         $courses = [];
         // Prepare course information for template.
@@ -174,11 +171,11 @@ class action_handler
         return $messageid;
     }
 
-    static function notify_owners(array $mailinglist) {
+    public static function notify_owners(array $mailinglist) {
         foreach ($mailinglist as $userid => $owner) {
             $user = \core_user::get_user($userid);
             $courseids = array_keys($owner);
-            action_handler::send_schedulednotification($user, $courseids);
+            self::send_schedulednotification($user, $courseids);
         }
     }
 }

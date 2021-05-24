@@ -16,7 +16,6 @@
 
 /**
  * This is a tool for managing retiring old courses, and categories.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -29,6 +28,7 @@ use context_system;
 use moodle_url;
 
 require_once(__DIR__ . '/../../../config.php');
+require_login();
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/locallib.php');
 require_once($CFG->libdir . '/tablelib.php');
@@ -107,15 +107,22 @@ $action_link = $CFG->wwwroot . '/admin/tool/coursewrangler/action.php';
 if ($action_data != false) {
     $action_data->status = get_string('report_details_actionstatus_'.$action_data->status, 'tool_coursewrangler');
     $course->actionstatus = $action_data->status . ' - ' . userdate($action_data->lastupdated);
-    $course->links['action_reset_link'] = new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'reset']);
+    $course->links['action_reset_link'] = new moodle_url(
+        $action_link,
+        ['course_id' => $course->course_id, 'action' => 'reset']
+    );
 } else {
-    $course->links['action_delete_link'] = new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'delete']);
-    $course->links['action_protect_link'] = new moodle_url($action_link, ['course_id' => $course->course_id, 'action' => 'protect']);
+    $course->links['action_delete_link'] = new moodle_url(
+        $action_link,
+        ['course_id' => $course->course_id, 'action' => 'delete']
+    );
+    $course->links['action_protect_link'] = new moodle_url(
+        $action_link,
+        ['course_id' => $course->course_id, 'action' => 'protect']
+    );
 }
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('report_details_coursedetailsfor', 'tool_coursewrangler'));
-
 echo $OUTPUT->render_from_template('tool_coursewrangler/report_details', $course);
-
 echo $OUTPUT->footer();

@@ -38,8 +38,7 @@ class deletion_score
     protected stdClass $scores;
     protected array $courses;
 
-    function __construct(array $courses = [])
-    {
+    public function __construct(array $courses = []) {
         // Initialising settings.
         $this->course_parent_weight = (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10; // this makes parent courses more or less important
         $this->low_enrolments_flag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10; // this triggers a low score for courses with less enrolments than n enrolments
@@ -50,7 +49,6 @@ class deletion_score
         $this->low_enrolments_flag = $this->low_enrolments_flag > 0 ? $this->low_enrolments_flag : 10;
         $this->time_unit = $this->time_unit > 0 ? $this->time_unit : 86400;
         $this->score_limiter = $this->score_limiter > 0 ? $this->score_limiter : 400;
-        
         if (empty($courses)) {
             return;
         }
@@ -61,13 +59,11 @@ class deletion_score
         $this->courses = $courses;
     }
 
-    public function get_courses() : array
-    {
+    public function get_courses() : array {
         return $this->courses ?? [];
     }
 
-    public function apply_rules(stdClass $course) : stdClass
-    {
+    public function apply_rules(stdClass $course) : stdClass {
         $rules = [];
         $settings = [
             'time_unit' => $this->time_unit
@@ -78,13 +74,11 @@ class deletion_score
         $rules['course_noenrol'] = new rules\course_noenrol($course);
         $rules['course_isover'] = new rules\course_isover($course, $settings);
         $rules['course_neverused'] = new rules\course_neverused($course);
-        
         $course->rules = $rules;
         return $course;
     }
 
-    public function make_score(stdClass $course) : stdClass
-    {
+    public function make_score(stdClass $course) : stdClass {
         $score = new stdClass;
         $score->raw = 0;
         $score->rounded = 0;

@@ -52,7 +52,7 @@ class filldata extends \core\task\scheduled_task {
         global $DB;
         mtrace(">>> Starting " . $this->get_name() . '.');
         mtrace('>>> Calculating score...');
-        
+
         $start_time = time();
         $start_time_formatted = date('r', $start_time);
         mtrace('tool_coursewrangler ::: Gather Course Data PHP Script');

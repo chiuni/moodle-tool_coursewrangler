@@ -29,45 +29,44 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * @deprecated use find_relevant_course_data_lite instead
  */
-function find_relevant_course_data()
-{
+function find_relevant_course_data() {
     global $DB, $CFG;
     $modules = $DB->get_records_sql("SELECT id, name FROM {modules};");
     $union_segments = [];
     foreach ($modules as $module) {
-        $union_segments[] =    " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act ";
+        $union_segments[] = " SELECT act.id, act.course, act.name, act.timemodified FROM " . '{' . $module->name . '}' . " AS act ";
     }
     $union_statement = implode(" UNION ", $union_segments);
     return $DB->get_records_sql(
         "SELECT c.id AS course_id,
-                cm.id AS course_module_id, 
+                cm.id AS course_module_id,
                 act.id AS activity_id,
-                c.fullname AS course_fullname, 
-                c.shortname AS course_shortname, 
-                c.idnumber AS course_idnumber, 
-                c.startdate AS course_startdate, 
-                c.enddate AS course_enddate, 
-                c.timecreated AS course_timecreated, 
-                c.timemodified AS course_timemodified, 
-                c.visible AS course_visible, 
-                m.name AS activity_type, 
+                c.fullname AS course_fullname,
+                c.shortname AS course_shortname,
+                c.idnumber AS course_idnumber,
+                c.startdate AS course_startdate,
+                c.enddate AS course_enddate,
+                c.timecreated AS course_timecreated,
+                c.timemodified AS course_timemodified,
+                c.visible AS course_visible,
+                m.name AS activity_type,
                 MAX(act.timemodified) AS activity_last_modified
-        FROM    {course} AS c 
-            JOIN {course_modules} AS cm ON cm.course=c.id 
-            JOIN {modules} AS m ON cm.module=m.id 
+        FROM    {course} AS c
+            JOIN {course_modules} AS cm ON cm.course=c.id
+            JOIN {modules} AS m ON cm.module=m.id
             JOIN (  $union_statement ) AS act ON act.course=c.id AND act.id=cm.instance
-            JOIN (  SELECT ula.id, 
-                            ula.userid, 
-                            ula.courseid, 
+            JOIN (  SELECT ula.id,
+                            ula.userid,
+                            ula.courseid,
                             ula.timeaccess
                     FROM    {user_lastaccess} AS ula
-                        INNER JOIN (SELECT  courseid, 
+                        INNER JOIN (SELECT  courseid,
                                             MAX(timeaccess) AS timeid
                                     FROM    {user_lastaccess}
-                                    WHERE   userid!=:guestid 
+                                    WHERE   userid!=:guestid
                                     AND     userid NOT IN (:siteadminids)
-                                    GROUP BY courseid) AS groupedula 
-                        ON ula.courseid = groupedula.courseid 
+                                    GROUP BY courseid) AS groupedula
+                        ON ula.courseid = groupedula.courseid
                         AND ula.timeaccess = groupedula.timeid) AS ula
         WHERE c.id!=:siteid
         GROUP BY c.id;",
@@ -88,8 +87,7 @@ function find_relevant_course_data()
  *                                          guests and site admins.
  *      find_meta_parents()->           Finds meta parents and enrolments.
  */
-function find_relevant_course_data_lite(array $options = [])
-{
+function find_relevant_course_data_lite(array $options = []) {
     $course_query = find_course_activity_data();
     $ula_query = find_course_last_access();
     $meta_query = find_meta_parents();
@@ -147,7 +145,7 @@ function find_meta_parents() {
     return $DB->get_records_sql("SELECT id, courseid, customint1 AS parent_course_id FROM {enrol} WHERE enrol = 'meta';");
 }
 
-/** 
+/**
  * Simple query to find the latest enrolment in a course by course id.
  */
 function find_last_enrolment(int $course_id) {
@@ -155,9 +153,9 @@ function find_last_enrolment(int $course_id) {
         return null;
     }
     global $DB;
-   return $DB->get_record_sql(
-        "SELECT id, courseid AS course_id, 
-                MAX(timecreated) AS course_lastenrolment 
+    return $DB->get_record_sql(
+        "SELECT id, courseid AS course_id,
+                MAX(timecreated) AS course_lastenrolment
             FROM {enrol} WHERE courseid=:course_id;",
         ['course_id' => $course_id]);
 }
@@ -166,7 +164,6 @@ function find_last_enrolment(int $course_id) {
  * The idea is that for a given course, we can find all of the students.
  * By finding students, we can figure out if the course is still in use or not,
  *  since courses without a single student are likely to be no longer needed.
- * 
  * @param int $id The course ID.
  * @return array $course_students List of all students for a course.
  */
@@ -178,27 +175,27 @@ function find_course_students(int $id) {
     // Then foreach result, depending on type of enrol (e.enrol), store that information
     // also remember to check for students only, we do not want any other archetypes for now.
     $all_students = [];
-    $sql = "SELECT  concat(ra.id, '-', e.id) as id, 
-                    ue.userid AS userid, 
-                    r.shortname, 
-                    ra.component, 
-                    ue.timestart, 
-                    ue.timecreated, 
+    $sql = "SELECT  concat(ra.id, '-', e.id) as id,
+                    ue.userid AS userid,
+                    r.shortname,
+                    ra.component,
+                    ue.timestart,
+                    ue.timecreated,
                     ue.timemodified,
                     r.archetype AS role_type,
                     ue.status AS enrol_status,
-                    e.enrol AS enrol_type 
-            FROM {role_assignments} AS ra 
-        LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid 
-        LEFT JOIN {role} AS r ON ra.roleid = r.id 
-        LEFT JOIN {context} AS c ON c.id = ra.contextid 
-        LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id 
+                    e.enrol AS enrol_type
+            FROM {role_assignments} AS ra
+        LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid
+        LEFT JOIN {role} AS r ON ra.roleid = r.id
+        LEFT JOIN {context} AS c ON c.id = ra.contextid
+        LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id
         WHERE r.archetype=:archetype AND e.courseid = :course_id;";
     $students = $DB->get_records_sql($sql,['course_id' => $id, 'archetype' => $archetype]);
     $all_students[] = $students;
     // This might need review, but the idea is that we create a total enrolment
-    //  count, and other enrolment counts to help admins make decisions when
-    //  deleting courses.
+    // count, and other enrolment counts to help admins make decisions when
+    // deleting courses.
     $course_students = new stdClass;
     $course_students->total_enrol_count = 0;
     $course_students->active_enrol_count = 0;
@@ -239,10 +236,8 @@ function find_course_students(int $id) {
         }
         $course_students->suspended_enrol_count += $course_students->total_enrol_count - $course_students->active_enrol_count ?? 0;
     }
-
     return $course_students;
 }
-
 /**
  * Simple function to count modules in a course by course id.
  */
@@ -253,12 +248,9 @@ function count_course_modules(int $course_id) {
     global $DB;
     return $DB->get_record_sql("SELECT COUNT(id) AS course_modulescount FROM {course_modules} WHERE course=:course_id;", ['course_id' => $course_id]);
 }
-
 /**
  * Large query that fetches the core course data plus activity data regarding that course.
- * 
  * Might be worth ignoring the activity data here: how valuable is it?
- * 
  * I cannot remember why it would be beneficial to use $where, maybe for a single course?
  */
 function find_course_activity_data(string $where = '') {
@@ -271,23 +263,23 @@ function find_course_activity_data(string $where = '') {
     $union_statement = implode(" UNION ", $union_segments);
     return $DB->get_records_sql(
         "SELECT c.id AS course_id,
-                cm.id AS course_module_id, 
+                cm.id AS course_module_id,
                 act.id AS activity_id,
-                c.fullname AS course_fullname, 
-                c.shortname AS course_shortname, 
-                c.idnumber AS course_idnumber, 
-                c.startdate AS course_startdate, 
-                c.enddate AS course_enddate, 
-                c.timecreated AS course_timecreated, 
-                c.timemodified AS course_timemodified, 
-                c.visible AS course_visible, 
-                m.name AS activity_type, 
+                c.fullname AS course_fullname,
+                c.shortname AS course_shortname,
+                c.idnumber AS course_idnumber,
+                c.startdate AS course_startdate,
+                c.enddate AS course_enddate,
+                c.timecreated AS course_timecreated,
+                c.timemodified AS course_timemodified,
+                c.visible AS course_visible,
+                m.name AS activity_type,
                 MAX(act.timemodified) AS activity_lastmodified
-        FROM    {course} AS c 
-            LEFT JOIN {course_modules} AS cm ON cm.course=c.id 
-            LEFT JOIN {modules} AS m ON cm.module=m.id 
-            LEFT JOIN ( $union_statement ) AS act 
-        ON act.course=c.id 
+        FROM    {course} AS c
+            LEFT JOIN {course_modules} AS cm ON cm.course=c.id
+            LEFT JOIN {modules} AS m ON cm.module=m.id
+            LEFT JOIN ( $union_statement ) AS act
+        ON act.course=c.id
         AND act.id=cm.instance
         WHERE c.id!=:siteid
         GROUP BY c.id;",
@@ -300,10 +292,10 @@ function find_course_activity_data(string $where = '') {
 function find_course_last_access() {
     global $DB, $CFG;
     return $DB->get_records_sql(
-        "SELECT  courseid, 
+        "SELECT  courseid,
             MAX(timeaccess) AS timeaccess
             FROM    {user_lastaccess}
-            WHERE   userid!=:guestid 
+            WHERE   userid!=:guestid
             AND     userid NOT IN (:siteadminids)
             GROUP BY courseid;",
         [
@@ -328,26 +320,25 @@ function get_course_metric(int $courseid) {
     global $DB;
     return $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $courseid], '*', MUST_EXIST);
 }
-
 function get_enrolments(int $course_id, string $archetype) {
     if ($course_id < 1) {
         return false;
     }
     global $DB;
-    $sql = "SELECT concat(ra.id, '-', e.id) as id, 
-            ue.userid, 
-            r.shortname, 
+    $sql = "SELECT concat(ra.id, '-', e.id) as id,
+            ue.userid,
+            r.shortname,
             r.archetype,
             ra.component,
             e.enrol,
             ue.timestart,
             ue.timecreated,
             ue.timemodified
-        FROM {role_assignments} AS ra 
-       LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid 
-       LEFT JOIN {role} AS r ON ra.roleid = r.id 
-       LEFT JOIN {context} AS c ON c.id = ra.contextid 
-       LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id 
+        FROM {role_assignments} AS ra
+       LEFT JOIN {user_enrolments} AS ue ON ra.userid = ue.userid
+       LEFT JOIN {role} AS r ON ra.roleid = r.id
+       LEFT JOIN {context} AS c ON c.id = ra.contextid
+       LEFT JOIN {enrol} AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id
        WHERE e.courseid = :course_id
        AND r.archetype = :archetype;";
     return $DB->get_records_sql($sql, ['course_id' => $course_id, 'archetype' => $archetype]);
@@ -365,20 +356,17 @@ function find_owners(int $course_id, string $archetype = 'editingteacher') {
     }
     // Trying something.
     return $enrolments;
-    /**
-     * We now create an object that has different roles
-     *  of editing teacher based on that course.
-     */
+    // We now create an object that has different roles
+    // of editing teacher based on that course.
     $owners = new stdClass;
     foreach ($enrolments as $e) {
         $type = $e->shortname;
-        $owners->$type[$e->userid] = $e;
+        $owners->{$type}[$e->userid] = $e;
     }
     return $owners;
 }
 
-function insert_cw_logentry(string $description, string $actor = null, int $metricsid = null)
-{
+function insert_cw_logentry(string $description, string $actor = null, int $metricsid = null) {
     $log = new stdClass();
     $log->timestamp = time();
     $log->description = $description;
@@ -389,6 +377,32 @@ function insert_cw_logentry(string $description, string $actor = null, int $metr
 }
 
 /**
+ * This is a test function to be removed asap.
+ */
+function test_sendmessage($subject, $messagebody, $user) {
+    $message = new \core\message\message();
+    $message->courseid = SITEID;
+    $message->component = 'tool_coursewrangler'; // Your plugin's name
+    $message->name = 'schedulednotification'; // Your notification name from message.php
+    $message->userfrom = \core_user::get_noreply_user(); // If the message is 'from' a specific user you can set them here
+    $message->userto = $user;
+    $message->subject = $subject;
+    $message->fullmessage = $messagebody;
+    $message->fullmessageformat = FORMAT_MARKDOWN;
+    $message->fullmessagehtml = html_to_text($message->fullmessage);
+    $message->smallmessage = $messagebody;
+    $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
+    $message->contexturl = (new \moodle_url('/course/'))->out(false); // A relevant URL for the notification
+    $message->contexturlname = 'Course list'; // Link title explaining where users get to for the contexturl
+    $content = [
+        '*' =>
+        ['header' => ' HEADER ', 'footer' => ' FOOTER ']
+    ]; // Extra content for specific processor.
+    $message->set_additional_content('email', $content);
+    $messageid = message_send($message);
+}
+
+/**
  * Temporary function to help debug within html.
  */
 function cwt_debugger($data, string $leadingtext = 'Debug') {
@@ -396,7 +410,7 @@ function cwt_debugger($data, string $leadingtext = 'Debug') {
         return false;
     }
     $id = 'coursewrangler_debug_' . random_int(100, 100000);
-    echo "<p><button class=\"btn btn-dark\" type=\"button\" data-toggle=\"collapse\" data-target=\"#$id\">Debug data</button></p>"; 
+    echo "<p><button class=\"btn btn-dark\" type=\"button\" data-toggle=\"collapse\" data-target=\"#$id\">Debug data</button></p>";
     echo '<div class="collapse" id="'.$id.'"><pre>' . $leadingtext . ': <br>';
     if ($data === null) {
         echo "Data is null.";

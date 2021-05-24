@@ -16,14 +16,12 @@
 
 /**
  * The interface for Rule classes.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// More Info: https://docs.moodle.org/dev/Coding_style#Namespaces
 namespace tool_coursewrangler\interfaces;
 
 /**
@@ -33,9 +31,9 @@ namespace tool_coursewrangler\interfaces;
  */
 interface rule
 {
-    function __construct(\stdClass $course, array $settings = []);
-    function evaluate_condition(): bool;
-    function calculate_score(): float;
-    function has_params(): bool;
-    function set_params();
+    public function __construct(\stdClass $course, array $settings = []);
+    public function evaluate_condition(): bool;
+    public function calculate_score(): float;
+    public function has_params(): bool;
+    public function set_params();
 }

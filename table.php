@@ -35,20 +35,20 @@ $rows_selected = is_array($rows_selected) ? $rows_selected : array_filter( (arra
 
 $category_ids = optional_param('category_ids', null, PARAM_RAW);
 $category_ids = is_array($category_ids) ? $category_ids : array_filter( (array) explode(',', $category_ids) );
-$category_ids = empty($category_ids) && isset($report_form_data_json->category_ids) 
-                    ? $report_form_data_json->category_ids 
+$category_ids = empty($category_ids) && isset($report_form_data_json->category_ids)
+                    ? $report_form_data_json->category_ids
                     : $category_ids;
 
 $filter_action_data = optional_param('filter_action_data', null, PARAM_RAW);
 $filter_action_data = is_array($filter_action_data) ? $filter_action_data : array_filter( (array) explode(',', $filter_action_data) );
-$filter_action_data = empty($filter_action_data) && isset($report_form_data_json->filter_action_data) 
-                    ? $report_form_data_json->filter_action_data 
+$filter_action_data = empty($filter_action_data) && isset($report_form_data_json->filter_action_data)
+                    ? $report_form_data_json->filter_action_data
                     : $filter_action_data;
 
 $filter_by_courseids = optional_param('filter_by_courseids', null, PARAM_RAW);
 $filter_by_courseids = is_array($filter_by_courseids) ? $filter_by_courseids : array_filter( (array) explode(',', $filter_by_courseids) );
-$filter_by_courseids = empty($filter_by_courseids) && isset($report_form_data_json->filter_by_courseids) 
-                    ? $report_form_data_json->filter_by_courseids 
+$filter_by_courseids = empty($filter_by_courseids) && isset($report_form_data_json->filter_by_courseids)
+                    ? $report_form_data_json->filter_by_courseids
                     : $filter_by_courseids;
 
 // Dates optional params.
@@ -70,37 +70,37 @@ $course_timeaccess_before = optional_param('course_timeaccess_before', null, PAR
 $course_timeaccess_before = $course_timeaccess_before ?? $report_form_data_json->course_timeaccess_before ?? false;
 
 // Turning dates into timestamps.
-$course_timecreated_after = isset($course_timecreated_after['enabled']) 
-                            && $course_timecreated_after['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_timecreated_after) 
+$course_timecreated_after = isset($course_timecreated_after['enabled'])
+                            && $course_timecreated_after['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_timecreated_after)
                                 : $course_timecreated_after;
-$course_timecreated_before = isset($course_timecreated_before['enabled']) 
-                            && $course_timecreated_before['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_timecreated_before) 
+$course_timecreated_before = isset($course_timecreated_before['enabled'])
+                            && $course_timecreated_before['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_timecreated_before)
                                 : $course_timecreated_before;
-$course_startdate_after = isset($course_startdate_after['enabled']) 
-                            && $course_startdate_after['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_startdate_after) 
+$course_startdate_after = isset($course_startdate_after['enabled'])
+                            && $course_startdate_after['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_startdate_after)
                                 : $course_startdate_after;
-$course_startdate_before = isset($course_startdate_before['enabled']) 
-                            && $course_startdate_before['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_startdate_before) 
+$course_startdate_before = isset($course_startdate_before['enabled'])
+                            && $course_startdate_before['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_startdate_before)
                                 : $course_startdate_before;
-$course_enddate_after = isset($course_enddate_after['enabled']) 
-                            && $course_enddate_after['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_enddate_after) 
+$course_enddate_after = isset($course_enddate_after['enabled'])
+                            && $course_enddate_after['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_enddate_after)
                                 : $course_enddate_after;
-$course_enddate_before = isset($course_enddate_before['enabled']) 
-                            && $course_enddate_before['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_enddate_before) 
+$course_enddate_before = isset($course_enddate_before['enabled'])
+                            && $course_enddate_before['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_enddate_before)
                                 : $course_enddate_before;
-$course_timeaccess_after = isset($course_timeaccess_after['enabled']) 
-                            && $course_timeaccess_after['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_timeaccess_after) 
+$course_timeaccess_after = isset($course_timeaccess_after['enabled'])
+                            && $course_timeaccess_after['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_timeaccess_after)
                                 : $course_timeaccess_after;
-$course_timeaccess_before = isset($course_timeaccess_before['enabled']) 
-                            && $course_timeaccess_before['enabled'] == 1 
-                                ? moodletime_to_unixtimestamp($course_timeaccess_before) 
+$course_timeaccess_before = isset($course_timeaccess_before['enabled'])
+                            && $course_timeaccess_before['enabled'] == 1
+                                ? moodletime_to_unixtimestamp($course_timeaccess_before)
                                 : $course_timeaccess_before;
 
 // Validating timestamps.
@@ -197,14 +197,14 @@ $url_params = array_filter($url_params);
 $base_url = new moodle_url($base_url_str, $url_params);
 $base_url_reset = new moodle_url($base_url_str);
 
-//Form processing and displaying is done here.
+// Form processing and displaying is done here.
 if ($mform->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form.
+    // Handle form cancel operation, if cancel button is present on form.
     // This is the default way Moodle handles cancelled forms.
     redirect($base_url_reset);
     exit;
 } elseif ($fromform = $mform->get_data()) {
-    //In this case you process validated data. $mform->get_data() returns data posted in form.
+    // In this case you process validated data. $mform->get_data() returns data posted in form.
 } else {
     // This branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
@@ -225,21 +225,21 @@ $totalrowshtml = \html_writer::tag(
 if ($display_action_data == true) {
     $aform = new form\action_form(null, ['report_form_data_json' => json_encode($options_array)]);
     if ($fromform = $aform->get_data()) {
-        //In this case you process validated data. $mform->get_data() returns data posted in form.
+        // In this case you process validated data. $mform->get_data() returns data posted in form.
         if (isset($rows_selected) && isset($action)) {
             $form_handler = new action_handler();
             foreach ($rows_selected as $row_course_id) {
                 action_handler::update($row_course_id, $action);
             }
             // TODO: Is this the best way of doing redirects in Moodle?
-            redirect($base_url, 
+            redirect($base_url,
             get_string('table_actionredirectmessage', 'tool_coursewrangler'),
             0
             );
             exit;
         }
     } else {
-        // This branch is executed if the form is submitted but the data 
+        // This branch is executed if the form is submitted but the data
         // doesn't validate and the form should be redisplayed
         // or on the first display of the form.
     }
@@ -248,7 +248,7 @@ if ($display_action_data == true) {
 // We do this so that redirects can happen prior.
 echo $OUTPUT->header();
 
-//Displays the big form.
+// Displays the big form.
 $mform->display();
 echo $totalrowshtml;
 

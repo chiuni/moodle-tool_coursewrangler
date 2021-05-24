@@ -16,7 +16,6 @@
 
 /**
  * This file how to uninstall the plugin.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -26,5 +25,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 function xmldb_tool_coursewrangler_uninstall() {
-    global $DB;
 }

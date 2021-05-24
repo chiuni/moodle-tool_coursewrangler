@@ -33,18 +33,15 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
-class report_form extends moodleform
-{
-    //Add elements to form
-    public function definition()
-    {
+class report_form extends moodleform {
+    // Add elements to form.
+    public function definition() {
         global $DB;
 
         $mform = $this->_form;
         $customdata = $this->_customdata;
 
-        // HEADER FILTER OPTIONS
-
+        // Header filter options.
         $bycourseids_areanames = [];
         $allmetrics = $DB->get_records('tool_coursewrangler_metrics');
         foreach ($allmetrics as $course) {
@@ -64,13 +61,12 @@ class report_form extends moodleform
             $bycourseids_areanames,
             $bycourseids_options
         );
-
         // Short string match for course idnumber and course short name.
         $mform->addElement(
-            'text', 
+            'text',
             'matchstring_short', 
             get_string('report_form_matchstring_short', 'tool_coursewrangler')
-        );        
+        );
         // Full string match for course full name.
         $mform->addElement(
             'text', 
@@ -84,7 +80,6 @@ class report_form extends moodleform
             get_string('report_form_pagesize', 'tool_coursewrangler'), 
             $pagesize_options
         );
-
         // Autocomplete search box for categories.
         $categories = $DB->get_records('course_categories', ['parent' => 0], 'name ASC');
         $category_areanames = [];
@@ -103,13 +98,11 @@ class report_form extends moodleform
             $category_areanames, 
             $category_options
         );
-
         $mform->addElement(
             'checkbox', 
             'display_action_data', 
             get_string('report_form_filter_display_action_data', 'tool_coursewrangler')
         );
-        
         $actions_areanames = [
             'null' => get_string('report_form_filter_display_action_null', 'tool_coursewrangler'),
             'delete' => get_string('report_form_filter_display_action_delete', 'tool_coursewrangler'),
@@ -130,7 +123,7 @@ class report_form extends moodleform
 
         $mform->hideIf('filter_action_data', 'display_action_data');
 
-        // HEADER DATE OPTIONS
+        // Header date options.
         $mform->addElement(
             'header', 
             'header_date_options', 
@@ -155,91 +148,91 @@ class report_form extends moodleform
             $mform->setExpanded('header_date_options', true);
         }
 
-        // COURSE_TIMECREATED
+        // COURSE_TIMECREATED.
         $mform->addElement(
-            'date_selector', 
-            'course_timecreated_after', 
-            get_string('report_form_filter_course_timecreated_after', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_timecreated_after',
+            get_string('report_form_filter_course_timecreated_after', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
-            'date_selector', 
-            'course_timecreated_before', 
-            get_string('report_form_filter_course_timecreated_before', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_timecreated_before',
+            get_string('report_form_filter_course_timecreated_before', 'tool_coursewrangler'),
             ['optional' => true]
         );
-        // COURSE_TIMECREATED_NOTSET
+        // COURSE_TIMECREATED_NOTSET.
         $mform->addElement(
-            'checkbox', 
-            'course_timecreated_notset', 
+            'checkbox',
+            'course_timecreated_notset',
             get_string('report_form_filter_course_timecreated_notset', 'tool_coursewrangler')
         );
 
-        // COURSE_STARTDATE
+        // COURSE_STARTDATE.
         $mform->addElement(
-            'date_selector', 
-            'course_startdate_after', 
-            get_string('report_form_filter_course_startdate_after', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_startdate_after',
+            get_string('report_form_filter_course_startdate_after', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
-            'date_selector', 
-            'course_startdate_before', 
-            get_string('report_form_filter_course_startdate_before', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_startdate_before',
+            get_string('report_form_filter_course_startdate_before', 'tool_coursewrangler'),
             ['optional' => true]
         );
-        // COURSE_STARTDATE_NOTSET
+        // COURSE_STARTDATE_NOTSET.
         $mform->addElement(
-            'checkbox', 
-            'course_startdate_notset', 
+            'checkbox',
+            'course_startdate_notset',
             get_string('report_form_filter_course_startdate_notset', 'tool_coursewrangler')
         );
 
-        // COURSE_ENDDATE
+        // COURSE_ENDDATE.
         $mform->addElement(
-            'date_selector', 
-            'course_enddate_after', 
-            get_string('report_form_filter_course_enddate_after', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_enddate_after',
+            get_string('report_form_filter_course_enddate_after', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
-            'date_selector', 
-            'course_enddate_before', 
-            get_string('report_form_filter_course_enddate_before', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_enddate_before',
+            get_string('report_form_filter_course_enddate_before', 'tool_coursewrangler'),
             ['optional' => true]
         );
-        // COURSE_ENDDATE_NOTSET
+        // COURSE_ENDDATE_NOTSET.
         $mform->addElement(
-            'checkbox', 
-            'course_enddate_notset', 
+            'checkbox',
+            'course_enddate_notset',
             get_string('report_form_filter_course_enddate_notset', 'tool_coursewrangler')
         );
 
-        // COURSE_TIMEACCESS
+        // COURSE_TIMEACCESS.
         $mform->addElement(
-            'date_selector', 
-            'course_timeaccess_after', 
-            get_string('report_form_filter_course_timeaccess_after', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_timeaccess_after',
+            get_string('report_form_filter_course_timeaccess_after', 'tool_coursewrangler'),
             ['optional' => true]
         );
         $mform->addElement(
-            'date_selector', 
-            'course_timeaccess_before', 
-            get_string('report_form_filter_course_timeaccess_before', 'tool_coursewrangler'), 
+            'date_selector',
+            'course_timeaccess_before',
+            get_string('report_form_filter_course_timeaccess_before', 'tool_coursewrangler'),
             ['optional' => true]
         );
-        // COURSE_TIMEACCESS_NOTSET
+        // COURSE_TIMEACCESS_NOTSET.
         $mform->addElement(
-            'checkbox', 
-            'course_timeaccess_notset', 
+            'checkbox',
+            'course_timeaccess_notset',
             get_string('report_form_filter_course_timeaccess_notset', 'tool_coursewrangler')
         );
 
-        // HEADER FLAG OPTIONS
+        // HEADER FLAG OPTIONS.
         $mform->addElement(
-            'header', 
-            'header_flag_options', 
-            get_string('report_form_flag_options', 
+            'header',
+            'header_flag_options',
+            get_string('report_form_flag_options',
             'tool_coursewrangler')
         );
         $mform->setExpanded('header_flag_options', false);
@@ -250,17 +243,16 @@ class report_form extends moodleform
         ){
             $mform->setExpanded('header_flag_options', true);
         }
-
-        // hideshow_meta_children
+        // Hideshow_meta_children.
         $meta_children_options = [
             'default' => get_string('select_an_option', 'tool_coursewrangler'),
             'hide' => get_string('hideshow_meta_children_hideonly', 'tool_coursewrangler'),
             'show' => get_string('hideshow_meta_children_showonly', 'tool_coursewrangler')
         ];
         $mform->addElement(
-            'select', 
-            'hideshow_meta_children', 
-            get_string('report_form_filter_hideshow_meta_children', 'tool_coursewrangler'), 
+            'select',
+            'hideshow_meta_children',
+            get_string('report_form_filter_hideshow_meta_children', 'tool_coursewrangler'),
             $meta_children_options
         );
         // hideshow_meta_parents
@@ -270,9 +262,9 @@ class report_form extends moodleform
             'show' => get_string('hideshow_meta_parents_showonly', 'tool_coursewrangler')
         ];
         $mform->addElement(
-            'select', 
-            'hideshow_meta_parents', 
-            get_string('report_form_filter_hideshow_meta_parents', 'tool_coursewrangler'), 
+            'select',
+            'hideshow_meta_parents',
+            get_string('report_form_filter_hideshow_meta_parents', 'tool_coursewrangler'),
             $meta_parents_options
         );
         // hideshow_hidden_courses
@@ -282,22 +274,17 @@ class report_form extends moodleform
             'show' => get_string('hideshow_hidden_courses_showonly', 'tool_coursewrangler')
         ];
         $mform->addElement(
-            'select', 
-            'hideshow_hidden_courses', 
-            get_string('report_form_filter_hideshow_hidden_courses', 'tool_coursewrangler'), 
+            'select',
+            'hideshow_hidden_courses',
+            get_string('report_form_filter_hideshow_hidden_courses', 'tool_coursewrangler'),
             $meta_parents_options
         );
-
-        // filter button
+        // Filter button.
         $this->add_action_buttons(true, get_string('report_form_filter_results', 'tool_coursewrangler'));
 
     }
-    //Custom validation should be added here.
-    function validation($data, $files)
-    {
+    // Custom validation should be added here.
+    public function validation($data, $files) {
         return array();
     }
-
-
-
 }

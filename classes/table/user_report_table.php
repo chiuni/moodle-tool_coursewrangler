@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -43,8 +42,7 @@ class user_report_table extends table_sql implements renderable
     /**
      * Sets up the table.
      */
-    public function __construct(\moodle_url $baseurl, array $params = [])
-    {
+    public function __construct(\moodle_url $baseurl, array $params = []) {
         parent::__construct('tool_coursewrangler-report');
         $this->context = \context_system::instance();
         // This object should not be used without the right permissions. TODO: THIS ->
@@ -89,8 +87,7 @@ class user_report_table extends table_sql implements renderable
     /**
      * Define table configs.
      */
-    protected function define_table_configs()
-    {
+    protected function define_table_configs() {
         $this->sortable(true, 'course_id', SORT_ASC);
         $this->pageable(true);
     }
@@ -102,8 +99,7 @@ class user_report_table extends table_sql implements renderable
      * @param int $index numerical index of the column.
      * @return string HTML fragment.
      */
-    protected function show_hide_link($column, $index)
-    {
+    protected function show_hide_link($column, $index) {
         if ($column != 'course_id') {
             return parent::show_hide_link($column, $index);
         }
@@ -137,8 +133,8 @@ class user_report_table extends table_sql implements renderable
         $params += $cids_params;
         $conditions[] = "metrics.course_id $cids_sql";
         // Now we only want to see the ones that have been marked for deletion
-        //  and the user has at least been notified, scheduled ones might not
-        //  be confirmed for deletion yet.
+        // and the user has at least been notified, scheduled ones might not
+        // be confirmed for deletion yet.
         $params['status'] = 'notified';
         $conditions[] = "act.status = :status";
         $params['delete'] = 'delete';
@@ -160,7 +156,7 @@ class user_report_table extends table_sql implements renderable
         $this->set_sql($sqlwhat, $sqlfrom, $conditions, $params);
     }
 
-    function col_course_timecreated($values) : string {
+    public function col_course_timecreated($values) : string {
         return ($values->course_timecreated == 0) ? '-' : userdate($values->course_timecreated);
     }
     /**
@@ -175,8 +171,7 @@ class user_report_table extends table_sql implements renderable
     /**
      * Creating the action col.
      */
-    public function col_action($values): string
-    {
+    public function col_action($values): string {
         $display_value = isset($values->action) ? "table_action_$values->action" : 'table_value_notavailable';
         $display_value_string = get_string($display_value, 'tool_coursewrangler');
         return ($display_value_string);
@@ -184,7 +179,7 @@ class user_report_table extends table_sql implements renderable
     /**
      * Creating the action status col.
      */
-    function col_status($values) : string {
+    public function col_status($values) : string {
         $display_value = (isset($values->status) && $values->status != '')
                             ? "table_status_$values->status"
                             : 'table_value_notavailable';
@@ -195,7 +190,7 @@ class user_report_table extends table_sql implements renderable
     /**
      * Creating the action status col.
      */
-    function col_lastupdated($values) : string {
+    public function col_lastupdated($values) : string {
         $lastupdated = $values->lastupdated;
         $scheduledperiod = get_config('tool_coursewrangler', 'scheduledduration');
         $toberun = $scheduledperiod + $lastupdated;

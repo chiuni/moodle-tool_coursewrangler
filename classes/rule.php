@@ -16,7 +16,6 @@
 
 /**
  * The parent Rule class.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -30,7 +29,6 @@ use stdClass;
 use tool_coursewrangler\traits\score_limit;
 
 abstract class rule {
-    
     use score_limit;
 
     protected stdClass $course;
@@ -40,7 +38,7 @@ abstract class rule {
     protected bool $has_param;
     public float $score;
 
-    function __construct(
+    public function __construct(
         stdClass $course,
         array $settings = []
     ) {
@@ -58,12 +56,11 @@ abstract class rule {
         unset($this->course);
     }
 
-    abstract function evaluate_condition();
-    abstract function calculate_score();
-    abstract function set_params();
+    public abstract function evaluate_condition();
+    public abstract function calculate_score();
+    public abstract function set_params();
 
-    function has_params(): bool
-    {
+    public function has_params(): bool {
         if (!isset($this->params)) {
             return false;
         }

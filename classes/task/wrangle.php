@@ -16,7 +16,6 @@
 
 /**
  * This file is a ...
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -30,6 +29,7 @@ use tool_coursewrangler\action;
 use tool_coursewrangler\action_handler;
 
 use function tool_coursewrangler\get_course_metric as get_course_metric;
+use function tool_coursewrangler\insert_cw_logentry as insert_cw_logentry;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/admin/tool/coursewrangler/locallib.php');
@@ -50,8 +50,8 @@ class wrangle extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
         mtrace("Starting " . $this->get_name());
-        // Working out the amount of time that should 
-        //  pass before running each phase.
+        // Working out the amount of time that should
+        // pass before running each phase.
         $scheduledduration = time() - get_config('tool_coursewrangler', 'scheduledduration');
         $notifyduration = time() - get_config('tool_coursewrangler', 'notifyduration');
         $hiddenduration = time() - get_config('tool_coursewrangler', 'hiddenduration');
@@ -68,32 +68,30 @@ class wrangle extends \core\task\scheduled_task {
         $notified_actions = $DB->get_records_sql(
             'SELECT * FROM {tool_coursewrangler_action} 
                 WHERE action="delete" AND status="notified" 
-                AND lastupdated < :lastupdated ;', 
+                AND lastupdated < :lastupdated ;',
             ['lastupdated' => $notifyduration]
         );
         $hidden_actions = $DB->get_records_sql(
             'SELECT * FROM {tool_coursewrangler_action} 
                 WHERE action="delete" AND status="hidden" 
-                AND lastupdated < :lastupdated ;', 
+                AND lastupdated < :lastupdated ;',
             ['lastupdated' => $hiddenduration]
         );
         $waiting_actions = $DB->get_records_sql(
             'SELECT * FROM {tool_coursewrangler_action} 
                 WHERE action="delete" AND status="waiting" 
-                AND lastupdated < :lastupdated ;', 
+                AND lastupdated < :lastupdated ;',
             ['lastupdated' => $waitingduration]
         );
-        
         mtrace("Starting 'Schedule' Task.");
-        /**
-         * The first step of Wrangle is to workout who do we notify.
-         * 
-         * Some of the extra steps should be:
-         *  - If setting to protect child courses is enabled, 
-         *     skip parent course deletion?
-         *  - If end date is set, and not yet over, protect it? (setting).
-         *  - If course is not visible, do not notify? (setting).
-         */
+
+        // The first step of Wrangle is to workout who do we notify.
+        // Some of the extra steps should be:
+        // - If setting to protect child courses is enabled,
+        // skip parent course deletion?
+        // - If end date is set, and not yet over, protect it? (setting).
+        // - If course is not visible, do not notify? (setting).
+
         $childprotection = get_config('tool_coursewrangler', 'childprotection') ?? false;
         $enddateprotection = get_config('tool_coursewrangler', 'enddateprotection') ?? false;
         $donotnotifyhidden = get_config('tool_coursewrangler', 'donotnotifyhidden') ?? false;
@@ -147,15 +145,16 @@ class wrangle extends \core\task\scheduled_task {
         foreach ($waiting_actions as $waiting) {
             mtrace("Processing waiting action for course id $waiting->course_id:");
             mtrace("ATTENTION! Deleting course $waiting->course_id.");
-            continue;
             $action_object = new action($waiting->id);
             $delete_status = $action_object->delete_course();
             if ($delete_status) {
                 // Log in database the success?
-                // $DB->insert_record_sql();
+                insert_cw_logentry("Course: $waiting->course_id deleted successfully.", 'wrangle_task');
                 mtrace("Delete successfull.");
             } else {
+                $metric = $DB->get_record('tool_coursewrangler_metrics', ['course_id' => $waiting->course_id]);
                 // Log in database the failure.
+                insert_cw_logentry("Course: $waiting->course_id failed to delete.", 'wrangle_task', $metric->id);
             }
         }
         mtrace("Finished tool_coursewrangler wrangle task");

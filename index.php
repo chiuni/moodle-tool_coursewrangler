@@ -16,7 +16,6 @@
 
 /**
  * This is a tool for managing retiring old courses, and categories.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}

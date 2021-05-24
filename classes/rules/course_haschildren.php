@@ -16,7 +16,6 @@
 
 /**
  * This is a rule implementation class.
- * 
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -31,16 +30,14 @@ use tool_coursewrangler\rule;
 
 class course_haschildren extends rule implements rule_interface
 {
-    function evaluate_condition(): bool
-    {
+    public function evaluate_condition(): bool {
         $children = explode(',', $this->course->course_children);
         if (count($children) > 0) {
             $this->state = true;
         }
         return $this->state;
     }
-    function calculate_score(): float
-    {
+    public function calculate_score(): float {
         if (!$this->state) {
             return $this->score;
         }
@@ -50,8 +47,7 @@ class course_haschildren extends rule implements rule_interface
         $this->score = $count * -100;
         return $this->score;
     }
-    function set_params()
-    {
+    public function set_params() {
         $this->params = [];
         $this->params[] = 'course_children';
     }

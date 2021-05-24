@@ -24,14 +24,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    // Courses tab navigation
+    // Courses tab navigation.
     $courses = new admin_externalpage(
         'coursewrangler',
         get_string('pluginname', 'tool_coursewrangler'),
         new moodle_url('/admin/tool/coursewrangler/index.php')
     );
     $ADMIN->add('courses', $courses);
-    // Settings tab navigation
+    // Settings tab navigation.
     $settings = new theme_boost_admin_settingspage_tabs(
         'tool_coursewrangler',
         get_string('pluginname', 'tool_coursewrangler')
@@ -50,9 +50,7 @@ if ($hassiteconfig) {
         }
         $large_numbers[$i] = $i;
     }
-
     $main_page = new admin_settingpage('tool_coursewrangler_main', get_string('settingspage_main', 'tool_coursewrangler'));
-    
 
     $main_page->add(new admin_setting_configduration(
         'tool_coursewrangler/timeunit',
@@ -90,19 +88,19 @@ if ($hassiteconfig) {
         'tool_coursewrangler/minimumage',
         get_string('settings_minimumage', 'tool_coursewrangler'),
         get_string('settings_minimumage_desc', 'tool_coursewrangler'),
-        52 * WEEKSECS, 
+        52 * WEEKSECS,
         WEEKSECS
     ));
 
     $settings->add($main_page);
-    
+
     $tasks_page = new admin_settingpage('tool_coursewrangler_tasks', get_string('settingspage_tasks', 'tool_coursewrangler'));
 
     $tasks_page->add(new admin_setting_configduration(
         'tool_coursewrangler/scheduledduration',
         get_string('settings_scheduledduration', 'tool_coursewrangler'),
         get_string('settings_scheduledduration_desc', 'tool_coursewrangler'),
-        7 * DAYSECS, 
+        7 * DAYSECS,
         DAYSECS
     ));
 
@@ -110,7 +108,7 @@ if ($hassiteconfig) {
         'tool_coursewrangler/notifyduration',
         get_string('settings_notifyduration', 'tool_coursewrangler'),
         get_string('settings_notifyduration_desc', 'tool_coursewrangler'),
-        7 * DAYSECS, 
+        7 * DAYSECS,
         DAYSECS
     ));
 
@@ -118,7 +116,7 @@ if ($hassiteconfig) {
         'tool_coursewrangler/hiddenduration',
         get_string('settings_hiddenduration', 'tool_coursewrangler'),
         get_string('settings_hiddenduration_desc', 'tool_coursewrangler'),
-        7 * DAYSECS, 
+        7 * DAYSECS,
         DAYSECS
     ));
 
@@ -126,38 +124,37 @@ if ($hassiteconfig) {
         'tool_coursewrangler/waitingduration',
         get_string('settings_waitingduration', 'tool_coursewrangler'),
         get_string('settings_waitingduration_desc', 'tool_coursewrangler'),
-        7 * DAYSECS, 
+        7 * DAYSECS,
         DAYSECS
     ));
 
     $tasks_page->add(new admin_setting_configcheckbox(
         'tool_coursewrangler/notifymode',
         get_string('settings_notifymode', 'tool_coursewrangler'),
-        get_string('settings_notifymode_desc', 'tool_coursewrangler'), 
+        get_string('settings_notifymode_desc', 'tool_coursewrangler'),
         0
     ));
 
     $tasks_page->add(new admin_setting_configcheckbox(
         'tool_coursewrangler/childprotection',
         get_string('settings_childprotection', 'tool_coursewrangler'),
-        get_string('settings_childprotection_desc', 'tool_coursewrangler'), 
+        get_string('settings_childprotection_desc', 'tool_coursewrangler'),
         0
     ));
 
     $tasks_page->add(new admin_setting_configcheckbox(
         'tool_coursewrangler/enddateprotection',
         get_string('settings_enddateprotection', 'tool_coursewrangler'),
-        get_string('settings_enddateprotection_desc', 'tool_coursewrangler'), 
+        get_string('settings_enddateprotection_desc', 'tool_coursewrangler'),
         0
     ));
 
     $tasks_page->add(new admin_setting_configcheckbox(
         'tool_coursewrangler/donotnotifyhidden',
         get_string('settings_donotnotifyhidden', 'tool_coursewrangler'),
-        get_string('settings_donotnotifyhidden_desc', 'tool_coursewrangler'), 
+        get_string('settings_donotnotifyhidden_desc', 'tool_coursewrangler'),
         0
     ));
-    
-    $settings->add($tasks_page);
 
+    $settings->add($tasks_page);
 }

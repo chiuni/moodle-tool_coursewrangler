@@ -16,7 +16,6 @@
 
 /**
  * This file defines message providers.
- *
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -27,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $messageproviders = [
-    // Notify teacher that a student has submitted a quiz attempt
+    // Notify teacher that a student has submitted a quiz attempt.
     'schedulednotification' => [
         'defaults' => [
             'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,

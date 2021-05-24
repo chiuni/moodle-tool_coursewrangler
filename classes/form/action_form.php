@@ -33,11 +33,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
-class action_form extends moodleform
-{
-    //Add elements to form.
-    public function definition()
-    {
+class action_form extends moodleform {
+    // Add elements to form.
+    public function definition() {
         $mform = $this->_form;
         $customdata = $this->_customdata;
         $report_form_data_json = null;
@@ -50,9 +48,13 @@ class action_form extends moodleform
         $options['delete'] = get_string('action_form_scheduledelete', 'tool_coursewrangler');
         $options['protect'] = get_string('action_form_protectcourse', 'tool_coursewrangler');
         $options['reset'] = get_string('action_form_resetaction', 'tool_coursewrangler');
-        
+
         $objs = array();
-        $objs[] =& $mform->createElement('select', 'action', get_string('action_form_chooseaction', 'tool_coursewrangler'), $options);
+        $objs[] =& $mform->createElement(
+            'select',
+            'action',
+            get_string('action_form_chooseaction', 'tool_coursewrangler'),
+            $options);
         $objs[] =& $mform->createElement('submit', 'submit', get_string('go'));
         $batchdescription = get_string('action_form_withselected', 'tool_coursewrangler');
         $mform->addElement('group', 'actionsgrp', $batchdescription, $objs, ' ', false);

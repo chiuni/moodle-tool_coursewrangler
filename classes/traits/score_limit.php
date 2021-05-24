@@ -31,8 +31,7 @@ trait score_limit
     /**
      * @param int $limit A positive score limit
      */
-    public function get_limit_score(int $limit): int
-    {
+    public function get_limit_score(int $limit): int {
         $this->score = $this->score ?? 0;
         $polarity = $this->score <=> 0;
         $compare = $limit <=> abs($this->score);
