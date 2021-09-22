@@ -62,18 +62,20 @@ class action {
         if (!isset($this->courseid) || !is_integer((int) $this->courseid) || $this->courseid < 1) {
             return false;
         }
+        global $DB;
         // Double check course exits:
-        $course = get_course($this->courseid, false);
-        if ($course == false) {
+        // Prevent error by doing sql query yourself to check exists.
+        $id = $DB->get_records_sql('SELECT `id` FROM {course} WHERE `id` = '. $this->courseid . ';');
+        if ($id <= 0) {
+            // Course has already been deleted.
             return false;
         }
         \core_php_time_limit::raise();
         // We do this here because it spits out feedback as it goes.
         $deletestatus = delete_course($this->courseid);
         if ($deletestatus) {
-            global $DB;
-            $DB->delete_record('tool_coursewrangler_action', ['courseid' => $this->courseid]);
-            $DB->delete_record('tool_coursewrangler_metrics', ['courseid' => $this->courseid]);
+            $DB->delete_records('tool_coursewrangler_action', ['courseid' => $this->courseid]);
+            $DB->delete_records('tool_coursewrangler_metrics', ['courseid' => $this->courseid]);
             insert_cw_logentry("Course with ID: $this->courseid ", 'course_wrangler', $this->id);
         }
         return $deletestatus;
@@ -96,6 +98,10 @@ class action {
         $course->visible = 0;
         $metric->coursevisible = 0;
         $DB->update_record('tool_coursewrangler_metrics', $metric);
+        // Bug Fix [todo]: Fix issue where course enddate being greater than course startdate throws error.
+        if ($course->enddate <= $course->startdate || $course->startdate == 0) {
+            unset($course->enddate);
+        }
         return update_course($course);
     }
 }

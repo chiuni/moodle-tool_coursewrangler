@@ -19,10 +19,7 @@ $context = context_system::instance();
 
 require_login(null, false);
 
-if (!is_siteadmin($USER)) {
-    redirect('', 'Only site admins can access this page.');
-    exit;
-}
+require_capability('tool/coursewrangler:manage', $context);
 
 // Report_form_data_json is reponsible for allowing cross-form
 // parameter sharing, to remember what the user options were.
@@ -233,8 +230,8 @@ if ($displayactiondata == true) {
             }
             // TODO: Is this the best way of doing redirects in Moodle?
             redirect($baseurl,
-            get_string('table_actionredirectmessage', 'tool_coursewrangler'),
-            0
+                get_string('table_actionredirectmessage', 'tool_coursewrangler'),
+                0
             );
             exit;
         }

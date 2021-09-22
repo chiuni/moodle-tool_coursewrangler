@@ -25,6 +25,7 @@ $string['pageheading'] = 'Course Wrangler Tool';
 $string['privacy:metadata'] = 'The course wrangler tool plugin does not store any personal data.';
 
 $string['table_tablename'] = 'CWT Table';
+$string['table_usertable_name'] = 'Users\' Table';
 $string['table_row_select'] = 'Select';
 $string['table_selectall'] = 'Select All';
 $string['table_edit'] = 'Edit';
@@ -127,6 +128,8 @@ $string['report_details_action_logs'] = 'Action History Log';
 $string['report_details_action_protect'] = 'Protect Course';
 $string['report_details_actionstatus'] = 'Action Status';
 $string['report_details_actionstatus_scheduled'] = 'Scheduled for deletion';
+$string['report_details_actionstatus_protect'] = 'Protected course';
+$string['report_details_actionstatus_waiting'] = 'Waiting for deletion';
 
 // Form stuff.
 $string['report_form_filter_results'] = 'Filter Results';
@@ -195,6 +198,15 @@ $string['message_scheduleddeletion_p3'] = 'If you believe this is a mistake, ple
 $string['message_scheduleddeletion_p4'] = 'Thank you,';
 $string['message_scheduleddeletion_p5'] = 'Admin Team at <a href="https://moodle.chi.ac.uk/">moodle.chi.ac.uk';
 $string['message_scheduleddeletion_accesslistofallcourses'] = 'Access list of all courses on the deletion list.';
+
+// Action page.
+
+$string['actionpage'] = 'Action Page';
+$string['actionpage_confirm_btn'] = 'Are you sure you want to {$a->action} course with id {$a->courseid}?';
+$string['actionpage_returntoreportdetails'] = 'Return to Details Page';
+$string['actionpage_returntotablelink'] = 'Return to Table';
+$string['actionpage_actionsuccess'] = '<b>Success:</b> Course action successfully updated.';
+$string['actionpage_actionfail'] = '<b>Something went wrong:</b> Could not update course action.';
 
 // Other.
 $string['select_an_option'] = 'Select an option';

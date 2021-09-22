@@ -56,7 +56,7 @@ class user_report_table extends table_sql implements renderable
 
         // Optional params setting.
         $this->courseids = $params['courseids'] ?? 0;
-        if ($this->courseids == 0) {
+        if ($this->courseids == 0 || empty($this->courseids)) {
             global $USER;
             $enrolments = enrol_get_all_users_courses($USER->id);
             $this->courseids = array_keys($enrolments);
@@ -127,10 +127,18 @@ class user_report_table extends table_sql implements renderable
         ];
         $params = [];
         $conditions = [];
+        $cidssql = '';
+        $cidsparams = [];
         // We must filter the user's course ids from their enrolments.
-        list($cidssql, $cidsparams) = $DB->get_in_or_equal($this->courseids, SQL_PARAMS_NAMED, 'cids');
-        $params += $cidsparams;
-        $conditions[] = "{tool_coursewrangler_metrics}.courseid $cidssql";
+        if (!empty($this->courseids)) {
+            list($cidssql, $cidsparams) = $DB->get_in_or_equal($this->courseids, SQL_PARAMS_NAMED, 'cids');
+        }
+        if (!empty($cidsparams)) {
+            $params += $cidsparams;
+        }
+        if ($cidssql != '') {
+            $conditions[] = "{tool_coursewrangler_metrics}.courseid $cidssql";
+        }
         // Now we only want to see the ones that have been marked for deletion
         // and the user has at least been notified, scheduled ones might not
         // be confirmed for deletion yet.

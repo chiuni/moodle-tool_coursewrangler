@@ -34,7 +34,7 @@ require_once(__DIR__ . '/locallib.php');
 require_once($CFG->libdir . '/tablelib.php');
 $context = context_system::instance();
 
-require_capability('moodle/site:configview', $context);
+require_capability('tool/coursewrangler:manage', $context);
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -107,21 +107,31 @@ $course->links = ['returnlink' => $returnlink];
 $actiondata = $DB->get_record('tool_coursewrangler_action', ['courseid' => $course->courseid]);
 
 $actionlink = $CFG->wwwroot . '/admin/tool/coursewrangler/action.php';
+$actionlinkparams = [];
+$actionlinkparams['courseid'] = $course->courseid;
+$actionlinkparams['returnlink'] = $returnlink;
 if ($actiondata != false) {
+    $actiondata->status = ($actiondata->status == '') ? $actiondata->action : $actiondata->status;
     $actiondata->status = get_string('report_details_actionstatus_'.$actiondata->status, 'tool_coursewrangler');
     $course->actionstatus = $actiondata->status . ' - ' . userdate($actiondata->lastupdated);
+    $resetlinkparams = $actionlinkparams;
+    $resetlinkparams['action'] = 'reset';
     $course->links['action_reset_link'] = new moodle_url(
         $actionlink,
-        ['courseid' => $course->courseid, 'action' => 'reset']
+        $resetlinkparams
     );
 } else {
+    $deletelinkparams = $actionlinkparams;
+    $deletelinkparams['action'] = 'delete';
     $course->links['action_delete_link'] = new moodle_url(
         $actionlink,
-        ['courseid' => $course->courseid, 'action' => 'delete']
+        $deletelinkparams
     );
+    $protectlinkparams = $actionlinkparams;
+    $protectlinkparams['action'] = 'protect';
     $course->links['action_protect_link'] = new moodle_url(
         $actionlink,
-        ['courseid' => $course->courseid, 'action' => 'protect']
+        $protectlinkparams
     );
 }
 

@@ -370,10 +370,10 @@ function insert_cw_logentry(string $description, string $actor = null, int $metr
     $log = new stdClass();
     $log->timestamp = time();
     $log->description = $description;
-    $log->actor = $actor ?? 'system';
     $log->actor = $metricsid ?? null;
+    $log->actor = $actor ?? 'system';
     global $DB;
-    return $DB->insert('tool_coursewrangler_log', $log);
+    return $DB->insert_record('tool_coursewrangler_log', $log);
 }
 
 /**

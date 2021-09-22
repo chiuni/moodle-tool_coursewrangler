@@ -35,7 +35,7 @@ $context = context_system::instance();
 
 require_login(null, false);
 
-require_capability('moodle/site:configview', $context);
+require_capability('tool/coursewrangler:manage', $context);
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
@@ -49,7 +49,7 @@ echo $OUTPUT->heading(get_string('plugindesc', 'tool_coursewrangler'));
 
 echo '<div>SHOW LATEST INFO HERE,PERHAPS LOGS?</div>';
 echo $OUTPUT->single_button(
-    new moodle_url('/admin/tool/coursewrangler/generatereport.php'),
+    new moodle_url('#'),
     get_string('button_generatereport', 'tool_coursewrangler'),
     'post',
     ['primary' => 1]

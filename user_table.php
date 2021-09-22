@@ -40,6 +40,8 @@ if (isset($userid) && $userid != null && is_siteadmin($USER)) {
     $userid = $USER->id;
 }
 
+require_capability('tool/coursewrangler:viewowntobedeleted', $context);
+
 $user = \core_user::get_user($userid);
 
 $PAGE->set_context($context);

@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin capabilities
  * @package   tool_coursewrangler
  * @author    Hugo Soares <h.soares@chi.ac.uk>
  * @copyright 2020 University of Chichester {@link www.chi.ac.uk}
@@ -23,8 +24,34 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021042208;
-$plugin->requires = 2019111800;
-$plugin->component = 'tool_coursewrangler';
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '0.0.2';
+$capabilities = [
+
+    'tool/coursewrangler:viewowntobedeleted' => [
+
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'guest' => CAP_PROHIBIT,
+            'student' => CAP_PROHIBIT,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ]
+    ],
+
+    'tool/coursewrangler:manage' => [
+        'riskbitmask' => RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'guest' => CAP_PROHIBIT,
+            'student' => CAP_PROHIBIT,
+            'teacher' => CAP_PROHIBIT,
+            'editingteacher' => CAP_PROHIBIT,
+            'manager' => CAP_PREVENT
+        ]
+    ]
+];
+
+
