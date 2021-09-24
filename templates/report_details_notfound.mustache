@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{#str}}report_details_notfound, tool_coursewrangler{{/str}}</h5>
+                <hr>
+                <p>{{#str}}report_details_notfound_desc, tool_coursewrangler{{/str}}</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-0 p-0 pb-2">
+                        <dt>{{#str}}table_courseid, tool_coursewrangler{{/str}}</dt>
+                        {{#links}}
+                        {{#courselink}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{courselink}}}"><i class="icon fa fa-link fa-fw "></i>{{{courseid}}} - {{#str}}report_details_coursenotexists, tool_coursewrangler{{/str}}</a></span></li>{{/courselink}}
+                        {{/links}}
+                    </li>
+                </u>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{#str}}pluginname, tool_coursewrangler{{/str}}</h5>
+                <ul class="list-group list-group-flush">
+                    {{#links}}
+                    {{#returnlink}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{returnlink}}}"><i class="icon fa fa-arrow-left fa-fw "></i>{{#str}}report_details_return, tool_coursewrangler{{/str}}</a></span></li>{{/returnlink}}
+                    {{/links}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

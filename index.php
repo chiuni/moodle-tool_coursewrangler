@@ -46,21 +46,29 @@ $PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('plugindesc', 'tool_coursewrangler'));
 
-
-echo '<div>SHOW LATEST INFO HERE,PERHAPS LOGS?</div>';
-echo $OUTPUT->single_button(
-    new moodle_url('#'),
-    get_string('button_generatereport', 'tool_coursewrangler'),
-    'post',
-    ['primary' => 1]
-);
 echo $OUTPUT->single_button(
     new moodle_url('/admin/tool/coursewrangler/table.php'),
-    get_string('table_tablename', 'tool_coursewrangler')
+    get_string('table_tablename', 'tool_coursewrangler'),
+    'post',
+    ['primary' => 1]
 );
 echo $OUTPUT->single_button(
     new moodle_url('/admin/tool/coursewrangler/user_table.php'),
     get_string('table_usertable_name', 'tool_coursewrangler')
 );
+echo $OUTPUT->single_button(
+    new moodle_url('/admin/tasklogs.php?filter=tool_coursewrangler'),
+    get_string('button_cw_scheduled_tasks_logs', 'tool_coursewrangler')
+);
+
+$baseurlstr = '/admin/tool/coursewrangler/index.php';
+$baseurl = new moodle_url($baseurlstr, []);
+
+$table = new table\logs_table(
+    $baseurl,
+    []
+);
+
+$table->out(50, false);
 
 echo $OUTPUT->footer();

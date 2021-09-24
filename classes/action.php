@@ -65,20 +65,32 @@ class action {
         global $DB;
         // Double check course exits:
         // Prevent error by doing sql query yourself to check exists.
-        $id = $DB->get_records_sql('SELECT `id` FROM {course} WHERE `id` = '. $this->courseid . ';');
-        if ($id <= 0) {
+        $alreadydeleted = false;
+        $course = $DB->get_records_sql('SELECT `id` FROM {course} WHERE `id` = '. $this->courseid . ';');
+        if (isset($course['id']) && $course['id'] <= 0) {
             // Course has already been deleted.
-            return false;
+            // Need to remove from action and metrics tables.
+            $alreadydeleted = true;
         }
-        \core_php_time_limit::raise();
-        // We do this here because it spits out feedback as it goes.
-        $deletestatus = delete_course($this->courseid);
-        if ($deletestatus) {
+        $deletestatus = false;
+        if (!$alreadydeleted) {
+            \core_php_time_limit::raise();
+            // We do this here because it spits out feedback as it goes.
+            try {
+                $deletestatus = delete_course($this->courseid);
+            } catch(\Exception $ex) {
+                insert_cw_logentry("Deleting dourse with ID $this->courseid has thrown an exception: " . $ex->error, 'course_wrangler-delete_course', $this->id);
+            }
+        } else {
+            insert_cw_logentry("Course with ID: $this->courseid has already been deleted", 'course_wrangler-delete_course', $this->id);
+        }
+        if ($deletestatus | $alreadydeleted) {
             $DB->delete_records('tool_coursewrangler_action', ['courseid' => $this->courseid]);
             $DB->delete_records('tool_coursewrangler_metrics', ['courseid' => $this->courseid]);
-            insert_cw_logentry("Course with ID: $this->courseid ", 'course_wrangler', $this->id);
+            insert_cw_logentry("Course with ID: $this->courseid has been deleted from metrics and action tables.", 'course_wrangler-delete_course', $this->id);
+            return true;
         }
-        return $deletestatus;
+        return false;
     }
 
     public function wait() {

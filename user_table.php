@@ -39,8 +39,8 @@ if (isset($userid) && $userid != null && is_siteadmin($USER)) {
 } else {
     $userid = $USER->id;
 }
-
-require_capability('tool/coursewrangler:viewowntobedeleted', $context);
+// To Do: This should work for all authenticated users, it doesnt, fix it.
+// require_capability('tool/coursewrangler:viewowntobedeleted', $context);
 
 $user = \core_user::get_user($userid);
 

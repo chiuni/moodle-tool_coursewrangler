@@ -25,17 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-
+    // Fix this cap.
     'tool/coursewrangler:viewowntobedeleted' => [
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
-            'guest' => CAP_PROHIBIT,
-            'student' => CAP_PROHIBIT,
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'user' => CAP_ALLOW
         ]
     ],
 

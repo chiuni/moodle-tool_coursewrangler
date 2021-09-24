@@ -48,6 +48,20 @@ $PAGE->set_pagelayout('admin');
 
 global $DB;
 $course = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_metrics} WHERE courseid=:courseid', ['courseid' => $courseid]);
+
+if (!isset($course->id)) {
+    $course->courseid = $courseid;
+    $course->links = [];
+    $course->links['returnlink'] = $returnlink;
+    $course->links['courselink'] = new moodle_url('/course/view.php?id=' . $courseid);
+    // Course was not found for whatever reason, display default template.
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('report_details_notfound', 'tool_coursewrangler'));
+    echo $OUTPUT->render_from_template('tool_coursewrangler/report_details_notfound', $course);
+    echo $OUTPUT->footer();
+    exit;
+}
+
 // Creating course link.
 $courseurl = new moodle_url('/course/view.php?id=' . $course->courseid, []);
 $course->course_title_link = \html_writer::link($courseurl, $course->courseshortname . ': ' . $course->coursefullname);
@@ -113,7 +127,8 @@ $actionlinkparams['returnlink'] = $returnlink;
 if ($actiondata != false) {
     $actiondata->status = ($actiondata->status == '') ? $actiondata->action : $actiondata->status;
     $actiondata->status = get_string('report_details_actionstatus_'.$actiondata->status, 'tool_coursewrangler');
-    $course->actionstatus = $actiondata->status . ' - ' . userdate($actiondata->lastupdated);
+    $course->actionstatus = $actiondata->status;
+    $course->actionstatus_date = userdate($actiondata->lastupdated);
     $resetlinkparams = $actionlinkparams;
     $resetlinkparams['action'] = 'reset';
     $course->links['action_reset_link'] = new moodle_url(

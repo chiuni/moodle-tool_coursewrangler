@@ -25,6 +25,7 @@
 
 namespace tool_coursewrangler\task;
 
+use moodle_url;
 use tool_coursewrangler\action;
 use tool_coursewrangler\action_handler;
 
@@ -147,14 +148,15 @@ class wrangle extends \core\task\scheduled_task {
             mtrace("ATTENTION! Deleting course $waiting->courseid.");
             $actionobject = new action($waiting->id);
             $deletestatus = $actionobject->delete_course();
+            $logcourseidlink = new moodle_url('/course/view.php?id=' . $waiting->courseid);
             if ($deletestatus) {
                 // Log in database the success?
-                insert_cw_logentry("Course: $waiting->courseid deleted successfully.", 'wrangle_task');
-                mtrace("Delete successfull.");
+                insert_cw_logentry("Course with ID: $this->courseid deleted successfully.", 'wrangle_task');
+                mtrace("Delete successful ID-$this->courseid.");
             } else {
                 $metric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $waiting->courseid]);
                 // Log in database the failure.
-                insert_cw_logentry("Course: $waiting->courseid failed to delete.", 'wrangle_task', $metric->id);
+                insert_cw_logentry("Course: <a href=\"$logcourseidlink\">$waiting->courseid</a> failed to delete.", 'wrangle_task', $metric->id);
             }
         }
         mtrace("Finished tool_coursewrangler wrangle task");

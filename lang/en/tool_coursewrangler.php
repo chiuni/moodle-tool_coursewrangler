@@ -31,7 +31,6 @@ $string['table_selectall'] = 'Select All';
 $string['table_edit'] = 'Edit';
 $string['table_action_delete'] = 'Delete';
 
-
 $string['table_courseid'] = 'Course ID';
 $string['table_coursemoduleid'] = 'Course Module ID';
 $string['table_coursefullname'] = 'Name';
@@ -78,8 +77,17 @@ $string['table_course_status'] = 'Status';
 $string['table_action_protect'] = 'Protect';
 $string['table_status_protect'] = 'Protect';
 
+$string['table_log_id'] = 'Log ID';
+$string['table_log_actor'] = 'Actor';
+$string['table_log_description'] = 'Description';
+$string['table_log_timestamp'] = 'Date';
+$string['table_log_metrics_id'] = 'Metrics ID';
+
+$string['table_actionredirectmessage'] = 'Action set successfully';
+
 // Buttons.
 $string['button_generatereport'] = 'Generate Report';
+$string['button_cw_scheduled_tasks_logs'] = 'Task Logs';
 
 // Settings.
 $string['settingspage_main'] = 'Main Settings';
@@ -117,19 +125,23 @@ $string['settings_donotnotifyhidden_desc'] = 'Owners of courses that are not vis
 // Report_details page.
 $string['report_details_pageheader'] = 'Report Details';
 $string['report_details_coursedetailsfor'] = 'Course details for: ';
-$string['report_details_report_date'] = 'Last updated on';
+$string['report_details_report_date'] = 'Course details last updated on';
 $string['report_details_enrolmentinformation'] = 'Enrolment Information';
 $string['report_details_scoreinformation'] = 'Deletion Score';
-$string['report_details_scorecreated'] = 'Score created on';
+$string['report_details_scorecreated'] = 'Score last calculated on';
 $string['report_details_action_delete'] = 'Schedule Deletion';
 $string['report_details_return'] = 'Return to Table';
 $string['report_details_action_reset'] = 'Reset Action';
 $string['report_details_action_logs'] = 'Action History Log';
 $string['report_details_action_protect'] = 'Protect Course';
-$string['report_details_actionstatus'] = 'Action Status';
+$string['report_details_actionstatus'] = 'Action status';
+$string['report_details_actionstatus_date'] = 'Action updated on';
 $string['report_details_actionstatus_scheduled'] = 'Scheduled for deletion';
 $string['report_details_actionstatus_protect'] = 'Protected course';
 $string['report_details_actionstatus_waiting'] = 'Waiting for deletion';
+$string['report_details_notfound'] = 'Course not found';
+$string['report_details_notfound_desc'] = 'Maybe this course has already been deleted, or the site task which gathers information on courses has not yet run.';
+$string['report_details_coursenotexists'] = 'course likely does not exit';
 
 // Form stuff.
 $string['report_form_filter_results'] = 'Filter Results';
@@ -172,7 +184,6 @@ $string['hideshowmetaparents_hideonly'] = 'Hide parent courses';
 $string['hideshowmetaparents_showonly'] = 'Show only parent courses';
 $string['hideshowhiddencourses_hideonly'] = 'Hide visible courses';
 $string['hideshowhiddencourses_showonly'] = 'Show only visible courses';
-
 
 $string['action_form_chooseaction'] = 'missing string!';
 

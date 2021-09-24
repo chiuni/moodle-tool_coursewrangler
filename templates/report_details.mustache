@@ -3,7 +3,11 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">{{{course_title_link}}}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{#str}}table_coursetimeaccess, tool_coursewrangler{{/str}}: {{{coursetimeaccess}}}</h6>
+                <div class="mb-3">
+                    <p class="card-subtitle ">{{#str}}table_coursetimeaccess, tool_coursewrangler{{/str}}:
+                        <span class="text-muted ">{{{coursetimeaccess}}}</span>
+                    </p>
+                </div>
                 <hr>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item border-0 p-0 pb-2">
@@ -96,11 +100,28 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">{{#str}}pluginname, tool_coursewrangler{{/str}}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{#str}}report_details_report_date, tool_coursewrangler{{/str}}: {{{metricsupdated}}}</h6>
-                <ul class="list-group list-group-flush">
+                <hr>
+                <div class="mb-3">
+                    <p class="card-subtitle ">{{#str}}report_details_report_date, tool_coursewrangler{{/str}}:
+                        <br>
+                        <span class="text-muted ">{{{metricsupdated}}}</span>
+                    </p>
+                </div>
+                <hr>
+                <div class="mb-3">
                     {{#actionstatus}}
-                        {{#str}}report_details_actionstatus, tool_coursewrangler{{/str}}: {{{actionstatus}}}
+                    <p class="card-subtitle ">{{#str}}report_details_actionstatus, tool_coursewrangler{{/str}}:
+                        <br>
+                        <span class="text-muted ">{{{actionstatus}}}</span>
+                        <br>
+                        <span class="">{{#str}}report_details_actionstatus_date, tool_coursewrangler{{/str}}</span>:
+                        <br>
+                        <span class="text-muted ">{{{actionstatus_date}}}</span>
+                    </p>
                     {{/actionstatus}}
+                </div>
+                <hr>
+                <ul class="list-group list-group-flush">
                     {{#links}}
                     {{#returnlink}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{returnlink}}}"><i class="icon fa fa-arrow-left fa-fw "></i>{{#str}}report_details_return, tool_coursewrangler{{/str}}</a></span></li>{{/returnlink}}
                     {{#action_delete_link}}<li class="list-group-item border-0 p-0 pb-1"><span><a href="{{{action_delete_link}}}"><i class="icon fa fa-trash fa-fw "></i>{{#str}}report_details_action_delete, tool_coursewrangler{{/str}}</a></span></li>{{/action_delete_link}}
@@ -115,7 +136,12 @@
             <div class="card-body">
                 {{#score}}
                 <h5 class="card-title">{{#str}}report_details_scoreinformation, tool_coursewrangler{{/str}}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{#str}}report_details_scorecreated, tool_coursewrangler{{/str}}: {{{timemodified}}}</h6>
+                <div class="mb-3">
+                    <p class="card-subtitle ">{{#str}}report_details_scorecreated, tool_coursewrangler{{/str}}:
+                        <br>
+                        <span class="text-muted ">{{{timemodified}}}</span>
+                    </p>
+                </div>
                 <hr>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item border-0 p-0 pb-2">

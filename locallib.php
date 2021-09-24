@@ -400,6 +400,7 @@ function test_sendmessage($subject, $messagebody, $user) {
     ]; // Extra content for specific processor.
     $message->set_additional_content('email', $content);
     $messageid = message_send($message);
+    return $messageid;
 }
 
 /**
