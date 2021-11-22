@@ -62,14 +62,24 @@ class filldata extends \core\task\scheduled_task {
         mtrace("Start time: $starttimeformatted");
         $coursedata = find_relevant_coursedata_lite();
         $dbendtime = time();
-        mtrace('Queries took a total of: ' . ($dbendtime - $starttime) . ' seconds');
+        mtrace(
+            'Queries took a total of: ' . ($dbendtime - $starttime) . ' seconds'
+        );
         mtrace('Creating metrics data.');
         foreach ($coursedata as $data) {
-            $fetchmetric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $data->courseid]);
+            $fetchmetric =
+                $DB->get_record(
+                    'tool_coursewrangler_metrics',
+                    ['courseid' => $data->courseid]
+                );
             if (!$fetchmetric) {
                 // This is a new entry.
                 $data->metricsupdated = time();
-                $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
+                $DB->insert_record(
+                    'tool_coursewrangler_metrics',
+                    $data,
+                    true
+                );
                 continue;
             }
             // Compare data to highlight changes.
@@ -94,7 +104,11 @@ class filldata extends \core\task\scheduled_task {
         }
         $scriptendtime = time();
 
-        mtrace('>>> Script took ' . ($scriptendtime - $starttime) . ' seconds.');
-        mtrace(">>> Finishing " . $this->get_name() . '.');
+        mtrace(
+            '>>> Script took ' . ($scriptendtime - $starttime) . ' seconds.'
+        );
+        mtrace(
+            '>>> Finishing ' . $this->get_name() . '.'
+        );
     }
 }

@@ -54,7 +54,12 @@ class score extends \core\task\scheduled_task {
         $courses = $scorekeeper->get_courses();
         $insert = [];
         foreach ($courses as $metrics) {
-            $currentscore = $DB->get_record('tool_coursewrangler_score', ['metrics_id' => $metrics->id]) ?? false;
+            $currentscore =
+                $DB->get_record(
+                    'tool_coursewrangler_score',
+                    ['metrics_id' => $metrics->id]
+                    )
+                ?? false;
             $scoredata = [
                 'metrics_id' => $metrics->id,
                 'timemodified' => $scrstarttime,
@@ -72,10 +77,20 @@ class score extends \core\task\scheduled_task {
             $DB->update_record('tool_coursewrangler_score', $scoredata, true);
         }
         if (!empty($insert)) {
-            $DB->insert_records('tool_coursewrangler_score', $insert, true, true);
+            $DB->insert_records(
+                'tool_coursewrangler_score',
+                $insert,
+                true,
+                true
+            );
         }
         $screndtime = time();
-        mtrace('>>> Calculating score took ' . ($screndtime - $scrstarttime) . ' seconds.');
-        mtrace(">>> Finishing " . $this->get_name() . '.');
+        mtrace(
+            '>>> Calculating score took ' .
+            ($screndtime - $scrstarttime) . ' seconds.'
+        );
+        mtrace(
+            '>>> Finishing ' . $this->get_name() . '.'
+        );
     }
 }

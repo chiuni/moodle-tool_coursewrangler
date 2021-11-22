@@ -38,7 +38,11 @@ class action_handler
         }
     }
 
-    public static function update(int $courseid, string $task, string $status = '') {
+    public static function update(
+        int $courseid,
+        string $task,
+        string $status = ''
+    ) {
         if ($courseid < 1) {
             return false;
         }
@@ -68,9 +72,16 @@ class action_handler
             return false;
         }
         global $DB;
-        $action = $DB->get_record('tool_coursewrangler_action', ['courseid' => $courseid], 'id', IGNORE_MISSING);
+        $action = $DB->get_record(
+            'tool_coursewrangler_action',
+            ['courseid' => $courseid],
+            'id', IGNORE_MISSING
+        );
         if ($action == true) {
-            return $DB->delete_records('tool_coursewrangler_action', ['id' => $action->id]);
+            return $DB->delete_records(
+                'tool_coursewrangler_action',
+                ['id' => $action->id]
+            );
         }
         return null;
     }
@@ -80,7 +91,10 @@ class action_handler
      * @param array $relevantarchetypes Array of archetypes to select.
      * @return array Array of user ids => Array of course ids
      */
-    static public function old_getmaillist(array $scheduled, array $relevantarchetypes = []) {
+    static public function old_getmaillist(
+        array $scheduled,
+        array $relevantarchetypes = []
+    ) {
         // Could this be done using capabilities?
         $responsibleuserids = [];
         foreach ($scheduled as $action) {
@@ -91,7 +105,10 @@ class action_handler
             $allarchetypes = get_role_archetypes();
             $validarchetypes = $allarchetypes;
             if (!empty($relevantarchetypes)) {
-                $validarchetypes = array_intersect($allarchetypes, $relevantarchetypes);
+                $validarchetypes = array_intersect(
+                    $allarchetypes,
+                    $relevantarchetypes
+                );
             }
             // Getting all roles and selecting based on archetype.
             $roles = get_all_roles($coursecontext);
@@ -133,20 +150,29 @@ class action_handler
         return $owners;
     }
 
-    public static function send_schedulednotification(object $user, array $courseids) {
+    public static function send_schedulednotification(
+        object $user,
+        array $courseids
+    ) {
         global $OUTPUT;
         $courses = [];
         // Prepare course information for template.
         foreach ($courseids as $cid) {
             $course = get_course_metric($cid);
-            $course->courseurl = new \moodle_url('/course/view.php', ['id' => $course->courseid]);
+            $course->courseurl = new \moodle_url(
+                '/course/view.php',
+                ['id' => $course->courseid]
+            );
             $courses[] = $course;
         }
         $messagebody = $OUTPUT->render_from_template(
             'tool_coursewrangler/scheduled_notification',
             [
                 'courses' => $courses,
-                'user_table_url' => new \moodle_url('/admin/tool/coursewrangler/user_table.php', ['userid'=>$user->id])
+                'user_table_url' => new \moodle_url(
+                    '/admin/tool/coursewrangler/user_table.php',
+                    ['userid'=>$user->id]
+                )
             ]
         );
         $message = new \core\message\message();
@@ -155,17 +181,25 @@ class action_handler
         $message->name = 'schedulednotification';
         $message->userfrom = \core_user::get_noreply_user();
         $message->userto = $user;
-        $message->subject = get_string('message_deletesubject', 'tool_coursewrangler');
+        $message->subject = get_string(
+            'message_deletesubject',
+            'tool_coursewrangler'
+        );
         $message->fullmessage = $messagebody;
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $message->fullmessagehtml = $message->fullmessage;
         $message->smallmessage = html_to_text($messagebody);
-        // Because this is a notification generated from Moodle, not a user-to-user message:
+        // Because this is a notification generated from Moodle,
+        // not a user-to-user message:
         $message->notification = 1;
         // A relevant URL for the notification.
-        $message->contexturl = (new \moodle_url('/admin/tool/coursewrangler/user_table.php'))->out(false);
+        $murl = new \moodle_url('/admin/tool/coursewrangler/user_table.php');
+        $message->contexturl = $murl->out(false);
         // Link title explaining where users get to for the contexturl.
-        $message->contexturlname = get_string('message_contexturlname', 'tool_coursewrangler');
+        $message->contexturlname = get_string(
+            'message_contexturlname',
+            'tool_coursewrangler'
+        );
         $messageid = message_send($message);
         return $messageid;
     }

@@ -41,36 +41,81 @@ $action = required_param('action', PARAM_ALPHA);
 $returnlink = optional_param('returnlink', null, PARAM_URL);
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
-$returnlink_reportdetails = new moodle_url('/admin/tool/coursewrangler/report_details.php', ['courseid' => $courseid, 'returnlink' => $returnlink]);
+$returnlink_reportdetails =
+    new moodle_url(
+        '/admin/tool/coursewrangler/report_details.php',
+        ['courseid' => $courseid,
+        'returnlink' => $returnlink]
+    );
 $returnlink_table = $returnlink ?? false;
 
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
-$PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/action.php', ['courseid' => $courseid, 'action' => $action]));
-$PAGE->set_title(get_string('report_details_pageheader', 'tool_coursewrangler'));
+$PAGE->set_url(
+    new moodle_url(
+        '/admin/tool/coursewrangler/action.php',
+        ['courseid' => $courseid,
+        'action' => $action]
+    )
+);
+$PAGE->set_title(
+    get_string(
+        'report_details_pageheader',
+        'tool_coursewrangler'
+    )
+);
 $PAGE->set_pagelayout('admin');
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('actionpage', 'tool_coursewrangler'));
 
 if (!$confirm) {
-    $confirmstring = get_string('actionpage_confirm_btn', 'tool_coursewrangler', ['action' => $action, 'courseid' => $courseid]);
+    $confirmstring = get_string(
+        'actionpage_confirm_btn',
+        'tool_coursewrangler',
+        ['action' => $action, 'courseid' => $courseid]
+    );
     $confirmurl = new moodle_url(
             '/admin/tool/coursewrangler/action.php',
-            ['courseid' => $courseid, 'action' => $action, 'confirm' => true, 'returnlink' => $returnlink]
+            [
+                'courseid' => $courseid,
+                'action' => $action,
+                'confirm' => true,
+                'returnlink' => $returnlink
+            ]
         );
-    echo $OUTPUT->confirm($confirmstring, $confirmurl, $returnlink_reportdetails);
+    echo $OUTPUT->confirm(
+        $confirmstring,
+        $confirmurl,
+        $returnlink_reportdetails
+    );
 }
 
 if ($confirm) {
     $actionsuccess = action_handler::update($courseid, $action);
     if ($actionsuccess == true) {
-        echo $OUTPUT->notification(get_string('actionpage_actionsuccess', 'tool_coursewrangler'), 'notifysuccess');
+        echo $OUTPUT->notification(
+            get_string(
+                'actionpage_actionsuccess',
+                'tool_coursewrangler'
+            ),
+            'notifysuccess'
+        );
     } else {
-        echo $OUTPUT->notification(get_string('actionpage_actionfail', 'tool_coursewrangler'), 'notifyerror');
+        echo $OUTPUT->notification(
+            get_string(
+                'actionpage_actionfail',
+                'tool_coursewrangler'
+            ),
+            'notifyerror'
+        );
     }
     echo $OUTPUT->single_button(
-        $returnlink_reportdetails, get_string('actionpage_returntoreportdetails', 'tool_coursewrangler')
+        $returnlink_reportdetails,
+        get_string(
+            'actionpage_returntoreportdetails',
+            'tool_coursewrangler'
+        )
     );
     if ($returnlink_table != false) {
         echo $OUTPUT->single_button(

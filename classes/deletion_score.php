@@ -40,18 +40,26 @@ class deletion_score
     public function __construct(array $courses = []) {
         // Initialising settings.
         // This makes parent courses more or less important.
-        $this->courseparentweight = (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10;
+        $this->courseparentweight =
+            (int) get_config('tool_coursewrangler', 'courseparentweight') ?? 10;
         // This triggers a low score for courses with less enrolments than n enrolments.
-        $this->lowenrolmentsflag = (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10;
+        $this->lowenrolmentsflag =
+            (int) get_config('tool_coursewrangler', 'lowenrolmentsflag') ?? 10;
         // This makes each time unit = 1 score point.
-        $this->timeunit = (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400;
+        $this->timeunit =
+            (int) get_config('tool_coursewrangler', 'timeunit') ?? 86400;
         // This is the value used for limiting each score to a upper/lower limit.
-        $this->score_limiter = (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400;
+        $this->score_limiter =
+            (int) get_config('tool_coursewrangler', 'scorelimiter') ?? 400;
         // Preventing zeros, they cause division by zero errors.
-        $this->courseparentweight = $this->courseparentweight > 0 ? $this->courseparentweight : 10;
-        $this->lowenrolmentsflag = $this->lowenrolmentsflag > 0 ? $this->lowenrolmentsflag : 10;
-        $this->timeunit = $this->timeunit > 0 ? $this->timeunit : 86400;
-        $this->score_limiter = $this->score_limiter > 0 ? $this->score_limiter : 400;
+        $this->courseparentweight =
+            $this->courseparentweight > 0 ? $this->courseparentweight : 10;
+        $this->lowenrolmentsflag =
+            $this->lowenrolmentsflag > 0 ? $this->lowenrolmentsflag : 10;
+        $this->timeunit =
+            $this->timeunit > 0 ? $this->timeunit : 86400;
+        $this->score_limiter =
+            $this->score_limiter > 0 ? $this->score_limiter : 400;
         if (empty($courses)) {
             return;
         }
@@ -71,12 +79,18 @@ class deletion_score
         $settings = [
             'timeunit' => $this->timeunit
         ];
-        $rules['course_lastaccess'] = new rules\course_lastaccess($course, $settings);
-        $rules['course_haschildren'] = new rules\course_haschildren($course);
-        $rules['course_isvisible'] = new rules\course_isvisible($course);
-        $rules['course_noenrol'] = new rules\course_noenrol($course);
-        $rules['course_isover'] = new rules\course_isover($course, $settings);
-        $rules['course_neverused'] = new rules\course_neverused($course);
+        $rules['course_lastaccess'] =
+            new rules\course_lastaccess($course, $settings);
+        $rules['course_haschildren'] =
+            new rules\course_haschildren($course);
+        $rules['course_isvisible'] =
+            new rules\course_isvisible($course);
+        $rules['course_noenrol'] =
+            new rules\course_noenrol($course);
+        $rules['course_isover'] =
+            new rules\course_isover($course, $settings);
+        $rules['course_neverused'] =
+            new rules\course_neverused($course);
         $course->rules = $rules;
         return $course;
     }

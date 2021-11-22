@@ -35,9 +35,12 @@ class course_lastaccess extends rule implements rule_interface
         if ($this->course->coursetimeaccess == 0) {
             return $this->state;
         }
-        if ($this->course->coursetimeaccess > $this->course->coursetimecreated) {
-            $this->state = true;
-        }
+        if (
+            $this->course->coursetimeaccess >
+            $this->course->coursetimecreated
+            ) {
+                $this->state = true;
+            }
         return $this->state;
     }
     public function calculate_score(): float {
@@ -47,7 +50,9 @@ class course_lastaccess extends rule implements rule_interface
         // Given the time unit set in settings, score becomes how many time
         // units have passed since last access. Can only be positive. Time
         // units are configurable in settings.
-        $this->score = (time() - $this->course->coursetimeaccess) / $this->settings['timeunit'];
+        $this->score =
+            (time() - $this->course->coursetimeaccess)
+            / $this->settings['timeunit'];
         return $this->score;
     }
     public function set_params() {

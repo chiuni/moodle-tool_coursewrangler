@@ -34,7 +34,12 @@ class action {
             return null;
         }
         global $DB;
-        $actionclass = $DB->get_record('tool_coursewrangler_action', ['id' => $id], '*', MUST_EXIST);
+        $actionclass = $DB->get_record(
+            'tool_coursewrangler_action',
+            ['id' => $id],
+            '*',
+            MUST_EXIST
+        );
         if (!$actionclass) {
             $this->action_not_found = true;
             return false;
@@ -51,7 +56,11 @@ class action {
             return null;
         }
         global $DB;
-        $action = $DB->get_record('tool_coursewrangler_action', ['courseid' => $courseid], '*');
+        $action = $DB->get_record(
+            'tool_coursewrangler_action',
+            ['courseid' => $courseid],
+            '*'
+        );
         if ($action == false) {
             return false;
         }
@@ -59,14 +68,20 @@ class action {
     }
 
     public function delete_course() {
-        if (!isset($this->courseid) || !is_integer((int) $this->courseid) || $this->courseid < 1) {
+        if (
+            !isset($this->courseid) ||
+            !is_integer((int) $this->courseid) ||
+            $this->courseid < 1
+        ) {
             return false;
         }
         global $DB;
         // Double check course exits:
         // Prevent error by doing sql query yourself to check exists.
         $alreadydeleted = false;
-        $course = $DB->get_records_sql('SELECT `id` FROM {course} WHERE `id` = '. $this->courseid . ';');
+        $course = $DB->get_records_sql(
+            'SELECT `id` FROM {course} WHERE `id` = '. $this->courseid . ';'
+        );
         if (isset($course['id']) && $course['id'] <= 0) {
             // Course has already been deleted.
             // Need to remove from action and metrics tables.
@@ -79,21 +94,54 @@ class action {
             try {
                 $deletestatus = delete_course($this->courseid);
             } catch(\Exception $ex) {
-                insert_cw_logentry("Deleting course with ID $this->courseid has thrown an exception: <pre>" . print_r($ex,1) . '</pre>', 'course_wrangler-delete_course', $this->id);
+                $exdescription =
+                    "Deleting course with ID $this->courseid has thrown
+                     an exception: <pre>" . print_r($ex,1) . '</pre>';
+                insert_cw_logentry(
+                    $exdescription,
+                    'course_wrangler-delete_course',
+                    $this->id
+                );
                 $deletestatus = 0;
             }
-            // This part is important, something went wrong, so we will report it.
+            // This part is important, something went wrong,
+            // so we will report it.
             if ($deletestatus === 0) {
-                insert_cw_logentry("Something prevented Moodle from deleteting course with ID $this->courseid, there is nothing Course Wrangler can do to force delete this course.", 'course_wrangler-delete_course', $this->id);
+                $somethingwrongtext =
+                    "Something prevented Moodle from deleteting course
+                     with ID $this->courseid, there is nothing Course Wrangler
+                     can do to force delete this course.";
+                insert_cw_logentry(
+                    $somethingwrongtext,
+                    'course_wrangler-delete_course',
+                    $this->id
+                );
 
             }
         } else {
-            insert_cw_logentry("Course with ID: $this->courseid has already been deleted", 'course_wrangler-delete_course', $this->id);
+            insert_cw_logentry(
+                "Course with ID: $this->courseid has already been deleted",
+                'course_wrangler-delete_course',
+                $this->id
+            );
         }
         if ($deletestatus | $alreadydeleted) {
-            $DB->delete_records('tool_coursewrangler_action', ['courseid' => $this->courseid]);
-            $DB->delete_records('tool_coursewrangler_metrics', ['courseid' => $this->courseid]);
-            insert_cw_logentry("Course with ID: $this->courseid has been deleted from metrics and action tables.", 'course_wrangler-delete_course', $this->id);
+            $DB->delete_records(
+                'tool_coursewrangler_action',
+                ['courseid' => $this->courseid]
+            );
+            $DB->delete_records(
+                'tool_coursewrangler_metrics',
+                ['courseid' => $this->courseid]
+            );
+            $hassbeendeletedtext =
+                "Course with ID: $this->courseid has been deleted
+                 from metrics and action tables.";
+            insert_cw_logentry(
+                $hassbeendeletedtext,
+                'course_wrangler-delete_course',
+                $this->id
+            );
             return true;
         }
         return false;
@@ -111,13 +159,23 @@ class action {
 
     public static function hide_course(int $courseid) {
         global $DB;
-        $course = $DB->get_record('course', ['id' => $courseid]);
-        $metric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $courseid]);
+        $course = $DB->get_record(
+            'course',
+            ['id' => $courseid]
+        );
+        $metric = $DB->get_record(
+            'tool_coursewrangler_metrics',
+            ['courseid' => $courseid]
+        );
         $course->visible = 0;
         $metric->coursevisible = 0;
         $DB->update_record('tool_coursewrangler_metrics', $metric);
-        // Bug Fix [todo]: Fix issue where course enddate being greater than course startdate throws error.
-        if ($course->enddate <= $course->startdate || $course->startdate == 0) {
+        // Bug Fix [todo]: Fix issue where course enddate
+        // being greater than course startdate throws error.
+        if (
+            $course->enddate <= $course->startdate ||
+            $course->startdate == 0
+        ) {
             unset($course->enddate);
         }
         return update_course($course);

@@ -47,35 +47,72 @@ $PAGE->set_title(get_string('report_details_pageheader', 'tool_coursewrangler'))
 $PAGE->set_pagelayout('admin');
 
 global $DB;
-$course = $DB->get_record_sql('SELECT * FROM {tool_coursewrangler_metrics} WHERE courseid=:courseid', ['courseid' => $courseid]);
+$course = $DB->get_record_sql(
+    'SELECT *
+     FROM {tool_coursewrangler_metrics}
+     WHERE courseid=:courseid',
+    ['courseid' => $courseid]
+    );
 
 if (!isset($course->id)) {
     $course->courseid = $courseid;
     $course->links = [];
     $course->links['returnlink'] = $returnlink;
-    $course->links['courselink'] = new moodle_url('/course/view.php?id=' . $courseid);
+    $course->links['courselink'] =
+        new moodle_url('/course/view.php?id=' . $courseid);
     // Course was not found for whatever reason, display default template.
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('report_details_notfound', 'tool_coursewrangler'));
-    echo $OUTPUT->render_from_template('tool_coursewrangler/report_details_notfound', $course);
+    echo $OUTPUT->heading(
+        get_string(
+            'report_details_notfound',
+            'tool_coursewrangler'
+        )
+    );
+    echo $OUTPUT->render_from_template(
+        'tool_coursewrangler/report_details_notfound',
+        $course
+    );
     echo $OUTPUT->footer();
     exit;
 }
 
 // Creating course link.
 $courseurl = new moodle_url('/course/view.php?id=' . $course->courseid, []);
-$course->course_title_link = \html_writer::link($courseurl, $course->courseshortname . ': ' . $course->coursefullname);
+$course->course_title_link =
+    \html_writer::link(
+        $courseurl,
+        $course->courseshortname . ': ' . $course->coursefullname
+    );
 // Processing dates into human readable format.
-$course->coursetimecreated = ($course->coursetimecreated == 0) ? '-' : userdate($course->coursetimecreated);
-$course->coursetimemodified = ($course->coursetimemodified == 0) ? '-' : userdate($course->coursetimemodified);
-$course->coursestartdate = ($course->coursestartdate == 0) ? '-' : userdate($course->coursestartdate);
-$course->courseenddate = ($course->courseenddate == 0) ? '-' : userdate($course->courseenddate);
-$course->coursetimeaccess = ($course->coursetimeaccess == 0) ? '-' : userdate($course->coursetimeaccess);
-$course->courselastenrolment = ($course->courselastenrolment == 0) ? '-' : userdate($course->courselastenrolment);
-$course->activitylastmodified = ($course->activitylastmodified == 0) ? '-' : userdate($course->activitylastmodified);
-$course->metricsupdated = ($course->metricsupdated == 0) ? '-' : userdate($course->metricsupdated);
-// Processing visible and parent. To do: Convert to languange strings.
-$course->coursevisible = ($course->coursevisible == 0) ? 'No' : 'Yes';
+$course->coursetimecreated =
+    ($course->coursetimecreated == 0) ?
+    '-' : userdate($course->coursetimecreated);
+$course->coursetimemodified =
+    ($course->coursetimemodified == 0) ?
+    '-' : userdate($course->coursetimemodified);
+$course->coursestartdate =
+    ($course->coursestartdate == 0) ?
+    '-' : userdate($course->coursestartdate);
+$course->courseenddate =
+    ($course->courseenddate == 0) ?
+    '-' : userdate($course->courseenddate);
+$course->coursetimeaccess =
+    ($course->coursetimeaccess == 0) ?
+    '-' : userdate($course->coursetimeaccess);
+$course->courselastenrolment =
+    ($course->courselastenrolment == 0) ?
+    '-' : userdate($course->courselastenrolment);
+$course->activitylastmodified =
+    ($course->activitylastmodified == 0) ?
+    '-' : userdate($course->activitylastmodified);
+$course->metricsupdated =
+    ($course->metricsupdated == 0) ?
+    '-' : userdate($course->metricsupdated);
+// Processing visible and parent.
+// [TODO] To do: Convert to languange strings.
+$course->coursevisible =
+    ($course->coursevisible == 0) ?
+    'No' : 'Yes';
 
 if ($course->courseparents != null) {
     $courseparents = explode(',', $course->courseparents);
@@ -83,7 +120,10 @@ if ($course->courseparents != null) {
     foreach ($courseparents as $parentcourseid) {
         $course->courseparents[] = [
             'courseid' => $parentcourseid,
-            'course_link' => new moodle_url('/course/view.php?id=' . $parentcourseid, [])
+            'course_link' => new moodle_url(
+                '/course/view.php?id=' . $parentcourseid,
+                []
+            )
         ];
     }
 } else {
@@ -95,7 +135,10 @@ if ($course->coursechildren != null) {
     foreach ($coursechildren as $childcourseid) {
         $course->coursechildren[] = [
             'courseid' => $childcourseid,
-            'course_link' => new moodle_url('/course/view.php?id=' . $childcourseid, [])
+            'course_link' => new moodle_url(
+                '/course/view.php?id=' . $childcourseid,
+                []
+            )
         ];
     }
 } else {
@@ -118,15 +161,23 @@ if ($course == false) {
 }
 $course->links = ['returnlink' => $returnlink];
 
-$actiondata = $DB->get_record('tool_coursewrangler_action', ['courseid' => $course->courseid]);
+$actiondata = $DB->get_record(
+    'tool_coursewrangler_action',
+    ['courseid' => $course->courseid]
+);
 
 $actionlink = $CFG->wwwroot . '/admin/tool/coursewrangler/action.php';
 $actionlinkparams = [];
 $actionlinkparams['courseid'] = $course->courseid;
 $actionlinkparams['returnlink'] = $returnlink;
 if ($actiondata != false) {
-    $actiondata->status = ($actiondata->status == '') ? $actiondata->action : $actiondata->status;
-    $actiondata->status = get_string('report_details_actionstatus_'.$actiondata->status, 'tool_coursewrangler');
+    $actiondata->status =
+        ($actiondata->status == '') ?
+        $actiondata->action : $actiondata->status;
+    $actiondata->status = get_string(
+        'report_details_actionstatus_'.$actiondata->status,
+        'tool_coursewrangler'
+    );
     $course->actionstatus = $actiondata->status;
     $course->actionstatus_date = userdate($actiondata->lastupdated);
     $resetlinkparams = $actionlinkparams;
@@ -151,6 +202,14 @@ if ($actiondata != false) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('report_details_coursedetailsfor', 'tool_coursewrangler'));
-echo $OUTPUT->render_from_template('tool_coursewrangler/report_details', $course);
+echo $OUTPUT->heading(
+    get_string(
+        'report_details_coursedetailsfor',
+        'tool_coursewrangler'
+    )
+);
+echo $OUTPUT->render_from_template(
+    'tool_coursewrangler/report_details',
+    $course
+);
 echo $OUTPUT->footer();
