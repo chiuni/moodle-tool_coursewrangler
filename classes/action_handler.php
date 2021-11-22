@@ -146,7 +146,7 @@ class action_handler
             'tool_coursewrangler/scheduled_notification',
             [
                 'courses' => $courses,
-                'user_table_url' => new \moodle_url('/admin/tool/coursewrangler/user_table.php')
+                'user_table_url' => new \moodle_url('/admin/tool/coursewrangler/user_table.php', ['userid'=>$user->id])
             ]
         );
         $message = new \core\message\message();
@@ -168,6 +168,16 @@ class action_handler
         $message->contexturlname = get_string('message_contexturlname', 'tool_coursewrangler');
         $messageid = message_send($message);
         return $messageid;
+    }
+
+    public static function notify_siteadmins(array $courses) {
+        global $CFG;
+        $siteadmins = $CFG->siteadmins;
+        foreach ($siteadmins as $admin) {
+            $user = \core_user::get_user($admin->userid);
+            $courseids = array_keys($courses);
+            self::send_schedulednotification($user, $courseids);
+        }
     }
 
     public static function notify_owners(array $mailinglist) {

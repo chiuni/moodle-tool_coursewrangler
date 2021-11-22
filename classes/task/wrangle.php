@@ -96,6 +96,7 @@ class wrangle extends \core\task\scheduled_task {
         $childprotection = get_config('tool_coursewrangler', 'childprotection') ?? false;
         $enddateprotection = get_config('tool_coursewrangler', 'enddateprotection') ?? false;
         $donotnotifyhidden = get_config('tool_coursewrangler', 'donotnotifyhidden') ?? false;
+        $notifysiteadmins = get_config('tool_coursewrangler', 'notifysiteadmins') ?? false;
         $scheduledmailinglist = [];
         $notifymode = get_config('tool_coursewrangler', 'notifymode') ?? false;
         $scheduledactionsnotify = [];
@@ -151,8 +152,8 @@ class wrangle extends \core\task\scheduled_task {
             $logcourseidlink = new moodle_url('/course/view.php?id=' . $waiting->courseid);
             if ($deletestatus) {
                 // Log in database the success?
-                insert_cw_logentry("Course with ID: $this->courseid deleted successfully.", 'wrangle_task');
-                mtrace("Delete successful ID-$this->courseid.");
+                insert_cw_logentry("Course with ID: $waiting->courseid deleted successfully.", 'wrangle_task');
+                mtrace("Delete successful ID-$waiting->courseid.");
             } else {
                 $metric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $waiting->courseid]);
                 // Log in database the failure.

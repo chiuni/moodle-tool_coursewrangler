@@ -71,7 +71,15 @@ class report_form extends moodleform {
             'matchstringfull',
             get_string('report_form_matchstringfull', 'tool_coursewrangler')
         );
-        $pagesizeoptions = [50 => 50, 100 => 100, 250 => 250, 500 => 500];
+        $pagesizeoptions = [
+            50 => 50,
+            100 => 100,
+            250 => 250,
+            500 => 500,
+            1000 => 1000,
+            2500 => 2500,
+            5000 => 5000
+        ];
         $mform->addElement(
             'select',
             'pagesize',

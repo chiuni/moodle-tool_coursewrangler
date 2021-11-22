@@ -41,11 +41,11 @@ $starttime = time();
 
 echo 'Starting tool_coursewrangler send test message script.' . PHP_EOL;
 $user = \core_user::get_user(1426261);
-action_handler::send_schedulednotification($user, [58558, 58560]);
-mtrace("Assembling mailing list.");
-$scheduledmailinglist = action_handler::getmaillist($scheduledactionsnotify);
-mtrace("Emailing course managers and teachers for new scheduled tasks.");
-action_handler::notify_owners($scheduledmailinglist);
+action_handler::send_schedulednotification($user, [58564, 58570]);
+// mtrace("Assembling mailing list.");
+// $scheduledmailinglist = action_handler::getmaillist($scheduledactionsnotify);
+// mtrace("Emailing course managers and teachers for new scheduled tasks.");
+// action_handler::notify_owners($scheduledmailinglist);
 
 $elapsed = time() - $starttime;
 echo "Finished script in $elapsed seconds." . PHP_EOL;

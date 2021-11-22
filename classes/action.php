@@ -79,7 +79,13 @@ class action {
             try {
                 $deletestatus = delete_course($this->courseid);
             } catch(\Exception $ex) {
-                insert_cw_logentry("Deleting dourse with ID $this->courseid has thrown an exception: " . $ex->error, 'course_wrangler-delete_course', $this->id);
+                insert_cw_logentry("Deleting course with ID $this->courseid has thrown an exception: <pre>" . print_r($ex,1) . '</pre>', 'course_wrangler-delete_course', $this->id);
+                $deletestatus = 0;
+            }
+            // This part is important, something went wrong, so we will report it.
+            if ($deletestatus === 0) {
+                insert_cw_logentry("Something prevented Moodle from deleteting course with ID $this->courseid, there is nothing Course Wrangler can do to force delete this course.", 'course_wrangler-delete_course', $this->id);
+
             }
         } else {
             insert_cw_logentry("Course with ID: $this->courseid has already been deleted", 'course_wrangler-delete_course', $this->id);

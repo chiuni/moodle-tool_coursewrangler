@@ -131,7 +131,7 @@ $hideshowhiddencourses = optional_param('hideshowhiddencourses', null, PARAM_TEX
 $hideshowhiddencourses = $hideshowhiddencourses ?? $reportformdatajson->hideshowhiddencourses ?? null;
 $pagesize = optional_param('pagesize', null, PARAM_INT);
 $pagesize = $pagesize ?? $reportformdatajson->pagesize ?? 0; // This resets it back to 50, two lines below.
-$pagesize = ($pagesize > 500) ? 500 : $pagesize;
+$pagesize = ($pagesize > 5000) ? 5000 : $pagesize;
 $pagesize = ($pagesize < 50) ? 50 : $pagesize;
 
 $matchstringshort = optional_param('matchstringshort', null, PARAM_TEXT);

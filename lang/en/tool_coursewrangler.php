@@ -115,12 +115,14 @@ $string['settings_waitingduration'] = 'Waiting Phase Task Length';
 $string['settings_waitingduration_desc'] = 'The time it takes for the "waiting" task to be executed.';
 $string['settings_notifymode'] = 'Email Mode';
 $string['settings_notifymode_desc'] = 'Email mode for notifying managers and teachers pior to deletion of courses.';
-$string['settings_childprotection'] = 'Child course protection.';
+$string['settings_childprotection'] = 'Child Course Protection';
 $string['settings_childprotection_desc'] = 'Protect child course by preventing parent deletion (meta enrolments).';
-$string['settings_enddateprotection'] = 'End date protection.';
+$string['settings_enddateprotection'] = 'Course End Date Protection';
 $string['settings_enddateprotection_desc'] = 'Protect courses that end date is set in the future from being deleted.';
-$string['settings_donotnotifyhidden'] = 'Do not notify hidden courses.';
+$string['settings_donotnotifyhidden'] = 'Do Not Notify Hidden Courses';
 $string['settings_donotnotifyhidden_desc'] = 'Owners of courses that are not visible will not be notified.';
+$string['settings_notifysiteadmins'] = 'Notify Site Admins';
+$string['settings_notifysiteadmins_desc'] = 'Whether to notify site admins everytime a course is to be deleted.';
 
 // Report_details page.
 $string['report_details_pageheader'] = 'Report Details';
@@ -205,9 +207,9 @@ $string['message_scheduleddeletion_h1'] = 'Course Deletion Notice';
 $string['message_scheduleddeletion_h2'] = 'List of courses:';
 $string['message_scheduleddeletion_p1'] = 'Some courses that you are enroled in have been identified as old and are marked for deletion.';
 $string['message_scheduleddeletion_p2'] = 'Please make sure any important resources in these courses have been backed up, if not then make sure to do so as soon as possible.';
-$string['message_scheduleddeletion_p3'] = 'If you believe this is a mistake, please contact <a href="#">someone@chi.ac.uk</a> but please note that due to our retention policies, old courses have to be deleted after they are no longer in use.';
+$string['message_scheduleddeletion_p3'] = 'If you believe this is a mistake, please contact <a href="mailto:modular@chi.ac.uk">modular@chi.ac.uk</a> but please note that due to our retention policies, old courses have to be deleted after they are no longer in use.';
 $string['message_scheduleddeletion_p4'] = 'Thank you,';
-$string['message_scheduleddeletion_p5'] = 'Admin Team at <a href="https://moodle.chi.ac.uk/">moodle.chi.ac.uk';
+$string['message_scheduleddeletion_p5'] = 'IT Service Development Team at <a href="https://moodle.chi.ac.uk/">moodle.chi.ac.uk';
 $string['message_scheduleddeletion_accesslistofallcourses'] = 'Access list of all courses on the deletion list.';
 
 // Action page.

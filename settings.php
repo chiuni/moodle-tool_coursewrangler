@@ -156,5 +156,12 @@ if ($hassiteconfig) {
         0
     ));
 
+    $taskspage->add(new admin_setting_configcheckbox(
+        'tool_coursewrangler/notifysiteadmins',
+        get_string('settings_notifysiteadmins', 'tool_coursewrangler'),
+        get_string('settings_notifysiteadmins_desc', 'tool_coursewrangler'),
+        0
+    ));
+
     $settings->add($taskspage);
 }
