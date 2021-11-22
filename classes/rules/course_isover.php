@@ -54,9 +54,12 @@ class course_isover extends rule implements rule_interface
         if ($this->course->courseenddate < time()) {
             // Else, add 100 to deletion score.
             $this->score = 100;
-            // And for each time-period past the course enddate, we add a score point.
+            // And for each time-period past the course enddate,
+            // we add a score point.
             $timeperiod = $this->settings['timeunit'];
-            $this->score += (time() - $this->course->courseenddate) / $timeperiod;
+            $this->score +=
+                (time() - $this->course->courseenddate)
+                / $timeperiod;
         }
         return $this->score;
     }

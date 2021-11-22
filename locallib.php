@@ -186,12 +186,21 @@ function find_coursestudents(int $id) {
                     {user_enrolments}.status AS enrol_status,
                     {enrol}.enrol AS enrol_type
             FROM {role_assignments}
-        LEFT JOIN {user_enrolments} ON {role_assignments}.userid = {user_enrolments}.userid
-        LEFT JOIN {role} ON {role_assignments}.roleid = {role}.id
-        LEFT JOIN {context} ON {context}.id = {role_assignments}.contextid
-        LEFT JOIN {enrol} ON {enrol}.courseid = {context}.instanceid AND {user_enrolments}.enrolid = {enrol}.id
-        WHERE {role}.archetype=:archetype AND {enrol}.courseid = :courseid;";
-    $students = $DB->get_records_sql($sql, ['courseid' => $id, 'archetype' => $archetype]);
+        LEFT JOIN {user_enrolments}
+            ON {role_assignments}.userid = {user_enrolments}.userid
+        LEFT JOIN {role}
+            ON {role_assignments}.roleid = {role}.id
+        LEFT JOIN {context}
+            ON {context}.id = {role_assignments}.contextid
+        LEFT JOIN {enrol}
+            ON {enrol}.courseid = {context}.instanceid
+            AND {user_enrolments}.enrolid = {enrol}.id
+        WHERE {role}.archetype=:archetype
+        AND {enrol}.courseid = :courseid;";
+    $students = $DB->get_records_sql(
+        $sql,
+        ['courseid' => $id, 'archetype' => $archetype]
+    );
     $allstudents[] = $students;
     // This might need review, but the idea is that we create a total enrolment
     // count, and other enrolment counts to help admins make decisions when
@@ -230,7 +239,10 @@ function find_coursestudents(int $id) {
                     break;
             }
         }
-        $coursestudents->suspendedenrolcount += $coursestudents->totalenrolcount - $coursestudents->activeenrolcount ?? 0;
+        $coursestudents->suspendedenrolcount +=
+            $coursestudents->totalenrolcount -
+            $coursestudents->activeenrolcount
+            ?? 0;
     }
     return $coursestudents;
 }
@@ -243,14 +255,18 @@ function count_course_modules(int $courseid) {
     }
     global $DB;
     return $DB->get_record_sql(
-        "SELECT COUNT(id) AS coursemodulescount FROM {course_modules} WHERE course=:courseid;",
+        "SELECT COUNT(id) AS coursemodulescount
+         FROM {course_modules}
+         WHERE course=:courseid;",
         ['courseid' => $courseid]
     );
 }
 /**
- * Large query that fetches the core course data plus activity data regarding that course.
+ * Large query that fetches the core course
+ *  data plus activity data regarding that course.
  * Might be worth ignoring the activity data here: how valuable is it?
- * I cannot remember why it would be beneficial to use $where, maybe for a single course?
+ * I cannot remember why it would be beneficial
+ *  to use $where, maybe for a single course?
  */
 function find_course_activity_data(string $where = '') {
     global $DB;
@@ -258,7 +274,12 @@ function find_course_activity_data(string $where = '') {
     $unionsegments = [];
     foreach ($modules as $module) {
         $mname = '{' . $module->name . '}';
-        $unionsegments[] = " SELECT $mname.id, $mname.course, $mname.name, $mname.timemodified FROM $mname $where";
+        $unionsegments[] =
+            "SELECT $mname.id,
+                    $mname.course,
+                    $mname.name,
+                    $mname.timemodified
+             FROM $mname $where";
     }
     $unionstatement = implode(" UNION ", $unionsegments);
     return $DB->get_records_sql(
@@ -309,7 +330,10 @@ function find_course_last_access() {
  * Could this be done differently?
  */
 function moodletime_to_unixtimestamp(array $timearray) {
-    $timestring = $timearray['day'] . '-' . $timearray['month'] . '-' . $timearray['year'];
+    $timestring =
+        $timearray['day'] . '-' .
+        $timearray['month'] . '-' .
+        $timearray['year'];
     return (strtotime($timestring) ?? 0);
 }
 
@@ -318,7 +342,12 @@ function get_course_metric(int $courseid) {
         return;
     }
     global $DB;
-    return $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $courseid], '*', MUST_EXIST);
+    return $DB->get_record(
+        'tool_coursewrangler_metrics',
+        ['courseid' => $courseid],
+        '*',
+        MUST_EXIST
+    );
 }
 function get_enrolments(int $courseid, string $archetype) {
     if ($courseid < 1) {
@@ -335,13 +364,21 @@ function get_enrolments(int $courseid, string $archetype) {
             {user_enrolments}.timecreated,
             {user_enrolments}.timemodified
         FROM {role_assignments}
-       LEFT JOIN {user_enrolments} ON {role_assignments}.userid = {user_enrolments}.userid
-       LEFT JOIN {role} ON {role_assignments}.roleid = {role}.id
-       LEFT JOIN {context} ON {context}.id = {role_assignments}.contextid
-       LEFT JOIN {enrol} ON {enrol}.courseid = {context}.instanceid AND {user_enrolments}.enrolid = {enrol}.id
+       LEFT JOIN {user_enrolments}
+        ON {role_assignments}.userid = {user_enrolments}.userid
+       LEFT JOIN {role}
+        ON {role_assignments}.roleid = {role}.id
+       LEFT JOIN {context}
+        ON {context}.id = {role_assignments}.contextid
+       LEFT JOIN {enrol}
+        ON {enrol}.courseid = {context}.instanceid
+        AND {user_enrolments}.enrolid = {enrol}.id
        WHERE {enrol}.courseid = :courseid
-       AND {role}.archetype = :archetype;";
-    return $DB->get_records_sql($sql, ['courseid' => $courseid, 'archetype' => $archetype]);
+        AND {role}.archetype = :archetype;";
+    return $DB->get_records_sql(
+        $sql,
+        ['courseid' => $courseid, 'archetype' => $archetype]
+    );
 }
 
 function find_owners(int $courseid, string $archetype = 'editingteacher') {
@@ -366,7 +403,11 @@ function find_owners(int $courseid, string $archetype = 'editingteacher') {
     return $owners;
 }
 
-function insert_cw_logentry(string $description, string $actor = null, int $metricsid = null) {
+function insert_cw_logentry(
+    string $description,
+    string $actor = null,
+    int $metricsid = null
+) {
     $log = new stdClass();
     $log->timestamp = time();
     $log->description = $description;
@@ -382,18 +423,25 @@ function insert_cw_logentry(string $description, string $actor = null, int $metr
 function test_sendmessage($subject, $messagebody, $user) {
     $message = new \core\message\message();
     $message->courseid = SITEID;
-    $message->component = 'tool_coursewrangler'; // Your plugin's name
-    $message->name = 'schedulednotification'; // Your notification name from message.php
-    $message->userfrom = \core_user::get_noreply_user(); // If the message is 'from' a specific user you can set them here
+    // Your plugin's name:
+    $message->component = 'tool_coursewrangler';
+    // Your notification name from message.php:
+    $message->name = 'schedulednotification';
+    // If the message is 'from' a specific user you can set them here:
+    $message->userfrom = \core_user::get_noreply_user();
     $message->userto = $user;
     $message->subject = $subject;
     $message->fullmessage = $messagebody;
     $message->fullmessageformat = FORMAT_MARKDOWN;
     $message->fullmessagehtml = html_to_text($message->fullmessage);
     $message->smallmessage = $messagebody;
-    $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-    $message->contexturl = (new \moodle_url('/course/'))->out(false); // A relevant URL for the notification
-    $message->contexturlname = 'Course list'; // Link title explaining where users get to for the contexturl
+    // Because this is a notification generated from Moodle,
+    // not a user-to-user message:
+    $message->notification = 1;
+    // A relevant URL for the notification:
+    $message->contexturl = (new \moodle_url('/course/'))->out(false);
+    // Link title explaining where users get to for the contexturl:
+    $message->contexturlname = 'Course list';
     $content = [
         '*' =>
         ['header' => ' HEADER ', 'footer' => ' FOOTER ']
@@ -411,7 +459,8 @@ function cwt_debugger($data, string $leadingtext = 'Debug') {
         return false;
     }
     $id = 'coursewrangler_debug_' . random_int(100, 100000);
-    echo "<p><button class=\"btn btn-dark\" type=\"button\" data-toggle=\"collapse\" data-target=\"#$id\">Debug data</button></p>";
+    echo "<p><button class=\"btn btn-dark\" type=\"button\"
+     data-toggle=\"collapse\" data-target=\"#$id\">Debug data</button></p>";
     echo '<div class="collapse" id="'.$id.'"><pre>' . $leadingtext . ': <br>';
     if ($data === null) {
         echo "Data is null.";

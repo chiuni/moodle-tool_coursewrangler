@@ -45,8 +45,12 @@ class logs_table extends table_sql implements renderable
     public function __construct(\moodle_url $baseurl, array $params = []) {
         parent::__construct('tool_coursewrangler-report');
         $this->context = \context_system::instance();
-        // This object should not be used without the right permissions. TODO: THIS ->
-        // require_capability('moodle/badges:manageglobalsettings', $this->context);
+        // This object should not be used without the right permissions.
+        // [TODO] THIS:
+        // require_capability(
+        //     'moodle/badges:manageglobalsettings',
+        //     $this->context
+        // );
 
         // Define columns and headers in the table.
         $this->define_table_columns();
@@ -62,11 +66,26 @@ class logs_table extends table_sql implements renderable
      */
     protected function define_table_columns() {
         $cols = [
-            'id' => get_string('table_log_id', 'tool_coursewrangler'),
-            'actor' => get_string('table_log_actor', 'tool_coursewrangler'),
-            'description' => get_string('table_log_description', 'tool_coursewrangler'),
-            'timestamp' => get_string('table_log_timestamp', 'tool_coursewrangler'),
-            'metrics_id' => get_string('table_log_metrics_id', 'tool_coursewrangler')
+            'id' => get_string(
+                'table_log_id',
+                'tool_coursewrangler'
+            ),
+            'actor' => get_string(
+                'table_log_actor',
+                'tool_coursewrangler'
+            ),
+            'description' => get_string(
+                'table_log_description',
+                'tool_coursewrangler'
+            ),
+            'timestamp' => get_string(
+                'table_log_timestamp',
+                'tool_coursewrangler'
+            ),
+            'metrics_id' => get_string(
+                'table_log_metrics_id',
+                'tool_coursewrangler'
+            )
         ];
 
         $this->define_columns(array_keys($cols));

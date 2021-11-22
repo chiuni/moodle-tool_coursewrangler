@@ -50,7 +50,10 @@ if ($hassiteconfig) {
         }
         $largenumbers[$i] = $i;
     }
-    $mainpage = new admin_settingpage('tool_coursewrangler_main', get_string('settingspage_main', 'tool_coursewrangler'));
+    $mainpage = new admin_settingpage(
+        'tool_coursewrangler_main',
+        get_string('settingspage_main', 'tool_coursewrangler')
+    );
 
     $mainpage->add(new admin_setting_configduration(
         'tool_coursewrangler/timeunit',
@@ -94,7 +97,10 @@ if ($hassiteconfig) {
 
     $settings->add($mainpage);
 
-    $taskspage = new admin_settingpage('tool_coursewrangler_tasks', get_string('settingspage_tasks', 'tool_coursewrangler'));
+    $taskspage = new admin_settingpage(
+        'tool_coursewrangler_tasks',
+        get_string('settingspage_tasks', 'tool_coursewrangler')
+    );
 
     $taskspage->add(new admin_setting_configduration(
         'tool_coursewrangler/scheduledduration',

@@ -61,11 +61,18 @@ $dbendtime = time();
 mtrace('Queries took a total of: ' . ($dbendtime - $starttime) . ' seconds');
 mtrace('Creating metrics data.');
 foreach ($coursedata as $data) {
-    $fetchmetric = $DB->get_record('tool_coursewrangler_metrics', ['courseid' => $data->courseid]);
+    $fetchmetric = $DB->get_record(
+        'tool_coursewrangler_metrics',
+        ['courseid' => $data->courseid]
+    );
     if (!$fetchmetric) {
         // This is a new entry.
         $data->metricsupdated = time();
-        $DB->insert_record('tool_coursewrangler_metrics', $data, true) ?? false;
+        $DB->insert_record(
+            'tool_coursewrangler_metrics',
+            $data,
+            true
+        ) ?? false;
         continue;
     }
     // Compare data to highlight changes.

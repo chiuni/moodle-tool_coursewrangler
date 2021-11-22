@@ -41,13 +41,22 @@ class action_form extends moodleform {
         $reportformdatajson = $customdata['reportformdatajson'] ?? null;
 
         $mform->addElement('hidden', 'reportformdatajson', $reportformdatajson);
-        $mform->addElement('hidden', 'rowsselected', null, ['class' => 'action_form-selected']);
+        $rowsselected = ['class' => 'action_form-selected'];
+        $mform->addElement('hidden', 'rowsselected', null, $rowsselected);
 
         $options = array();
-        $options['delete'] = get_string('action_form_scheduledelete', 'tool_coursewrangler');
-        $options['protect'] = get_string('action_form_protectcourse', 'tool_coursewrangler');
-        $options['reset'] = get_string('action_form_resetaction', 'tool_coursewrangler');
-
+        $options['delete'] = get_string(
+            'action_form_scheduledelete',
+            'tool_coursewrangler'
+        );
+        $options['protect'] = get_string(
+            'action_form_protectcourse',
+            'tool_coursewrangler'
+        );
+        $options['reset'] = get_string(
+            'action_form_resetaction',
+            'tool_coursewrangler'
+        );
         $objs = array();
         $objs[] =& $mform->createElement(
             'select',
@@ -55,7 +64,17 @@ class action_form extends moodleform {
             get_string('action_form_chooseaction', 'tool_coursewrangler'),
             $options);
         $objs[] =& $mform->createElement('submit', 'submit', get_string('go'));
-        $batchdescription = get_string('action_form_withselected', 'tool_coursewrangler');
-        $mform->addElement('group', 'actionsgrp', $batchdescription, $objs, ' ', false);
+        $batchdescription = get_string(
+            'action_form_withselected',
+            'tool_coursewrangler'
+        );
+        $mform->addElement(
+            'group',
+            'actionsgrp',
+            $batchdescription,
+            $objs,
+            ' ',
+            false
+        );
     }
 }

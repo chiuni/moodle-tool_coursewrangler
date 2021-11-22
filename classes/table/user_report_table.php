@@ -45,8 +45,13 @@ class user_report_table extends table_sql implements renderable
     public function __construct(\moodle_url $baseurl, array $params = []) {
         parent::__construct('tool_coursewrangler-report');
         $this->context = \context_system::instance();
-        // This object should not be used without the right permissions. TODO: THIS ->
-        // require_capability('moodle/badges:manageglobalsettings', $this->context);
+
+        // This object should not be used without the right permissions.
+        // [TODO] THIS:
+        // require_capability(
+        //     'moodle/badges:manageglobalsettings',
+        //     $this->context
+        // );
 
         // Define columns and headers in the table.
         $this->define_table_columns();
@@ -70,14 +75,38 @@ class user_report_table extends table_sql implements renderable
      */
     protected function define_table_columns() {
         $cols = [
-            'courseid' => get_string('table_courseid', 'tool_coursewrangler'),
-            'courseidnumber' => get_string('table_courseidnumber', 'tool_coursewrangler'),
-            'courseshortname' => get_string('table_courseshortname', 'tool_coursewrangler'),
-            'coursefullname' => get_string('table_coursefullname', 'tool_coursewrangler'),
-            'coursetimecreated' => get_string('table_coursetimecreated', 'tool_coursewrangler'),
-            'action' => get_string('table_course_action', 'tool_coursewrangler'),
-            'status' => get_string('table_course_status', 'tool_coursewrangler'),
-            'lastupdated' => get_string('table_action_lastupdated', 'tool_coursewrangler')
+            'courseid' => get_string(
+                'table_courseid',
+                'tool_coursewrangler'
+            ),
+            'courseidnumber' => get_string(
+                'table_courseidnumber',
+                'tool_coursewrangler'
+            ),
+            'courseshortname' => get_string(
+                'table_courseshortname',
+                'tool_coursewrangler'
+            ),
+            'coursefullname' => get_string(
+                'table_coursefullname',
+                'tool_coursewrangler'
+            ),
+            'coursetimecreated' => get_string(
+                'table_coursetimecreated',
+                'tool_coursewrangler'
+            ),
+            'action' => get_string(
+                'table_course_action',
+                'tool_coursewrangler'
+            ),
+            'status' => get_string(
+                'table_course_status',
+                'tool_coursewrangler'
+            ),
+            'lastupdated' => get_string(
+                'table_action_lastupdated',
+                'tool_coursewrangler'
+            )
         ];
 
         $this->define_columns(array_keys($cols));
@@ -123,7 +152,8 @@ class user_report_table extends table_sql implements renderable
         ];
         $sqlfrom = [
             '{tool_coursewrangler_metrics}',
-            'LEFT JOIN {tool_coursewrangler_action} ON {tool_coursewrangler_metrics}.courseid={tool_coursewrangler_action}.courseid'
+            'LEFT JOIN {tool_coursewrangler_action}
+             ON {tool_coursewrangler_metrics}.courseid={tool_coursewrangler_action}.courseid'
         ];
         $params = [];
         $conditions = [];
@@ -131,7 +161,12 @@ class user_report_table extends table_sql implements renderable
         $cidsparams = [];
         // We must filter the user's course ids from their enrolments.
         if (!empty($this->courseids)) {
-            list($cidssql, $cidsparams) = $DB->get_in_or_equal($this->courseids, SQL_PARAMS_NAMED, 'cids');
+            list($cidssql, $cidsparams) =
+                $DB->get_in_or_equal(
+                    $this->courseids,
+                    SQL_PARAMS_NAMED,
+                    'cids'
+                );
         }
         if (!empty($cidsparams)) {
             $params += $cidsparams;
@@ -147,9 +182,11 @@ class user_report_table extends table_sql implements renderable
         $params['delete'] = 'delete';
         $conditions[] = "{tool_coursewrangler_action}.action = :delete";
         // We do not want to confuse users by showing them hidden courses.
-        // Could we do something to check this against real data, instead of metrics?
+        // Could we do something to check this against real data, instead
+        // of metrics?
         $params['visible'] = '1';
-        $conditions[] = "{tool_coursewrangler_metrics}.coursevisible = :visible";
+        $conditions[] =
+            "{tool_coursewrangler_metrics}.coursevisible = :visible";
         return [$sqlwhat, $sqlfrom, $conditions, $params];
     }
     /**
@@ -164,7 +201,8 @@ class user_report_table extends table_sql implements renderable
     }
 
     public function col_coursetimecreated($values) : string {
-        return ($values->coursetimecreated == 0) ? '-' : userdate($values->coursetimecreated);
+        return ($values->coursetimecreated == 0) ?
+            '-' : userdate($values->coursetimecreated);
     }
     /**
      * Turning course name into link for details area.
@@ -178,8 +216,13 @@ class user_report_table extends table_sql implements renderable
      * Creating the action col.
      */
     public function col_action($values): string {
-        $displayvalue = isset($values->action) ? "table_action_$values->action" : 'table_value_notavailable';
-        $displayvaluestring = get_string($displayvalue, 'tool_coursewrangler');
+        $displayvalue =
+            isset($values->action) ?
+            "table_action_$values->action" : 'table_value_notavailable';
+        $displayvaluestring = get_string(
+            $displayvalue,
+            'tool_coursewrangler'
+        );
         return ($displayvaluestring);
     }
     /**
@@ -189,7 +232,10 @@ class user_report_table extends table_sql implements renderable
         $displayvalue = (isset($values->status) && $values->status != '')
                             ? "table_status_$values->status"
                             : 'table_value_notavailable';
-        $displayvaluestring = get_string($displayvalue, 'tool_coursewrangler');
+        $displayvaluestring = get_string(
+            $displayvalue,
+            'tool_coursewrangler'
+        );
         return ($displayvaluestring);
     }
 
@@ -198,7 +244,10 @@ class user_report_table extends table_sql implements renderable
      */
     public function col_lastupdated($values) : string {
         $lastupdated = $values->lastupdated;
-        $scheduledperiod = get_config('tool_coursewrangler', 'scheduledduration');
+        $scheduledperiod = get_config(
+            'tool_coursewrangler',
+            'scheduledduration'
+        );
         $toberun = $scheduledperiod + $lastupdated;
         $displayvaluestring = userdate($toberun);
         return ($displayvaluestring);
