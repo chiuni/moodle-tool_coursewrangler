@@ -109,8 +109,10 @@ function find_relevant_coursedata_lite(array $options = []) {
         if (array_key_exists($result->courseid, $courseparents)) {
             $result->courseparents = implode(',', $courseparents[$result->courseid]);
         }
-        $result->coursemodulescount = count_course_modules($result->courseid)->coursemodulescount ?? 0;
-        $result->courselastenrolment = find_last_enrolment($result->courseid)->courselastenrolment ?? 0;
+        $result->coursemodulescount =
+            count_course_modules($result->courseid)->coursemodulescount ?? 0;
+        $result->courselastenrolment =
+            find_last_enrolment($result->courseid)->courselastenrolment ?? 0;
         $coursestudents = find_coursestudents($result->courseid);
         foreach ($coursestudents as $key => $value) {
             $result->$key = $value;
@@ -119,7 +121,10 @@ function find_relevant_coursedata_lite(array $options = []) {
     // Options processing.
     // We must always have $minimumage specified, if missing defaults to settings.
     // This enables us to bypass the settings if needed for minimum age.
-    $minimumage = isset($options['minimumage']) ? $options['minimumage'] : get_config('tool_coursewrangler', 'minimumage');
+    $minimumage =
+        isset($options['minimumage']) ?
+        $options['minimumage'] :
+        get_config('tool_coursewrangler', 'minimumage');
     foreach ($coursequery as $id => $course) {
         if ($course->coursestartdate < 1) {
             continue;
@@ -142,7 +147,11 @@ function find_relevant_coursedata_lite(array $options = []) {
  */
 function find_meta_parents() {
     global $DB;
-    return $DB->get_records_sql("SELECT id, courseid, customint1 AS parentcourseid FROM {enrol} WHERE enrol = 'meta';");
+    return $DB->get_records_sql(
+        "SELECT id, courseid, customint1 AS parentcourseid
+         FROM {enrol}
+         WHERE enrol = 'meta';"
+    );
 }
 
 /**
@@ -449,6 +458,19 @@ function test_sendmessage($subject, $messagebody, $user) {
     $message->set_additional_content('email', $content);
     $messageid = message_send($message);
     return $messageid;
+}
+
+function get_course_action_status(int $courseid) {
+    global $DB;
+    $action = $DB->get_record(
+        'tool_coursewrangler_action',
+        ['courseid' => $courseid],
+        '*'
+    ) ?? false;
+    if ($action == false) {
+        return false;
+    }
+    return $action;
 }
 
 /**

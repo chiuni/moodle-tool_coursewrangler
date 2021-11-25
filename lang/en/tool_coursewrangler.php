@@ -139,6 +139,7 @@ $string['report_details_action_protect'] = 'Protect Course';
 $string['report_details_actionstatus'] = 'Action status';
 $string['report_details_actionstatus_date'] = 'Action updated on';
 $string['report_details_actionstatus_scheduled'] = 'Scheduled for deletion';
+$string['report_details_actionstatus_notified'] = 'Stakeholders notified';
 $string['report_details_actionstatus_protect'] = 'Protected course';
 $string['report_details_actionstatus_waiting'] = 'Waiting for deletion';
 $string['report_details_notfound'] = 'Course not found';
