@@ -169,5 +169,13 @@ if ($hassiteconfig) {
         0
     ));
 
+    $taskspage->add(new admin_setting_configduration(
+        'tool_coursewrangler/maxdeleteexecutiontime',
+        get_string('settings_maxdeleteexecutiontime', 'tool_coursewrangler'),
+        get_string('settings_maxdeleteexecutiontime_desc', 'tool_coursewrangler'),
+        30 * MINSECS,
+        MINSECS
+    ));
+
     $settings->add($taskspage);
 }

@@ -163,16 +163,27 @@ class wrangle extends \core\task\scheduled_task {
             mtrace(
                 "Processing notified action for
                  course id $notified->courseid:"
-                 );
+            );
             $action = new action($notified->id);
             $action->hide_course($notified->courseid);
             action_handler::update($notified->courseid, 'delete', 'hidden');
         }
         foreach ($hiddenactions as $hidden) {
-            mtrace("Processing hidden action for course id $hidden->courseid:");
+            mtrace(
+                "Processing hidden action for
+                 course id $hidden->courseid:"
+            );
             action_handler::update($hidden->courseid, 'delete', 'waiting');
         }
+        $deletestarttime = time();
+        $maxdeletetime =
+            get_config('tool_coursewrangler', 'maxdeleteexecutiontime') ?? 1800;
         foreach ($waitingactions as $waiting) {
+            // We introduce this check to make sure we don't spend
+            // than 30 minutes deleting courses.
+            if (time() > ($deletestarttime + $maxdeletetime)) {
+                break;
+            }
             mtrace(
                 "Processing waiting action for
                  course id $waiting->courseid:"

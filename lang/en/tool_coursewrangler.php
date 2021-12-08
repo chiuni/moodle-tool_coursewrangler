@@ -123,6 +123,8 @@ $string['settings_donotnotifyhidden'] = 'Do Not Notify Hidden Courses';
 $string['settings_donotnotifyhidden_desc'] = 'Owners of courses that are not visible will not be notified.';
 $string['settings_notifysiteadmins'] = 'Notify Site Admins';
 $string['settings_notifysiteadmins_desc'] = 'Whether to notify site admins everytime a course is to be deleted.';
+$string['settings_maxdeleteexecutiontime'] = 'Max Deletion Time';
+$string['settings_maxdeleteexecutiontime_desc'] = 'Max execution time for deletion of courses.';
 
 // Report_details page.
 $string['report_details_pageheader'] = 'Report Details';
