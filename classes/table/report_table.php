@@ -437,20 +437,28 @@ class report_table extends table_sql implements renderable
         }
         // String search for course short name and id number.
         if (isset($this->matchstringshort)) {
+            $matchstringshort =
+                str_replace('_', '\_', $this->matchstringshort);
+            $matchstringshort =
+                str_replace('%', '\%', $matchstringshort);
             $query = [];
             $query[] = $DB->sql_like(
                 '{tool_coursewrangler_metrics}.courseshortname',
                 ':matchstringshortname',
                 false
             );
+
             $query[] = $DB->sql_like(
                 '{tool_coursewrangler_metrics}.courseidnumber',
                 ':matchstring_idnumber',
                 false
             );
             $conditions[] = '(' . join(' OR ', $query) . ')';
-            $params['matchstringshortname'] = "%$this->matchstringshort%";
-            $params['matchstring_idnumber'] = "%$this->matchstringshort%";
+            $params['matchstringshortname'] = "%$matchstringshort%";
+            $params['matchstring_idnumber'] = "%$matchstringshort%";
+            \tool_coursewrangler\cwt_debugger($query);
+            \tool_coursewrangler\cwt_debugger($conditions);
+            \tool_coursewrangler\cwt_debugger($params);
 
         }
         // String search for course full name.
