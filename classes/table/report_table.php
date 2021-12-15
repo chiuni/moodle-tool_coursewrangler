@@ -481,7 +481,7 @@ class report_table extends table_sql implements renderable
                 $courseids = [];
                 foreach ($categories as $id) {
                     $categorycourses = $DB->get_records_sql(
-                        "SELECT c.id FROM {course}
+                        "SELECT {course}.id FROM {course}
                             WHERE {course}.category=:catid;",
                         ['catid' => $id]
                     );
