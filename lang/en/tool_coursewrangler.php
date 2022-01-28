@@ -218,6 +218,7 @@ $string['task_filldata'] = 'Fill Data Task';
 // Messages.
 $string['message_deletesubject'] = 'Course Deletion Notice';
 $string['message_contexturlname'] = 'Deletion course list';
+$string['message_scheduleddeletion_accesslistofallcourses'] = 'Access list of all courses on the deletion list.';
 $string['message_scheduleddeletion_h1'] = 'Course Deletion Notice';
 $string['message_scheduleddeletion_h2'] = 'List of courses:';
 $string['message_scheduleddeletion_p1'] = 'Some courses that you are enroled in have been identified as old and are marked for deletion.';
