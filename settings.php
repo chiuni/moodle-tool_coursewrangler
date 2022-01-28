@@ -118,6 +118,13 @@ if ($hassiteconfig) {
         DAYSECS
     ));
 
+    $taskspage->add(new admin_setting_confightmleditor(
+        'tool_coursewrangler/notificationhtml',
+        get_string('settings_notificationhtml', 'tool_coursewrangler'),
+        get_string('settings_notificationhtml_desc', 'tool_coursewrangler'),
+        get_string('settings_notificationhtml_default', 'tool_coursewrangler')
+    ));
+
     $taskspage->add(new admin_setting_configduration(
         'tool_coursewrangler/hiddenduration',
         get_string('settings_hiddenduration', 'tool_coursewrangler'),

@@ -172,7 +172,8 @@ class action_handler
                 'user_table_url' => new \moodle_url(
                     '/admin/tool/coursewrangler/user_table.php',
                     ['userid'=>$user->id]
-                )
+                ),
+                'notificationhtml' => get_config('tool_coursewrangler', 'notificationhtml')
             ]
         );
         $message = new \core\message\message();
