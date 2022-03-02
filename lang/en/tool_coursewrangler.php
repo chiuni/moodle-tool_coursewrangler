@@ -19,7 +19,8 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Course Wrangler Tool';
 $string['plugindesc'] = 'Course deletion tool for Moodle 3.8+';
 
-$string['pageheader'] = 'The course wrangler tool page header.';
+$string['pageheader'] = 'Course Wrangler Tool';
+$string['pageheader_usertable'] = 'User\'s Table - Course Wrangler';
 $string['pageheading'] = 'Course Wrangler Tool';
 
 $string['privacy:metadata'] = 'The course wrangler tool plugin does not store any personal data.';

@@ -14,12 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Simple file test.php to drop into root of Moodle installation.
- * This is the skeleton code to print a downloadable, paged, sorted table of
- * data from a sql query.
- */
-
 namespace tool_coursewrangler;
 
 use moodle_url;
@@ -47,7 +41,7 @@ $user = \core_user::get_user($userid);
 $PAGE->set_context($context);
 $PAGE->set_heading(get_string('pageheading', 'tool_coursewrangler'));
 $PAGE->set_url(new moodle_url('/admin/tool/coursewrangler/user_table.php'));
-$PAGE->set_title(get_string('pageheader', 'tool_coursewrangler'));
+$PAGE->set_title(get_string('pageheader_usertable', 'tool_coursewrangler'));
 $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(
     get_string('administrationsite'), new moodle_url('/admin/search.php')
@@ -62,7 +56,8 @@ $PAGE->navbar->add(
 );
 
 $enrolments = enrol_get_all_users_courses($userid);
-$enrolids = array_keys($enrolments);
+$courseids = array_keys($enrolments);
+
 // Creating url params.
 $baseurlstr = '/admin/tool/coursewrangler/user_table.php';
 // Parameter categoryids must be string.
@@ -70,7 +65,7 @@ $baseurl = new moodle_url($baseurlstr, []);
 
 $table = new table\user_report_table(
     $baseurl,
-    ['courseids' => $enrolids]
+    ['courseids' => $courseids]
 );
 
 echo $OUTPUT->header();
