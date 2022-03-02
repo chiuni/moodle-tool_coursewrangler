@@ -456,10 +456,6 @@ class report_table extends table_sql implements renderable
             $conditions[] = '(' . join(' OR ', $query) . ')';
             $params['matchstringshortname'] = "%$matchstringshort%";
             $params['matchstring_idnumber'] = "%$matchstringshort%";
-            \tool_coursewrangler\cwt_debugger($query);
-            \tool_coursewrangler\cwt_debugger($conditions);
-            \tool_coursewrangler\cwt_debugger($params);
-
         }
         // String search for course full name.
         if (isset($this->matchstringfull)) {

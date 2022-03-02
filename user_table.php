@@ -74,7 +74,6 @@ $table = new table\user_report_table(
 );
 
 echo $OUTPUT->header();
-cwt_debugger($enrolids);
 
 $usernamehtml = \html_writer::tag(
     'p',
