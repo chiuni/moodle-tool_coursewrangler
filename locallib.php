@@ -477,8 +477,7 @@ function get_course_action_status(int $courseid) {
  * Temporary function to help debug within html.
  */
 function cwt_debugger($data, string $leadingtext = 'Debug') {
-    global $CFG;
-    if ($CFG->debug === DEBUG_DEVELOPER) {
+    if (!debugging()) {
         return false;
     }
     $id = 'coursewrangler_debug_' . random_int(100, 100000);
