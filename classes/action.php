@@ -94,9 +94,13 @@ class action {
             try {
                 $deletestatus = delete_course($this->courseid);
             } catch(\Exception $ex) {
+                // Errors happen if exception string too long,
+                // so we make it shorter.
+                $shortex = substr(print_r($ex,1), 0, 1200);
+
                 $exdescription =
                     "Deleting course with ID $this->courseid has thrown
-                     an exception: <pre>" . print_r($ex,1) . '</pre>';
+                     an exception: <pre>$shortex</pre>";
                 insert_cw_logentry(
                     $exdescription,
                     'course_wrangler-delete_course',

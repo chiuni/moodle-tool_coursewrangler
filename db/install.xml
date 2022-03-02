@@ -76,7 +76,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="actor" TYPE="char" LENGTH="250" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
-        <FIELD NAME="description" TYPE="char" LENGTH="250" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
+        <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="."/>
         <FIELD NAME="metrics_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="."/>
       </FIELDS>
