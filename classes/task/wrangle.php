@@ -157,6 +157,8 @@ class wrangle extends \core\task\scheduled_task {
                 );
             action_handler::notify_owners($scheduledmailinglist);
             mtrace("Done notifying owners.");
+        } if ($notifysiteadmins) {
+            mtrace("Notifying site admins (oops, need to implement, skipping)");
         }
         // Processing the notified tasks.
         foreach ($notifiedactions as $notified) {
